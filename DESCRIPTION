@@ -1,0 +1,27 @@
+Package: GPUmatrix
+Type: Package
+Title: Basic Linear algebra with GPU
+Version: 0.0.0.9000
+Authors@R: 
+    c(person("Cesar Lobato", "Developer", role = c("aut", "cre"),
+                     email = "clobato@unav.es"),
+              person("Juan A. Ferrer-Bonsoms", "Developer", role = "aut"),
+              person("Angel Rubio", "User", role = c("aut","ctb"),
+                     email = "arubio@tecnun.es"))
+Description: I will put here a summary of the abastract of our paper.
+Depends:
+  R (>= 4.2)
+Imports:
+  tensorflow,
+  torch,
+  matrixStats,
+  MASS,
+  Matrix
+Suggests:
+  knitr,
+  rmarkdown
+License: Artistic-2.0
+LazyData: true
+RoxygenNote: 7.2.1
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
