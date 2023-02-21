@@ -1,1 +1,5 @@
 .Rproj.user\
+*.pper
+.Rproj.user/DF58E2E5/rmd-outputs
+.Rproj.user/DF58E2E5/persistent-state
+.Rproj.user/DF58E2E5/sources/session-44bb1a98/lock_file
