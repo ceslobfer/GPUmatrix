@@ -76,8 +76,7 @@ setMethod("det", signature(x = "gpu.matrix.tensorflow"), function(x, ...){
 
 setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
   z <- warningSparseTensor(z)
-  z <- tf$signal$fft(tf$cast(z@gm,tf$complex128))
-  res <- list("real"=z@gm$real,"imag"=z@gm$imag)
+  res <- gpu.matrix.tensorflow(tf$signal$fft(tf$cast(z@gm,tf$complex128)),dtype=tf$complex128)
   return(res)
 })
 

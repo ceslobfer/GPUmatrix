@@ -69,8 +69,8 @@ setMethod("det", signature(x = "gpu.matrix.torch"), function(x, ...){
 setMethod("fft", signature(z="gpu.matrix.torch"), function(z){
   z <- warningSparseTensor_torch(z)
   z@gm <- torch_fft_fft(z@gm)
-
-  return(z)
+  res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+  return(res)
 })
 
 
