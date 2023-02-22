@@ -39,7 +39,7 @@ logdetTensor <- function(x){
 
 warningInteger <- function(x){
   typeTensor <- dtype(x)
-  if (typeTensor$is_integer){
+  if (typeTensor == "int"){
     dtype(x) <- tf$float64
     warning(message = "Not allowed with int32, parse to float64 by default")
   }
@@ -76,34 +76,32 @@ setMethod("det", signature(x = "gpu.matrix.tensorflow"), function(x, ...){
 
 setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
   z <- warningSparseTensor(z)
-  z@gm <- tf$signal$fft(tf$cast(z@gm,tf$complex128))
-
-  return(z)
+  z <- tf$signal$fft(tf$cast(z@gm,tf$complex128))
+  res <- list("real"=z@gm$real,"imag"=z@gm$imag)
+  return(res)
 })
 
 setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "missing"), function(x,decreasing){
   if (x@sparse) {
-    x <- gpu.matrix.tensorflow(sort(x@gm$values),ncol=ncol(x),nrow=nrow(x),sparse = TRUE)
+    res <- as.vector(sort(x@gm$values))
   }else{
-    x@gm <- tf$sort(tf$reshape(x@gm,length(x)))
+    res <- as.vector(tf$sort(tf$reshape(x@gm,length(x))))
   }
-  return(x)
+  return(res)
 })
 
 setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "logical"), function(x,decreasing){
-  if (x@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sort(x@gm$values, decreasing = decreasing),ncol=ncol(x),nrow=nrow(x), sparse = TRUE)
+  if(decreasing){
+    decreasing="DESCENDING"
   }else{
-    if (!decreasing) {
-      x@gm <- tf$sort(tf$reshape(x@gm,length(x)),direction='ASCENDING')
-      # res <- gpu.matrix.tensorflow(tf$sort(x@gm,direction='ASCENDING'), dimnames = dimnames(x))
-    }else{
-      x@gm <- tf$sort(tf$reshape(x@gm,length(x)),direction='DESCENDING')
-      # res <- gpu.matrix.tensorflow(tf$sort(tf$reshape(x@gm,length(x)),direction='DESCENDING'), dimnames = dimnames(x),nrow = nrow(x), ncol=ncol(x))
-
+    decreasing="ASCENDING"
     }
+  if (x@sparse) {
+    res <- as.vector(tf$sort(x@gm$values, direction = decreasing))
+  }else{
+    res <- as.vector(tf$sort(tf$reshape(x@gm,length(x)),direction=decreasing))
   }
-  return(x)
+  return(res)
 })
 
 setMethod("round", signature = "gpu.matrix.tensorflow", function(x){
@@ -116,6 +114,22 @@ setMethod("round", signature = "gpu.matrix.tensorflow", function(x){
   }
   return(x)
 })
+
+my_tf_round<- function(x, decimals = 0){
+  multiplier = tf$constant(10**decimals, dtype=x$dtype)
+  return(tf$round(x * multiplier) / multiplier)
+}
+
+# setMethod("round", signature = "gpu.matrix.tensorflow", function(x){
+#   if (x@sparse) {
+#     x@gm <- tf$SparseTensor(indices = x@gm$indices,
+#                             values = tf$round(x@gm$values),
+#                             dense_shape = x@gm$shape)
+#   }else{
+#     x@gm <- tf$round(x@gm)
+#   }
+#   return(x)
+# })
 
 setMethod(f = "show", signature = "gpu.matrix.tensorflow", definition = function(object){
   cat("GPUmatrix\n")

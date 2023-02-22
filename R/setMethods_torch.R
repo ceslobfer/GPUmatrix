@@ -31,21 +31,11 @@ logdetTensor_torch <- function(x){
   value <- x@gm$slogdet()
   logAbDet <- as.numeric(value[[2]]$cpu())
   attr(logAbDet, which = "logarithm") <- TRUE
-  sign<-as.numeric(value[[1]]$cpu())
+  sign<-sign(as.numeric(value[[1]]$cpu()))
   res <- list("modulus"=logAbDet, "sign"=sign)
   attr(res, which = "class") <- "det"
   return(res)
 }
-
-
-# warningInteger <- function(x){
-#   typeTensor <- dtype(x)
-#   if (typeTensor$is_integer){
-#     dtype(x) <- tf$float64
-#     warning(message = "Not allowed with int32, parse to float64 by default")
-#   }
-#   return(x)
-# }
 
 setMethod("determinant", signature(x = "gpu.matrix.torch", logarithm = "missing"), function(x, logarithm, ...){
   x <- warningSparseTensor_torch(x)
@@ -70,9 +60,10 @@ setMethod("determinant", signature(x = "gpu.matrix.torch", logarithm = "logical"
 })
 
 setMethod("det", signature(x = "gpu.matrix.torch"), function(x, ...){
+  x <- warningSparseTensor_torch(x)
   res <- as.numeric(x@gm$det()$cpu())
 
-  return(as.numeric(res$modulus))
+  return(res)
 })
 
 setMethod("fft", signature(z="gpu.matrix.torch"), function(z){
@@ -114,12 +105,30 @@ setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "logical"), funct
 })
 
 setMethod("round", signature(x= "gpu.matrix.torch",digits="missing"), function(x,digits){
-  x@gm <- torch_round(x@gm,decimals = 0)
+  if(x@sparse){
+    oldDtype <- dtype(x)
+    indices <- torch_tensor(x@gm$indices()+1, dtype = torch_long())
+
+    x@gm <- torch_sparse_coo_tensor(indices = indices, values = torch_round(x@gm$values(),decimals = 0), size = x@gm$size(), device = torch_device(type = "cuda"))
+    x@gm <- x@gm$coalesce()
+    dtype(x) <- oldDtype
+  }else{
+    x@gm <- torch_round(x@gm,decimals = 0)
+  }
   return(x)
 })
 
 setMethod("round", signature(x= "gpu.matrix.torch",digits="numeric"), function(x,digits){
-  x@gm <- torch_round(x@gm,decimals = digits)
+  if(x@sparse){
+    oldDtype <- dtype(x)
+    indices <- torch_tensor(x@gm$indices()+1, dtype = torch_long())
+
+    x@gm <- torch_sparse_coo_tensor(indices = indices, values = torch_round(x@gm$values(),decimals = digits), size = x@gm$size(), device = torch_device(type = "cuda"))
+    x@gm <- x@gm$coalesce()
+    dtype(x) <- oldDtype
+  }else{
+    x@gm <- torch_round(x@gm,decimals = digits)
+  }
   return(x)
 })
 
@@ -638,7 +647,7 @@ setMethod("sum", signature(x = "gpu.matrix.torch"), function(x){
   return(res)
 })
 
-setGeneric("dtype", function(x) standardGeneric("dtype"))
+# setGeneric("dtype", function(x) standardGeneric("dtype"))
 
 writeDType_torch <- function(dtype){
   dtype <- as.character(dtype)
