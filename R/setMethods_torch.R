@@ -18,9 +18,9 @@ to_sparse_torch<-function(x){
 setClassUnion("numMatrixLike", members = c("logical", "integer", "numeric", "matrix"))
 c.GPUmatrix <- function(...) unlist(lapply(list(...), as.vector))
 
-setGeneric("to_dense", function(x) standardGeneric("to_dense"))
+# setGeneric("to_dense", function(x) standardGeneric("to_dense"))
 setMethod("to_dense", signature(x = "gpu.matrix.torch"), function(x) to_dense_torch(x) )
-setGeneric("to_sparse", function(x) standardGeneric("to_sparse"))
+# setGeneric("to_sparse", function(x) standardGeneric("to_sparse"))
 setMethod("to_sparse", signature(x = "gpu.matrix.torch"), function(x) to_sparse_torch(x) )
 
 

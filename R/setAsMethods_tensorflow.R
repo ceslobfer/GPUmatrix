@@ -5,7 +5,7 @@ setMethod("as.numeric", signature(x = "gpu.matrix.tensorflow"), function(x, ...)
 setAs("ANY", "gpu.matrix.tensorflow", function(from) gpu.matrix.tensorflow(as.matrix(from)))
 setAs("gpu.matrix.tensorflow", "matrix",
       function(from){
-        if (from@sparse) from <- to_dense(from)
+        if (from@sparse) from <- to_dense_tensorflow(from)
         typeData <- from@gm$dtype
         res <- as.matrix(from@gm)
         dimnames(res) <- dimnames(from)

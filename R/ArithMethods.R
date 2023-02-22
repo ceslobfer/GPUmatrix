@@ -1,6 +1,6 @@
 warningSparseTensor <- function(x){
   if(x@sparse){
-    x <- to_dense(x)
+    x <- to_dense_tensorflow(x)
     warning(message = "Not allowed with sparse matrix, matrix will be cast to dense for the operation. May cause memory problems")
   }
   return(x)
@@ -53,14 +53,6 @@ prodGPUmat <- function(e1,e2){
   res <- gpu.matrix.tensorflow(data = resTensor)
   return(suppressWarnings(res))
 
-  # if (e1@ncol==e2@nrow | length(e1) == 1 | length(e2) == 1){
-  #   resTensor <- e1@gm * e2@gm
-  #   res <- gpu.matrix.tensorflow(data = resTensor, dimnames = dimnames(e1))
-  #   return(suppressWarnings(res))
-  # }
-  # else{
-  #   stop("The matrices cannot be multiplied (check for compatible dimensions).")
-  # }
 }
 
 divisionGPUmat <- function(e1,e2){
@@ -72,7 +64,7 @@ divisionGPUmat <- function(e1,e2){
   #One sparse
   if (e2@sparse) {
     warning(message = "Not allowed with sparse matrix as denominator, matrix will be cast to dense for the operation. May cause memory problems")
-    e2 <- to_dense(e2)
+    e2 <- to_dense_tensorflow(e2)
   }
 
   resTensor <- tf$divide(e1@gm, e2@gm)
@@ -112,8 +104,8 @@ MatProdGPUmat <- function(x,y){
 
       warning(message = "Not allowed with two sparse matrix, the smallest matrix will be cast to dense for the operation. May cause memory problems")
       if (as.numeric(tf$size(x@gm)) < as.numeric(tf$size(y@gm))) {
-        x <- to_dense(x)
-      }else y <- to_dense(y)
+        x <- to_dense_tensorflow(x)
+      }else y <- to_dense_tensorflow(y)
     }
 
     #One sparse
@@ -167,10 +159,10 @@ setMethod("Arith",
                      divisionGPUmat(e1,e2)
                    },
                    '^'={
-                     if (e1@sparse) e1<-to_dense(e1)
+                     if (e1@sparse) e1<-to_dense_tensorflow(e1)
                      #Mejorar
                      if (class(e2) == "gpu.matrix.tensorflow") {
-                       if (e2@sparse) e2<-to_dense(e2)
+                       if (e2@sparse) e2<-to_dense_tensorflow(e2)
 
                        res <- gpu.matrix.tensorflow(e1@gm ^ e2@gm, dimnames = dimnames(e1))
                      }else{
@@ -204,7 +196,7 @@ setMethod("Arith",
                      divisionGPUmat(e1,e2)
                    },
                    '^'={
-                     if (e2@sparse) e2<-to_dense(e2)
+                     if (e2@sparse) e2<-to_dense_tensorflow(e2)
 
                      res <- gpu.matrix.tensorflow(e1 ^ e2@gm, dimnames = dimnames(e2))
                      return(res)
@@ -246,13 +238,4 @@ setMethod("Arith",
 
 
 
-
-# setMethod("log", signature(x = "gpu.matrix.tensorflow"), function(x){
-#   if (x@sparse) {
-#     x <- to_dense(x)
-#   }
-#   x@gm <- tf$math$log(x@gm)
-#
-#   return(x)
-# })
 

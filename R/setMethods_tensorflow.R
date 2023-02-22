@@ -1,17 +1,30 @@
 
-to_dense<-function(x){
+
+to_dense_tensorflow<-function(x){
   if(x@sparse){
-    res <- gpu.matrix.tensorflow(data=tf$sparse$to_dense(x@gm),dimnames = dimnames(x))
-  }else{
-    res <- x
+    x@gm <-tf$sparse$to_dense(x@gm)
+    x@sparse <- F
   }
-  return(res)
+  return(x)
+}
+
+to_sparse_tensorflow<-function(x){
+  if(!x@sparse){
+    x@gm <- tf$sparse$from_dense(x@gm)
+    x@sparse <- T
+  }
+  return(x)
 }
 setClassUnion("numMatrixLike", members = c("logical", "integer", "numeric", "matrix"))
 c.GPUmatrix <- function(...) unlist(lapply(list(...), as.vector))
 
 setMethod("c", "gpu.matrix.tensorflow", function(x, ..., recursive) c.GPUmatrix(x, ...))
 setMethod("c", "numMatrixLike", function(x, ..., recursive) c.GPUmatrix(x, ...))
+
+setGeneric("to_dense", function(x) standardGeneric("to_dense"))
+setMethod("to_dense", signature(x = "gpu.matrix.tensorflow"), function(x) to_dense_tensorflow(x) )
+setGeneric("to_sparse", function(x) standardGeneric("to_sparse"))
+setMethod("to_sparse", signature(x = "gpu.matrix.tensorflow"), function(x) to_sparse_tensorflow(x) )
 
 logdetTensor <- function(x){
   value <- tf$linalg$slogdet(x@gm)
@@ -438,9 +451,7 @@ setMethod("%^%", signature(x = "gpu.matrix.tensorflow", k = "numeric"), function
 })
 setGeneric("expmGPU", function(x) standardGeneric("expmGPU"))
 setMethod("expmGPU", signature(x = "gpu.matrix.tensorflow"), function(x){
-  if (x@sparse) {
-    x <- to_dense(X)
-  }
+  x <- warningSparseTensor(x)
   res <- tf$linalg$expm(x@gm)
   message("The exponential is computed using a combination of the scaling and squaring method and the Pade approximation.SIAM J. Matrix Anal. Applic., 26:1179-1193, 2005")
   return(res)
@@ -609,16 +620,45 @@ setMethod("sum", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
+writeDType_tensorflow <- function(dtype){
+  dtype <- as.character(dtype)
+  switch(dtype,
+         "<dtype: 'float32'>" = {
+           res <- "float32"
+         },
+         "<dtype: 'float64'>" = {
+           res <- "float64"
+         },
+         "<dtype: 'int32'>" = {
+           res <- "Int"
+         },
+         "<dtype: 'int64'>" = {
+           res <- "Int"
+         },
+         "<dtype: 'bool'>" = {
+           res <- "bool"
+         },
+         "<dtype: 'complex64'>"={
+           res <- "complex64"
+         },
+         "<dtype: 'complex128'>"={
+           res <- "complex128"
+         },
+         stop("Invalid input type")
+  )
+  return(res)
+}
+
 setGeneric("dtype", function(x) standardGeneric("dtype"))
 
 setMethod("dtype", signature(x = "gpu.matrix.tensorflow"), function(x){
-  res <- x@gm$dtype
+  res <- writeDType_tensorflow(x@gm$dtype)
   return(res)
 })
 
 setGeneric("dtype<-", function(x,value) standardGeneric("dtype<-"))
 setMethod("dtype<-", signature(x = "gpu.matrix.tensorflow", value="ANY"), function(x,value){
-
+  if (is.character(value)) value <- castDtype_tensorflow(value)
   x@gm <- tf$cast(x@gm,value)
   return(x)
 })
