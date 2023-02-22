@@ -148,13 +148,16 @@ setMethod("dim", signature(x = "gpu.matrix.torch"), function(x){dim(x@gm)})
 setMethod("dim<-", signature(x = "gpu.matrix.torch",value="vector"), function(x,value){
   x <- t(x)
 
-  x <- warningSparseTensor_torch(x)
   if (x@sparse) {
-    x@gm <- x@gm$reshape(rev(value))$to_sparse()
+    x <- warningSparseTensor_torch(x)
+    x@gm <- x@gm$reshape(rev(value))
+    x <- t(x)
+    x <- to_sparse(x)
   }else{
     x@gm <- x@gm$reshape(rev(value))
+    x <- t(x)
   }
-  return(t(x))
+  return(x)
 })
 
 

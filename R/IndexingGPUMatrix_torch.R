@@ -49,7 +49,7 @@ indexSparse_torch <- function(x, i, j){
   matchIndex <- match(index,indices)
   resValues <- as.numeric(x@gm$values()$cpu())[matchIndex]
   resValues[is.na(resValues)] <- 0
-  resValues <- torch_tensor(resValues,dtype = dtype(x), device = "cuda")
+  resValues <- torch_tensor(resValues,dtype = x@gm$dtype, device = "cuda")
 
   ni <- c(1:length(i))
   nj <- c(1:length(j))
@@ -201,10 +201,10 @@ setMethod("[", signature(x = "gpu.matrix.torch", i = "missing", j = "index"),
               res <- indexSparse_torch(x,i=c(1:nrow(x)),j)
             }else{
               if (typeof(j) == "character") j <- match(j, x@colnames)
-              x@gm <- x@gm[,j]
-              if (length(j) == 1) dim(x) <- c(length(x@gm), 1)
-              colnames(x)<- x@colnames[j]
-              res <- x
+              res <- gpu.matrix.torch(x@gm[,j])
+              rownames(res) <- x@rownames
+
+              colnames(res)<- x@colnames[j]
             }
 
             return(res)

@@ -146,12 +146,13 @@ setMethod("length", signature(x = "gpu.matrix.tensorflow"), function(x){
 
 setMethod("dim", signature(x = "gpu.matrix.tensorflow"), function(x){dim(x@gm)})
 setMethod("dim<-", signature(x = "gpu.matrix.tensorflow",value="vector"), function(x,value){
+  x <- t(x)
   if (x@sparse) {
-    x@gm <- tf$sparse$reshape(x@gm,as.integer(value))
+    x@gm <- tf$sparse$reshape(x@gm,as.integer(rev(value)))
   }else{
-    x@gm <- tf$reshape(x@gm,as.integer(value))
+    x@gm <- tf$reshape(x@gm,as.integer(rev(value)))
   }
-  x
+  return(t(x))
 })
 
 
@@ -333,7 +334,7 @@ setMethod("ncol", signature(x = "gpu.matrix.tensorflow"), function(x){
 
 setMethod("t", signature(x = "gpu.matrix.tensorflow"), function(x){
   if (x@sparse) {
-    x@gm <- gpu.matrix.tensorflow(data = tf$sparse$transpose(x@gm),rownames = colnames(x),colnames = rownames(x))
+    res <- gpu.matrix.tensorflow(data = tf$sparse$transpose(x@gm),rownames = colnames(x),colnames = rownames(x))
   }else{
     res <- gpu.matrix.tensorflow(tf$transpose(x@gm),rownames = colnames(x),colnames = rownames(x))
   }
