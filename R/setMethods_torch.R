@@ -143,17 +143,7 @@ setMethod("length", signature(x = "gpu.matrix.torch"), function(x){
   return(length(x@gm))
 } )
 
-# setAs("gpu.matrix.torch", "matrix", function(from){
-#   if (from@sparse) {
-#     res <- base::as.matrix(to_dense(from))
-#   }else{
-#     res <- base::as.matrix(from@gm)
-#   }
-#   dimnames(res) <- dimnames(from)
-#   return(res)
-# } )
 
-# as.matrix <- function(x, ...) UseMethod("as.matrix",x)
 setMethod("dim", signature(x = "gpu.matrix.torch"), function(x){dim(x@gm)})
 setMethod("dim<-", signature(x = "gpu.matrix.torch",value="vector"), function(x,value){
   x <- t(x)

@@ -103,7 +103,7 @@ setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "logical"), 
   return(res)
 })
 
-setMethod("round", signature = "gpu.matrix.tensorflow", function(x){
+setMethod("round", signature(x= "gpu.matrix.tensorflow",digits="missing"), function(x,digits){
   if (x@sparse) {
     x@gm <- tf$SparseTensor(indices = x@gm$indices,
                             values = tf$round(x@gm$values),
@@ -119,16 +119,17 @@ my_tf_round<- function(x, decimals = 0){
   return(tf$round(x * multiplier) / multiplier)
 }
 
-# setMethod("round", signature = "gpu.matrix.tensorflow", function(x){
-#   if (x@sparse) {
-#     x@gm <- tf$SparseTensor(indices = x@gm$indices,
-#                             values = tf$round(x@gm$values),
-#                             dense_shape = x@gm$shape)
-#   }else{
-#     x@gm <- tf$round(x@gm)
-#   }
-#   return(x)
-# })
+setMethod("round", signature(x= "gpu.matrix.tensorflow",digits="numeric"), function(x,digits){
+  if (x@sparse) {
+    x@gm <- tf$SparseTensor(indices = x@gm$indices,
+                            values = my_tf_round(x@gm$values, digits),
+                            dense_shape = x@gm$shape)
+  }else{
+    x@gm <- my_tf_round(x@gm, digits)
+  }
+  return(x)
+})
+
 
 setMethod(f = "show", signature = "gpu.matrix.tensorflow", definition = function(object){
   cat("GPUmatrix\n")
@@ -141,17 +142,8 @@ setMethod("length", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(length(x@gm))
 } )
 
-# setAs("gpu.matrix.tensorflow", "matrix", function(from){
-#   if (from@sparse) {
-#     res <- base::as.matrix(to_dense(from))
-#   }else{
-#     res <- base::as.matrix(from@gm)
-#   }
-#   dimnames(res) <- dimnames(from)
-#   return(res)
-# } )
 
-# as.matrix <- function(x, ...) UseMethod("as.matrix",x)
+
 setMethod("dim", signature(x = "gpu.matrix.tensorflow"), function(x){dim(x@gm)})
 setMethod("dim<-", signature(x = "gpu.matrix.tensorflow",value="vector"), function(x,value){
   if (x@sparse) {
