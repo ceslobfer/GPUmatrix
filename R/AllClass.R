@@ -230,7 +230,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
 
          },
          ddiMatrix={
-           data <- as(diMa,"dgCMatrix")
+           data <- as(data,"dgCMatrix")
            i <- data@i
            j <- findInterval(seq(data@x)-1,data@p[-1])
            indices <- as_tensor(lapply(c(1:length(i)),function(x){return(c(i[x],j[x]))}),dtype = tf$int64)

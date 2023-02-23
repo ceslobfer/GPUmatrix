@@ -56,15 +56,15 @@ dim(y)
 dim(yS)
 
 dim(a)<- c(2,8)
-a
+# a
 dim(x)<- c(2,8)
-x
+# x
 dim(xS)<- c(2,8)
-to_dense(xS)
+# to_dense(xS)
 dim(y)<- c(2,8)
-y
+# y
 dim(yS)<- c(2,8)
-to_dense(yS)
+# to_dense(yS)
 
 rownames(x) <- c("a","b")
 rownames(xS) <- c("a","b")
@@ -77,10 +77,10 @@ dimnames(xS)<- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
 dimnames(y)<- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
 dimnames(yS)<- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
 
-dimnames(x)
-dimnames(xS)
-dimnames(y)
-dimnames(yS)
+# dimnames(x)
+# dimnames(xS)
+# dimnames(y)
+# dimnames(yS)
 
 x[,1]
 xS[,1]
@@ -90,5 +90,38 @@ x[,c(1,2)]
 xS[,c(1,2)]
 y[,c(1,2)]
 yS[,c(1,2)]
+x[1,]
+xS[1,]
+y[1,]
+yS[1,]
+x[c(1,2),]
+xS[c(1,2),]
+y[c(1,2),]
+yS[c(1,2),]
+a[16]
+x[16]
+xS[16]
+y[16]
+yS[16]
 
 
+rowSums(x)
+rowSums(xS)
+rowSums(y)
+rowSums(yS)
+
+colSums(x)
+colSums(xS)
+colSums(y)
+colSums(yS)
+
+
+cbind(x,c(1,2,3,4))
+to_dense(cbind(xS,c(1,2,3,4)))
+cbind(y,c(1,2,3,4))
+to_dense(cbind(yS,c(1,2,3,4)))
+
+rbind(x,c(1,2,3,4))
+to_dense(rbind(xS,c(1,2,3,4)))
+rbind(y,c(1,2,3,4))
+to_dense(rbind(yS,c(1,2,3,4)))

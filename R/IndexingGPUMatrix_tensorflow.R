@@ -51,17 +51,28 @@ select_cols <- function(A,col_to_show){
 }
 
 select_rawIndex <- function(A, rawIndex){
-  rowsMatrix <- nrow(A)
-  index <- lapply(rawIndex,function(y,nrows=rowsMatrix){
-    colIndex <- as.integer(ceiling(y/nrows) - 1)
-    if (y > nrows){
-      rowIndex <- as.integer(y/(nrows))
-    }else{
-      rowIndex <- as.integer(y-1)
-    }
-    list(rowIndex, colIndex)
-  })
+  # rowsMatrix <- nrow(A)
+  # index <- lapply(rawIndex,function(y,nrows=rowsMatrix){
+  #   colIndex <- as.integer(ceiling(y/nrows) - 1)
+  #   if (y > nrows){
+  #     rowIndex <- as.integer(y/(nrows))
+  #   }else{
+  #     rowIndex <- as.integer(y-1)
+  #   }
+  #   list(rowIndex, colIndex)
+  # })
 
+  rowsMatrix <- nrow(A)
+  colIndex <- c()
+  rowIndex <- c()
+  for(i in rawIndex){
+    colIndex <- c(colIndex,as.integer(ceiling(i/rowsMatrix)))
+    valRow <- (i-(rowsMatrix*as.integer(i/rowsMatrix)))
+    if (valRow==0) valRow<- rowsMatrix
+    rowIndex <- c(rowIndex,valRow)
+  }
+
+  index <- list(as.integer(rowIndex-1), as.integer(colIndex-1))
   return(index)
 }
 

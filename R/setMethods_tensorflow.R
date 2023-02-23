@@ -237,7 +237,7 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
 
   if (is.null(colnames(x))) colnames(x) <- rep("",ncol(x))
   if (is.null(colnames(y))) colnames(y) <- rep("",ncol(y))
-  rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
+  # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
 
   # dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
@@ -261,9 +261,9 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
     res <- gpu.matrix.tensorflow(cbind(x@gm,y@gm))
   }
 
-  if (is.null(colnames(x))) colnames(x) <- rep("",ncol(x))
-  if (is.null(colnames(y))) colnames(y) <- rep("",ncol(y))
-  rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
+  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
+  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
+  # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
 
   # dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
@@ -287,10 +287,10 @@ setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(
   }
 
 
-  if (is.null(rownames(x))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y))) rownames(y) <- rep("",nrow(y))
-  cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
-  dimnames(res) <- list(c(rownames(x),rownames(y)),cNames)
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
+  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  # cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
+  dimnames(res) <- list(c(rownames(x),rownames(y)),colnames(x))
 
   res
 })
@@ -309,10 +309,10 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   }
 
 
-  if (is.null(rownames(x))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y))) rownames(y) <- rep("",nrow(y))
-  cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
-  dimnames(res) <- list(c(rownames(x),rownames(y)),cNames)
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
+  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  # cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
+  dimnames(res) <- list(c(rownames(x),rownames(y)),colnames(x))
 
   res
 })
