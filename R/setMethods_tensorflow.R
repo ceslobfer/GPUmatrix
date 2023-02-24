@@ -328,10 +328,16 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
 
 
 
-setMethod("head", signature(x = "gpu.matrix.tensorflow"), function(x, ...){head(x@gm,...)})
+setMethod("head", signature(x = "gpu.matrix.tensorflow"), function(x, ...){
+  x <- warningSparseTensor(x)
+  head(x@gm,...)
+  })
 
 
-setMethod("tail", signature(x = "gpu.matrix.tensorflow"), function(x, ...){tail(x@gm,...)})
+setMethod("tail", signature(x = "gpu.matrix.tensorflow"), function(x, ...){
+  x <- warningSparseTensor(x)
+  tail(x@gm,...)
+  })
 
 setMethod("nrow", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(nrow(x@gm))
