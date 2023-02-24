@@ -194,11 +194,20 @@ tcrossprod(xS,M)
 tcrossprod(y,M)
 tcrossprod(yS,M)
 
-outer(x,a)
-outer(xS,a)
-outer(y,a)
-outer(yS,a)
-outer(x,M)
-outer(xS,M)
-outer(y,M)
-outer(yS,M)
+x %x% x
+x %x% xS
+x %x% a
+x %x% M
+xS %x% x
+xS %x% xS
+xS %x% a
+xS %x% M
+y %x% y
+y %x% yS
+y %x% a
+y %x% M
+yS %x% y
+yS %x% yS
+yS %x% a
+yS %x% M
+

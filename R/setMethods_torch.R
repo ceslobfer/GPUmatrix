@@ -418,45 +418,45 @@ setMethod("tcrossprod", signature(x = "ANY", y = "gpu.matrix.torch"), function(x
   }
 } )
 
-setMethod("outer", signature(X = "gpu.matrix.torch", Y = "ANY"), function(X,Y, ...){
+# setMethod("outer", signature(X = "gpu.matrix.torch", Y = "ANY"), function(X,Y, ...){
+#
+#   castMatrix <- castTypeOperations_torch(X,Y)
+#   X <- castMatrix[[1]]
+#   Y <- castMatrix[[2]]
+#
+#   return(as.array(tf$tensordot(X@gm, Y@gm, axes=0L)))
+#
+# } )
+# setMethod("outer", signature(X = "ANY", Y = "gpu.matrix.torch"), function(X,Y, ...){
+#
+#   castMatrix <- castTypeOperations_torch(X,Y)
+#   X <- castMatrix[[1]]
+#   Y <- castMatrix[[2]]
+#
+#   return(as.array(tf$tensordot(X@gm, Y@gm, axes=0L)))
+#
+# } )
+#
+# setMethod("%o%", signature(X = "gpu.matrix.torch", Y = "ANY"), function(X,Y){
+#   return(outer(X,Y))
+# })
+# setMethod("%o%", signature(X = "ANY", Y = "gpu.matrix.torch"), function(X,Y){
+#   return(outer(X,Y))
+# })
 
-  castMatrix <- castTypeOperations_torch(X,Y)
-  X <- castMatrix[[1]]
-  Y <- castMatrix[[2]]
-
-  return(as.array(tf$tensordot(X@gm, Y@gm, axes=0L)))
-
-} )
-setMethod("outer", signature(X = "ANY", Y = "gpu.matrix.torch"), function(X,Y, ...){
-
-  castMatrix <- castTypeOperations_torch(X,Y)
-  X <- castMatrix[[1]]
-  Y <- castMatrix[[2]]
-
-  return(as.array(tf$tensordot(X@gm, Y@gm, axes=0L)))
-
-} )
-
-setMethod("%o%", signature(X = "gpu.matrix.torch", Y = "ANY"), function(X,Y){
-  return(outer(X,Y))
-})
-setMethod("%o%", signature(X = "ANY", Y = "gpu.matrix.torch"), function(X,Y){
-  return(outer(X,Y))
-})
-
-tf_kron <- function(X,Y){
+tf_kron_torch <- function(X,Y){
   castMatrix <- castTypeOperations_torch(X,Y,todense=T)
   X <- castMatrix[[1]]
   Y <- castMatrix[[2]]
 
-  res <- torch_kron(X,Y)
+  res <- torch_kron(X@gm,Y@gm)
   return(gpu.matrix.torch(res))
 }
 setMethod("%x%", signature(X = "gpu.matrix.torch", Y = "ANY"), function(X,Y){
-  return(tf_kron(X, Y))
+  return(tf_kron_torch(X, Y))
 })
 setMethod("%x%", signature(X = "ANY", Y = "gpu.matrix.torch"), function(X,Y){
-  return(tf_kron(X, Y))
+  return(tf_kron_torch(X, Y))
 })
 
 setGeneric("%^%", function(x,k) standardGeneric("%^%"))
