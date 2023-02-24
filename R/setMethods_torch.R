@@ -459,7 +459,7 @@ setMethod("%x%", signature(X = "ANY", Y = "gpu.matrix.torch"), function(X,Y){
   return(tf_kron_torch(X, Y))
 })
 
-setGeneric("%^%", function(x,k) standardGeneric("%^%"))
+# setGeneric("%^%", function(x,k) standardGeneric("%^%"))
 setMethod("%^%", signature(x = "gpu.matrix.torch", k = "numeric"), function(x,k){
   if (k < 0) stop("power must be a positive integer; use solve() directly for negative powers")
   res <- x

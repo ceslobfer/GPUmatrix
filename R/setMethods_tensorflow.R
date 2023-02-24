@@ -487,12 +487,12 @@ setMethod("diag", signature(x = "gpu.matrix.tensorflow"), function(x){
 setMethod("diag<-", signature(x = "gpu.matrix.tensorflow", value = "numeric"), function(x,value){
   if (x@sparse) {
     x <- warningSparseTensor(x)
-    x@gm <- tf$linalg$set_diag(test1@gm, value)
+    x@gm <- tf$linalg$set_diag(x@gm, value)
     x@gm <- tf$sparse$from_dense(x@gm)
     x@sparse <- T
   }else{
     x <- warningSparseTensor(x)
-    x@gm <- tf$linalg$set_diag(test1@gm, value)
+    x@gm <- tf$linalg$set_diag(x@gm, value)
   }
 
   return(x)

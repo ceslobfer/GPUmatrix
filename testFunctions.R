@@ -211,3 +211,18 @@ yS %x% yS
 yS %x% a
 yS %x% M
 
+
+x %^% 2
+xS %^% 2
+y %^% 2
+yS %^% 2
+
+diag(x)
+diag(xS)
+diag(y)
+diag(yS)
+
+diag(x) <- c(1,2,3,4)
+diag(xS) <- c(1,2,3,4)
+diag(y) <- c(1,2,3,4)
+diag(yS) <- c(1,2,3,4)
