@@ -238,20 +238,23 @@ setMethod("cbind2",signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y,..
     y <- warningSparseTensor_torch(y)
   }
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 2))
-  # if (is.null(colnames(x))) colnames(x) <- rep("",ncol(x))
-  # if (is.null(colnames(y))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
+  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
-
+  rNames <- NULL
+  if (!is.null(rownames(x))) rNames <- rownames(x)
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rNames <- rownames(y)
+  if (!is.null(rownames(x)) & !is.null(rownames(y))) rNames <- c(rownames(x),rownames(y))[c(1:nrow(x))]
   # dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
-  dimnames(res) <- list(c(rownames(x)),c(colnames(x), colnames(y)))
+  dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
 
   return(res)
 })
 
 setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
-
+  # if(is.vector(x)) x <- matrix(x, nrow = length(y), ncol = 1)
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
@@ -261,19 +264,23 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
     y <- warningSparseTensor_torch(y)
   }
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 2))
-  # if (is.null(colnames(x))) colnames(x) <- rep("",ncol(x))
-  # if (is.null(colnames(y))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
+  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
-
+  rNames <- NULL
+  if (!is.null(rownames(x))) rNames <- rownames(x)
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rNames <- rownames(y)
+  if (!is.null(rownames(x)) & !is.null(rownames(y))) rNames <- c(rownames(x),rownames(y))[c(1:nrow(x))]
   # dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
-  dimnames(res) <- list(c(rownames(x)),c(colnames(x), colnames(y)))
+  dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
 
   return(res)
 })
 
 setMethod("rbind2", signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y){
+  if(is.vector(y)) y <- matrix(y, ncol = length(y), nrow = 1)
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
@@ -285,15 +292,18 @@ setMethod("rbind2", signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y){
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 1))
 
 
-  if (is.null(rownames(x))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y))) rownames(y) <- rep("",nrow(y))
-  cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
+  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  cNames <- NULL
+  if (!is.null(colnames(x))) cNames <- colnames(x)
+  if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
+  if (!is.null(colnames(x)) & !is.null(colnames(y))) cNames <- c(colnames(x),colnames(y))[c(1:ncol(x))]
   dimnames(res) <- list(c(rownames(x),rownames(y)),cNames)
-
   return(res)
 })
 
 setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
+  if(is.vector(x)) x <- matrix(x, ncol = length(x), nrow = 1)
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
@@ -305,9 +315,13 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 1))
 
 
-  if (is.null(rownames(x))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y))) rownames(y) <- rep("",nrow(y))
-  cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
+  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  cNames <- NULL
+  if (!is.null(colnames(x))) cNames <- colnames(x)
+  if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
+  if (!is.null(colnames(x)) & !is.null(colnames(y))) cNames <- c(colnames(x),colnames(y))[c(1:ncol(x))]
+  # cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
   dimnames(res) <- list(c(rownames(x),rownames(y)),cNames)
 
   return(res)

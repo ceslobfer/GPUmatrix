@@ -103,6 +103,14 @@ x[16]
 xS[16]
 y[16]
 yS[16]
+x[c(1,16)]
+xS[c(1,16)]
+y[c(1,16)]
+yS[c(1,16)]
+x[c(1,1),c(1,2)]
+to_dense(xS[c(1,1),c(1,2)])
+y[c(1,1),c(1,2)]
+to_dense(yS[c(1,1),c(1,2)])
 
 
 rowSums(x)
@@ -116,12 +124,14 @@ colSums(y)
 colSums(yS)
 
 
-cbind(x,c(1,2,3,4))
+cbind(x,c(1,2))
 to_dense(cbind(xS,c(1,2,3,4)))
-cbind(y,c(1,2,3,4))
+cbind(y,c(1,2))
 to_dense(cbind(yS,c(1,2,3,4)))
 
 rbind(x,c(1,2,3,4))
 to_dense(rbind(xS,c(1,2,3,4)))
 rbind(y,c(1,2,3,4))
 to_dense(rbind(yS,c(1,2,3,4)))
+
+

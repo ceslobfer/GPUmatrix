@@ -235,13 +235,16 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
     res <- gpu.matrix.tensorflow(cbind(x@gm,y@gm))
   }
 
-  if (is.null(colnames(x))) colnames(x) <- rep("",ncol(x))
-  if (is.null(colnames(y))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
+  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
-
+  rNames <- NULL
+  if (!is.null(rownames(x))) rNames <- rownames(x)
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rNames <- rownames(y)
+  if (!is.null(rownames(x)) & !is.null(rownames(y))) rNames <- c(rownames(x),rownames(y))[c(1:nrow(x))]
   # dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
-  dimnames(res) <- list(c(rownames(x)),c(colnames(x), colnames(y)))
+  dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
 
   return(res)
@@ -264,10 +267,13 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
   if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
-
+  rNames <- NULL
+  if (!is.null(rownames(x))) rNames <- rownames(x)
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rNames <- rownames(y)
+  if (!is.null(rownames(x)) & !is.null(rownames(y))) rNames <- c(rownames(x),rownames(y))[c(1:nrow(x))]
   # dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
-  dimnames(res) <- list(c(rownames(x)),c(colnames(x), colnames(y)))
+  dimnames(res) <- list(rNames,c(colnames(x), colnames(y)))
 
 
   return(res)
@@ -292,7 +298,7 @@ setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(
   # cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
   dimnames(res) <- list(c(rownames(x),rownames(y)),colnames(x))
 
-  res
+  return(res)
 })
 
 setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y){
@@ -311,10 +317,13 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
 
   if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
   if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
-  # cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
-  dimnames(res) <- list(c(rownames(x),rownames(y)),colnames(x))
+  cNames <- NULL
+  if (!is.null(colnames(x))) cNames <- colnames(x)
+  if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
+  if (!is.null(colnames(x)) & !is.null(colnames(y))) cNames <- c(colnames(x),colnames(y))[c(1:ncol(x))]
+  dimnames(res) <- list(c(rownames(x),rownames(y)),cNames)
 
-  res
+  return(res)
 })
 
 

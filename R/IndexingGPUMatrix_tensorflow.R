@@ -165,7 +165,8 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "missing"
 
               }else{
                 if ((na <- nargs()) == 2) {
-                  index <- as.matrix(as_tensor(select_rawIndex(x,i)))
+                  index <- select_rawIndex(x,i)
+                  index <- do.call(cbind, index)
                   keyValues <- rnorm(dim(index)[2])
                   index <- index %*% keyValues
                   indices <- as.matrix(x@gm$indices) %*% keyValues
@@ -181,7 +182,7 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "missing"
 
               }else {
                 if((na <- nargs()) == 2){
-                  index <- select_rawIndex(x,i)
+                  index <- do.call(cbind,select_rawIndex(x,i))
                   res <- as.vector(tf$gather_nd(x@gm, indices = index))
                 }
               }
@@ -192,7 +193,7 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "missing"
 
 setMethod("[[", signature(x = "gpu.matrix.tensorflow", i = "index"),
           function(x,i,...){
-            index <- select_rawIndex(x,i)
+            index <- do.call(cbind,select_rawIndex(x,i))
             res <- as.vector(tf$gather_nd(x@gm, indices = index))
 
             return(res)
@@ -236,7 +237,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "m
                    if(x@sparse){
                      if((na <- nargs()) == 3){
                        if (max(i)>length(x)) stop(gettextf("invalid index"), domain=NA)
-                       index <- as.matrix(as_tensor(select_rawIndex(x,i)))
+                       index <- do.call(cbind,select_rawIndex(x,i))
                        keyValues <- rnorm(dim(index)[2])
                        indexU <- index %*% keyValues
                        indices <- x@gm$indices
@@ -269,7 +270,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "m
                      if((na <- nargs()) == 3){
                        if (length(i) == 1) value <- list(value)
 
-                       index <- select_rawIndex(x,i)
+                       index <- do.call(cbind,select_rawIndex(x,i))
                        res <- tf$tensor_scatter_nd_update(
                          x@gm,
                          indices = index,
@@ -371,7 +372,7 @@ setReplaceMethod("[[", signature(x = "gpu.matrix.tensorflow", i = "index",
                    value <- as.vector(value)
                    if (length(i) == 1) value <- list(value)
 
-                   index <- select_rawIndex(x,i)
+                   index <- do.call(cbind,select_rawIndex(x,i))
                    res <- tf$tensor_scatter_nd_update(
                      x@gm,
                      indices = index,
