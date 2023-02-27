@@ -513,8 +513,11 @@ setMethod("solve", signature(a = "gpu.matrix.torch", b = "ANY"), function(a, b){
   castMatrix <- castTypeOperations_torch(a,b)
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
-  res <- torch_lu_solve(a@gm, b@gm)
-  res <- list(X=gpu.matrix.torch(res[[1]]),LU=gpu.matrix.torch(res[[2]]))
+  des_lu <- torch_lu(a@gm,pivot = T)
+  LU <- des_lu[[1]]
+  pivots <- des_lu[[2]]
+  res <- torch_lu_solve(b@gm, LU, pivots)
+  res <- gpu.matrix.torch(res)
 
   return(res)
 })
@@ -523,8 +526,11 @@ setMethod("solve", signature(a = "ANY", b = "gpu.matrix.torch"), function(a, b){
   castMatrix <- castTypeOperations_torch(a,b)
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
-  res <- torch_solve(a@gm, b@gm)
-  res <- list(X=gpu.matrix.torch(res[[1]]),LU=gpu.matrix.torch(res[[2]]))
+  des_lu <- torch_lu(a@gm,pivot = T)
+  LU <- des_lu[[1]]
+  pivots <- des_lu[[2]]
+  res <- torch_lu_solve(b@gm, LU, pivots)
+  res <- gpu.matrix.torch(res)
 
   return(res)
 })
@@ -564,6 +570,7 @@ setMethod("svd", signature(x="gpu.matrix.torch"), function(x){
 
 setMethod("ginv", signature(X="gpu.matrix.torch", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
 {
+  X <- warningSparseTensor_torch(X)
   X@gm <- torch_pinverse(X@gm)
   return(X)
 

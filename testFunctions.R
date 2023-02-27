@@ -226,3 +226,41 @@ diag(x) <- c(1,2,3,4)
 diag(xS) <- c(1,2,3,4)
 diag(y) <- c(1,2,3,4)
 diag(yS) <- c(1,2,3,4)
+
+solve(x)
+solve(xS)
+solve(y)
+solve(yS)
+
+solve(x,t(x))
+solve(xS,t(xS))
+solve(y,t(y))
+solve(yS,t(yS))
+
+qr(x)
+qr(xS)
+qr(y)
+qr(yS)
+
+
+rankMatrix(x)
+rankMatrix(xS)
+rankMatrix(y)
+rankMatrix(yS)
+
+eigen(x)
+eigen(xS)
+eigen(y)
+eigen(yS)
+
+svd(x)
+svd(xS)
+svd(y)
+svd(yS)
+
+ginv(x)
+ginv(xS)
+ginv(y)
+ginv(yS)
+
+

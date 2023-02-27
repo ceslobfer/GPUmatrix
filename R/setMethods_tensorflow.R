@@ -563,6 +563,14 @@ setMethod("svd", signature(x="gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
+setMethod("ginv", signature(X="gpu.matrix.tensorflow", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
+{
+  X <- warningSparseTensor(X)
+  X@gm <- tf$linalg$pinv(X@gm)
+  return(X)
+
+})
+
 setMethod("chol", signature(x="gpu.matrix.tensorflow"), function(x){
 
   x <- warningSparseTensor(x)
