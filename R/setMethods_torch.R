@@ -684,7 +684,7 @@ writeDType_torch <- function(dtype){
            res <- "float64"
          },
          "Int" = {
-           res <- "Int"
+           res <- "int"
          },
          "Bool" = {
            res <- "bool"

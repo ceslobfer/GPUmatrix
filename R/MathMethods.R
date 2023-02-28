@@ -60,6 +60,7 @@ setMethod("Math",
                      return(x)
                    },
                    'asinh' = {
+                     x <- warningSparseTensor(x)
                      x@gm <- tf$math$asinh(x@gm)
                      return(x)
                    },

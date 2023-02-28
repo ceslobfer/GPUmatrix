@@ -527,3 +527,161 @@ colRanks(xS)
 colRanks(y)
 colRanks(yS)
 
+x==x
+xS == x
+y==y
+y==yS
+yS==y
+x>(2*x)
+xS>(2*x)
+y>(2*y)
+y>(2*yS)
+yS>(2*y)
+
+
+# Ejemplo de aplicación de cada función de la lista a cada una de las 4 matrices
+
+# Definimos las matrices
+x <- gpu.matrix(1:6, nrow = 2, type = "tensorflow", dtype = "float64")
+xS <- gpu.matrix(c(1,-1,2,-2,3,-3), nrow = 2, sparse=T, type = "tensorflow")
+y <- gpu.matrix(c(0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4), nrow = 2)
+yS <- gpu.matrix(c(0.5, 1, 2, 3, 4, 5, 6, 7), nrow = 2)
+
+# Aplicamos cada función a cada matriz
+log(x)
+log2(x)
+log10(x)
+log1p(x)
+cos(x)
+cosh(x)
+acos(x)
+acosh(xS)
+sin(x)
+sinh(x)
+asin(x)
+asinh(xS)
+tan(x)
+atan(x)
+tanh(x)
+atanh(xS)
+sqrt(y)
+abs(y)
+sign(y)
+ceiling(y)
+floor(y)
+cumsum(x)
+cumprod(x)
+exp(x)
+expm1(x)
+
+log(xS)
+log2(xS)
+log10(xS)
+log1p(xS)
+cos(xS)
+cosh(xS)
+acos(xS)
+acosh(xS)
+sin(xS)
+sinh(xS)
+asin(xS)
+asinh(xS)
+tan(xS)
+atan(xS)
+tanh(xS)
+atanh(xS)
+sqrt(yS)
+abs(yS)
+sign(yS)
+ceiling(yS)
+floor(yS)
+cumsum(xS)
+cumprod(xS)
+exp(xS)
+expm1(xS)
+
+log(y)
+log2(y)
+log10(y)
+log1p(y)
+cos(y)
+cosh(y)
+acos(y)
+acosh(yS)
+sin(y)
+sinh(y)
+asin(y)
+asinh(yS)
+tan(y)
+atan(y)
+tanh(y)
+atanh(yS)
+sqrt(y)
+abs(y)
+sign(y)
+ceiling(y)
+floor(y)
+cumsum(y)
+cumprod(y)
+exp(y)
+expm1(y)
+
+log(yS)
+log2(yS)
+log10(yS)
+log1p(yS)
+cos(yS)
+cosh(yS)
+acos(yS)
+acosh(yS)
+sin(yS)
+sinh(yS)
+asin(yS)
+asinh(yS)
+tan(yS)
+atan(yS)
+tanh(yS)
+atanh(yS)
+sqrt(yS)
+abs(yS)
+sign(yS)
+ceiling(yS)
+floor(yS)
+cumsum(yS)
+cumprod(yS)
+exp(yS)
+expm1(yS)
+
+library(GPUmatrix)
+
+# Crear dos matrices en la GPU
+A <- gpu.matrix(1:4, nrow = 2, dtype = "float64")
+B <- gpu.matrix(c(2, 4, 6, 8), nrow = 2)
+
+# Realizar algunas operaciones algebraicas
+C <- A + B
+D <- A %*% B
+
+# Verificar que los resultados son correctos
+print(C)
+#>      [,1] [,2]
+#> [1,]    3    7
+#> [2,]    5    9
+
+print(D)
+#>      [,1] [,2]
+#> [1,]   14   20
+#> [2,]   30   44
+
+# Aplicar una función a una matriz en la GPU
+E <- gpu.matrix(c(1, 2, 3, 4), nrow = 2)
+F <- log(E)
+
+# Verificar que el resultado es correcto
+print(F)
+#>           [,1]      [,2]
+#> [1,] 0.0000000 0.6931472
+#> [2,] 1.0986123 1.3862944
+
+
+

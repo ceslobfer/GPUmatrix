@@ -84,7 +84,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
                                   dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device=NULL){
   if (byrow) ncol=length(data)/nrow
   if (is.null(dtype)) dtype <- "float64"
-
+  charDtype <- dtype
   if (class(dtype)[[1]] != "torch_dtype") dtype <- castDtype_torch(dtype)
   #
 
@@ -202,7 +202,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
     res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="torch")
   }
   if(sparseCast) dtype(res) <- dtype
-
+  if (dtype(res) != charDtype & !is.null(charDtype)) dtype(res) <- charDtype
   if (is.null(dimnames)){
     dimnames(res) <- dimnames(data)
   }else dimnames(res) <- dimnames
@@ -213,7 +213,10 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
 gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
                                   dimnames = NULL, dtype=NULL, sparse=FALSE, colnames=c(), rownames=c()){
   if (byrow) ncol=length(data)/nrow
-  if (is.null(dtype)) dtype <- "float64"
+  if (is.null(dtype)){
+    dtype <- "float64"
+  }
+  charDtype <- dtype
 
   if (class(dtype)[[1]] != "tensorflow.python.framework.dtypes.DType") dtype <- castDtype_tensorflow(dtype)
 
@@ -304,7 +307,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
     res <- new("gpu.matrix.tensorflow", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="tensorflow")
   }
 
-
+  if (dtype(res) != charDtype & !is.null(charDtype)) dtype(res) <- charDtype
   if (is.null(dimnames)) dimnames(res) <- dimnames(data)
   else dimnames(res) <- dimnames
   return(res)

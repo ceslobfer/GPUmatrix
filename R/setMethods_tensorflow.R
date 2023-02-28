@@ -671,10 +671,10 @@ writeDType_tensorflow <- function(dtype){
            res <- "float64"
          },
          "<dtype: 'int32'>" = {
-           res <- "Int"
+           res <- "int"
          },
          "<dtype: 'int64'>" = {
-           res <- "Int"
+           res <- "int"
          },
          "<dtype: 'bool'>" = {
            res <- "bool"
