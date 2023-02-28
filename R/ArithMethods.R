@@ -169,7 +169,7 @@ setMethod("Arith",
                    '^'={
                      if (e1@sparse) e1<-to_dense_tensorflow(e1)
                      #Mejorar
-                     if (class(e2) == "gpu.matrix.tensorflow") {
+                     if (inherits(e2,"gpu.matrix.tensorflow") ) {
                        if (e2@sparse) e2<-to_dense_tensorflow(e2)
 
                        res <- gpu.matrix.tensorflow(e1@gm ^ e2@gm, dimnames = dimnames(e1))

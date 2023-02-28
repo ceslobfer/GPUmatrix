@@ -15,9 +15,11 @@ Imports:
   tensorflow,
   torch,
   matrixStats,
+  float,
   stats,
   MASS,
-  Matrix
+  Matrix,
+  methods
 Suggests:
   knitr,
   rmarkdown

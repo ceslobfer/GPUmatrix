@@ -31,10 +31,10 @@ Equivalent outer producto for GPUmatrix
 \S4method{\%o\%}{gpu.matrix.tensorflow,ANY}(X,Y)
 \S4method{\%o\%}{gpu.matrix.torch,ANY}(X,Y)
 
-\S4method{outer}{ANY,gpu.matrix.tensorflow}(X,Y)
-\S4method{outer}{ANY,gpu.matrix.torch}(X,Y)
-\S4method{outer}{gpu.matrix.tensorflow,ANY}(X,Y)
-\S4method{outer}{gpu.matrix.torch,ANY}(X,Y)
+\S4method{outer}{ANY,gpu.matrix.tensorflow}(X,Y,FUN,\dots)
+\S4method{outer}{ANY,gpu.matrix.torch}(X,Y,FUN,\dots)
+\S4method{outer}{gpu.matrix.tensorflow,ANY}(X,Y,FUN,\dots)
+\S4method{outer}{gpu.matrix.torch,ANY}(X,Y,FUN,\dots)
 
 
 }
@@ -42,7 +42,9 @@ Equivalent outer producto for GPUmatrix
 
 \arguments{
 
-\item{X}{A gpu.matrix.tensorflow o gpu.matrix.torch object}
-\item{Y}{A gpu.matrix.tensorflow o gpu.matrix.torch object or a matrix or a numeric variable}
+\item{X}{A gpu.matrix.tensorflow o gpu.matrix.torch object.}
+\item{Y}{A gpu.matrix.tensorflow o gpu.matrix.torch object or a matrix or a numeric variable.}
+\item{FUN}{a function to use on the outer products.}
+\item{\dots}{ptional arguments to be passed to FUN.}
 
 }

@@ -1,21 +1,23 @@
-\name{gpu.matrix.tensorflow.tensorflow}
-\alias{gpu.matrix.tensorflow}
+\name{gpu.matrix}
+\alias{gpu.matrix}
+\alias{as.gpu.matrix}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 create and store a matrix in the GPU
 }
 \description{
-gpu.matrix.tensorflow creates a matrix from input data. The created¡ matrix is stored in the GPU. This function mimics the function 'Matrix' of the library 'Matrix' and the function matrix from base.
+gpu.matrix creates a gpu.matrix.torch or gpu.matrix.tensorflow from input data. The created matrix is stored in the GPU. This function mimics the function 'Matrix' of the library 'Matrix' and the function matrix from base.
 }
 \usage{
-gpu.matrix.tensorflow(data = NA, nrow = NULL, ncol = NULL,
-           byrow = FALSE, dimnames = NULL,
-           dtype = NULL,sparse = FALSE,
-           colnames = c(), rownames = c())
+gpu.matrix(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
+                       dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(),
+                       rownames=c(),device="cuda", type="torch")
+
+as.gpu.matrix(x,\dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{data}{
+  \item{data,x}{
 a scalar, vector or matrix (both matrix or Matrix class).
 }
   \item{nrow}{
@@ -42,6 +44,12 @@ A vector with the column names.
   \item{rownames}{
 A vector with the row names.
 }
+
+\item{device}{By deafult "cuda". indicates de devide to load cuda.}
+\item{type}{By deafult "torch". If gpu.matrix is torch or tensorflow}
+
+\item{\dots}{additional arguments to be passed to or from methods.}
+
 }
 \details{
 gpu.matrix.tensorflow mimics the functions Matrix of the library Matrix and the base function matrix. If tensorflow is properly installed then the gpu.matrix.tensorflow will be stored on the GPU. The example shows how to check this.
@@ -64,6 +72,7 @@ See \code{\linkS4class{Matrix}} and \code{\linkS4class{matrix}}.
 \examples{
 
 \donttest{
+\dontrun{
 ## create a gpu.matrix.tensorflow and check it is stored in the GPU.
 a <- gpu.matrix(1:9,nrow=3,ncol=3)
 class(a)
@@ -76,6 +85,7 @@ a@gm$device
 
 #the output of a@gm@device should have a similar shape:
 #[1] "/job:localhost/replica:0/task:0/device:GPU:0"
+}
 }
 }
 

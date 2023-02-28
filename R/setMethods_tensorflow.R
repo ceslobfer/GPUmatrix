@@ -229,7 +229,7 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
   y <- castMatrix[[2]]
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(testGPUSparseMatrix@gm,testGPUSparseMatrix@gm), axis = 1L))
+    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 1L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -261,7 +261,7 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
 
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(testGPUSparseMatrix@gm,testGPUSparseMatrix@gm), axis = 1L))
+    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 1L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -291,7 +291,7 @@ setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(
   y <- castMatrix[[2]]
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(testGPUSparseMatrix@gm,testGPUSparseMatrix@gm), axis = 0L))
+    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 0L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -318,7 +318,7 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   y <- castMatrix[[2]]
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(testGPUSparseMatrix@gm,testGPUSparseMatrix@gm), axis = 0L))
+    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 0L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)

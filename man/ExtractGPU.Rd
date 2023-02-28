@@ -45,7 +45,7 @@
 }
 \examples{
 
-a <- gpu.matrix.tensorflow(as.numeric(1:9),nrow=3,ncol=3)
+a <- gpu.matrix(as.numeric(1:9),nrow=3,ncol=3)
 a[1,1]
 }
 \keyword{methods}

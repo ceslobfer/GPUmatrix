@@ -5,8 +5,11 @@ import(tensorflow)
 import(torch)
 import(matrixStats)
 import(Matrix)
+import(float)
 import(MASS)
+import(methods)
 importFrom("stats",rnorm)
+
 
 exportMethods("as.matrix",
               "as.gpu.matrix",

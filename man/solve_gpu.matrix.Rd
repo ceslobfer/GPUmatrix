@@ -5,17 +5,11 @@
 
 
 \alias{solve-methods}
-
 \alias{solve,ANY,gpu.matrix.tensorflow-method}
-
 \alias{solve,ANY,gpu.matrix.torch-method}
-
 \alias{solve,gpu.matrix.tensorflow,ANY-method}
-
 \alias{solve,gpu.matrix.tensorflow,missing-method}
-
 \alias{solve,gpu.matrix.torch,ANY-method}
-
 \alias{solve,gpu.matrix.torch,missing-method}
 
 
@@ -30,16 +24,11 @@ solves the equation ax=b for x, where b can be either a vector or a matrix.
 \usage{
 
 \S4method{solve}{ANY,gpu.matrix.tensorflow}(a,b)
-
 \S4method{solve}{ANY,gpu.matrix.torch}(a,b)
-
 \S4method{solve}{gpu.matrix.tensorflow,ANY}(a,b)
-
-\S4method{solve}{gpu.matrix.tensorflow,missing}(a,b)
-
+\S4method{solve}{gpu.matrix.tensorflow,missing}(a)
 \S4method{solve}{gpu.matrix.torch,ANY}(a,b)
-
-\S4method{solve}{gpu.matrix.torch,missing}(a,b)
+\S4method{solve}{gpu.matrix.torch,missing}(a)
 
 }
 

@@ -230,7 +230,7 @@ setMethod("Arith",
                      '^'={
                        # if (e1@sparse) e1<-to_dense_torch(e1)
                        #Mejorar
-                       if (class(e2) == "gpu.matrix.torch") {
+                       if (inherits(e2,"gpu.matrix.torch")) {
                          e2<-warningSparseTensor_torch(e2)
                          e1<-warningSparseTensor_torch(e1)
 

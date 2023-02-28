@@ -2,7 +2,7 @@ setMethod("Math",
           signature(x="gpu.matrix.tensorflow"),
           function(x)
           {
-
+            op = .Generic[[1]]
             switch(op,
                    'log' = {
                      x <- warningSparseTensor(x)
