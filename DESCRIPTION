@@ -15,6 +15,7 @@ Imports:
   tensorflow,
   torch,
   matrixStats,
+  stats,
   MASS,
   Matrix
 Suggests:

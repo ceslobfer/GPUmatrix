@@ -153,6 +153,7 @@ setMethod("dim<-", signature(x = "gpu.matrix.torch",value="vector"), function(x,
     x@gm <- x@gm$reshape(rev(value))
     x <- t(x)
     x <- to_sparse(x)
+    x@gm <- x@gm$coalesce()
   }else{
     x@gm <- x@gm$reshape(rev(value))
     x <- t(x)
@@ -219,17 +220,18 @@ setMethod("colnames<-", signature(x = "gpu.matrix.torch", value="vector"), funct
 
 setMethod("rowSums", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(as.vector(torch_sum(x@gm, 2)))
+  return(as.numeric(torch_sum(x@gm,2)$cpu()))
 })
 setMethod("colSums", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(as.vector(torch_sum(x@gm, 1)))
+  return(as.numeric(torch_sum(x@gm, 1)$cpu()))
 })
 
 
 setMethod("cbind2",signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y,...){
 
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
+  yOrigin <- y
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -238,8 +240,9 @@ setMethod("cbind2",signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y,..
     y <- warningSparseTensor_torch(y)
   }
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 2))
-  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
-  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep(NA,ncol(x))
+  if (is.null(colnames(y)) & !is.null(colnames(x)) & !is.vector(yOrigin)) colnames(y) <- rep(NA,ncol(y))
+  if (is.null(colnames(y)) & !is.null(colnames(x)) & is.vector(yOrigin)) y@colnames <- NA
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
   rNames <- NULL
   if (!is.null(rownames(x))) rNames <- rownames(x)
@@ -256,6 +259,7 @@ setMethod("cbind2",signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y,..
 setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
   # if(is.vector(x)) x <- matrix(x, nrow = length(y), ncol = 1)
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
+  xOrigin <- x
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -264,8 +268,9 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
     y <- warningSparseTensor_torch(y)
   }
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 2))
-  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
-  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y)) & !is.vector(xOrigin)) colnames(x) <- rep(NA,ncol(x))
+  if (is.null(colnames(x)) & !is.null(colnames(y)) & is.vector(xOrigin)) x@colnames<- NA
+  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep(NA,ncol(y))
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
   rNames <- NULL
   if (!is.null(rownames(x))) rNames <- rownames(x)
@@ -282,6 +287,7 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
 setMethod("rbind2", signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y){
   if(is.vector(y)) y <- matrix(y, ncol = length(y), nrow = 1)
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
+  yOrigin <- y
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -292,8 +298,9 @@ setMethod("rbind2", signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y){
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 1))
 
 
-  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep(NA,nrow(x))
+  if (is.null(rownames(y)) & !is.null(rownames(x)) & !is.vector(yOrigin)) rownames(y) <- rep(NA,nrow(y))
+  if (is.null(rownames(y)) & !is.null(rownames(x)) & is.vector(yOrigin)) y@rownames <- NA
   cNames <- NULL
   if (!is.null(colnames(x))) cNames <- colnames(x)
   if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
@@ -305,6 +312,7 @@ setMethod("rbind2", signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y){
 setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
   if(is.vector(x)) x <- matrix(x, ncol = length(x), nrow = 1)
   castMatrix <- castTypeOperations_torch(x,y, todense=F)
+  xOrigin <- x
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -315,8 +323,9 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
   res <- gpu.matrix.torch(torch_cat(tensors = c(x@gm,y@gm), dim = 1))
 
 
-  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  if (is.null(rownames(x)) & !is.null(rownames(y)) & !is.vector(xOrigin)) rownames(x) <- rep(NA,nrow(x))
+  if (is.null(rownames(x)) & !is.null(rownames(y)) & is.vector(xOrigin)) x@rownames <- NA
+  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep(NA,nrow(y))
   cNames <- NULL
   if (!is.null(colnames(x))) cNames <- colnames(x)
   if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
@@ -448,6 +457,8 @@ tf_kron_torch <- function(X,Y){
   castMatrix <- castTypeOperations_torch(X,Y,todense=T)
   X <- castMatrix[[1]]
   Y <- castMatrix[[2]]
+  X@gm<- X@gm$contiguous()
+  Y@gm<- Y@gm$contiguous()
 
   res <- torch_kron(X@gm,Y@gm)
   return(gpu.matrix.torch(res))
@@ -583,7 +594,7 @@ setMethod("chol", signature(x="gpu.matrix.torch"), function(x){
 
   return(res)
 })
-setGeneric("chol_solve", function(x,y) standardGeneric("chol_solve"))
+# setGeneric("chol_solve", function(x,y) standardGeneric("chol_solve"))
 
 setMethod("chol_solve", signature(x="gpu.matrix.torch", y="ANY"), function(x, y){
 
@@ -696,7 +707,7 @@ setMethod("dtype", signature(x = "gpu.matrix.torch"), function(x){
   return(writeDType_torch(res))
 })
 
-setGeneric("dtype<-", function(x,value) standardGeneric("dtype<-"))
+# setGeneric("dtype<-", function(x,value) standardGeneric("dtype<-"))
 setMethod("dtype<-", signature(x = "gpu.matrix.torch", value="ANY"), function(x,value){
   if (is.character(value)) value <- castDtype_torch(value)
   x@gm <- x@gm$to(value)
@@ -712,30 +723,30 @@ setMethod("dtype<-", signature(x = "gpu.matrix.torch", value="ANY"), function(x,
 #   }
 # })
 
-setMethod("colSums", signature(x = "gpu.matrix.torch"), function(x){
-
-  if (x@sparse) {
-    res <- t(x) %*% matrix(rep(1,ncol(x)))
-    res <- as.vector(res)
-  }else{
-    res <- as.numeric(x@gm$sum(1)$cpu())
-  }
-  names(res) <- colnames(x)
-  return(res)
-
-  return(res)
-})
-setMethod("rowSums", signature(x = "gpu.matrix.torch"), function(x){
-  if (x@sparse) {
-    res <- x %*% matrix(rep(1,nrow(x)))
-    res <- as.vector(res)
-  }else{
-    res <- as.numeric(x@gm$sum(2)$cpu())
-  }
-  names(res) <- rownames(x)
-  return(res)
-})
-
+# setMethod("colSums", signature(x = "gpu.matrix.torch"), function(x){
+#
+#   if (x@sparse) {
+#     res <- t(x) %*% matrix(rep(1,ncol(x)))
+#     res <- as.vector(res)
+#   }else{
+#     res <- as.numeric(x@gm$sum(1)$cpu())
+#   }
+#   names(res) <- colnames(x)
+#   return(res)
+#
+#   return(res)
+# })
+# setMethod("rowSums", signature(x = "gpu.matrix.torch"), function(x){
+#   if (x@sparse) {
+#     res <- x %*% matrix(rep(1,nrow(x)))
+#     res <- as.vector(res)
+#   }else{
+#     res <- as.numeric(x@gm$sum(2)$cpu())
+#   }
+#   names(res) <- rownames(x)
+#   return(res)
+# })
+#
 setMethod("min", signature(x = "gpu.matrix.torch"), function(x){
   if(x@sparse){
     res <- as.numeric(torch_min(x@gm$values())$cpu())
@@ -937,23 +948,26 @@ setMethod("cor", signature(x = "gpu.matrix.torch", y = "ANY"), function(x,y){
 
 setMethod("cor", signature(x = "gpu.matrix.torch", y = "ANY",use="missing", method = "character"), function(x,y,method){
   x <- warningSparseTensor_torch(x)
-  if (!is.null(y)) {
-    castMatrix <- castTypeOperations_torch(x,y)
-    x <- castMatrix[[1]]
-    y <- castMatrix[[2]]
-    if(method=="spearman"){
-      x <- gpu.matrix.torch(t(colRanks(x))@gm,dtype = tf$float64, dimnames = dimnames(x))
-      y <- gpu.matrix.torch(t(colRanks(y))@gm,dtype = tf$float64, dimnames = dimnames(y))
-    }
-    V <- cov(x,y)
-
-  }else{
-    if(method=="spearman"){
-      x <- gpu.matrix.torch(t(colRanks(x))@gm,dtype = tf$float64, dimnames = dimnames(x))
-    }
-    V <- cov(x)
-
+  castMatrix <- castTypeOperations_torch(x,y)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  if(method=="spearman"){
+    x <- gpu.matrix.torch(t(colRanks(x))@gm,dtype = dtype(x), dimnames = dimnames(x))
+    y <- gpu.matrix.torch(t(colRanks(y))@gm,dtype = dtype(y), dimnames = dimnames(y))
   }
+  V <- cov(x,y)
+  res <- cov2cor(V)
+  dimnames(res) <- dimnames(V)
+  return(res)
+})
+
+setMethod("cor", signature(x = "gpu.matrix.torch", y = "missing",use="missing", method = "character"), function(x,y,method){
+  x <- warningSparseTensor_torch(x)
+
+  if(method=="spearman"){
+    x <- gpu.matrix.torch(t(colRanks(x))@gm,dtype = dtype(x), dimnames = dimnames(x))
+  }
+  V <- cov(x)
   res <- cov2cor(V)
   dimnames(res) <- dimnames(V)
   return(res)
@@ -968,7 +982,7 @@ setMethod("rowVars", signature(x = "gpu.matrix.torch"), function(x){
 # library(matrixStats)
 setMethod("colVars", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.numeric(torch_var(x@gm,dim = 1)$cpu)
+  res <- as.numeric(torch_var(x@gm,dim = 1)$cpu())
   return(res)
 })
 
@@ -982,7 +996,7 @@ setMethod("colMaxs", signature(x = "gpu.matrix.torch"), function(x){
 # setGeneric("rowMaxs", function(x,y) standardGeneric("rowMaxs"))
 setMethod("rowMaxs", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.vector(torch_max(x@gm,dim=2)[[1]]$cpu())
+  res <- as.numeric(torch_max(x@gm,dim=2)[[1]]$cpu())
   names(res) <- rownames(x)
   return(res)
 })
@@ -990,24 +1004,24 @@ setMethod("rowMaxs", signature(x = "gpu.matrix.torch"), function(x){
 
 setMethod("rowRanks", signature(x="gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(gpu.matrix.torch(torch_argsort(torch_argsort(x@gm,dim = 2),dim = 2)))
+  return(gpu.matrix.torch(torch_argsort(torch_argsort(x@gm,dim = 2),dim = 2), dtype=dtype(x)))
 } )
 
 setMethod("colRanks", signature(x="gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(t(gpu.matrix.torch(torch_argsort(torch_argsort(x@gm,dim = 1),dim = 1))))
+  return(t(gpu.matrix.torch(torch_argsort(torch_argsort(x@gm,dim = 1),dim = 1),dtype=dtype(x))))
 } )
 
 setMethod("colMins", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.vector(torch_min(x@gm,dim=1)[[1]]$cpu())
+  res <- as.numeric(torch_min(x@gm,dim=1)[[1]]$cpu())
   names(res) <- colnames(x)
   return(res)
 })
 
 setMethod("rowMins", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.vector(torch_min(x@gm,dim=2)[[1]]$cpu())
+  res <- as.numeric(torch_min(x@gm,dim=2)[[1]]$cpu())
   names(res) <- rownames(x)
   return(res)
 })

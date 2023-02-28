@@ -27,10 +27,10 @@ castTypeOperations <- function(m1, m2, operator=FALSE, todense=TRUE){
 
 
   if (m2Class[1]!="gpu.matrix.tensorflow") {
-    m2 <- gpu.matrix.tensorflow(data = m2, dimnames = dimnames(m2))
+    m2 <- gpu.matrix.tensorflow(data = m2, dimnames = dimnames(m2),dtype = m1@gm$dtype)
   }
   if (m1Class[1]!="gpu.matrix.tensorflow") {
-    m1 <- gpu.matrix.tensorflow(data = m1, dimnames = dimnames(m1))
+    m1 <- gpu.matrix.tensorflow(data = m1, dimnames = dimnames(m1),dtype = m2@gm$dtype)
   }
   if (todense) {
     m1 <- warningSparseTensor(m1)
@@ -98,6 +98,14 @@ MatProdGPUmat <- function(x,y){
   y <- castMatrix[[2]]
 
   if (ncol(x)==nrow(y)){
+
+    if (dtype(x) != dtype(y)) {
+      if (is_dtype_greater(dtype(x),dtype(y))) {
+        dtype(x) <- dtype(y)
+      }else{
+        dtype(y) <- dtype(x)
+      }
+    }
 
     #Both sparse
     if (x@sparse & y@sparse) {

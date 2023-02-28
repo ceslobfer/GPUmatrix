@@ -7,9 +7,9 @@ warningSparseTensor_torch <- function(x){
 }
 
 is_dtype_greater <- function(dtype1, dtype2) {
-  dtype_order <- c("Double","Float","Long","Int")
+  dtype_order <- c("float64","float32","int")
 
-  if(match(as.character(dtype1), dtype_order) > match(as.character(dtype2), dtype_order)) {
+  if(match(dtype1, dtype_order) > match(dtype2, dtype_order)) {
     return(TRUE)
   } else {
     return(FALSE)

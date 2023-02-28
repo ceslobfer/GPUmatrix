@@ -213,17 +213,18 @@ setMethod("colnames<-", signature(x = "gpu.matrix.tensorflow", value="vector"), 
 
 setMethod("rowSums", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  return(as.vector(tf$math$reduce_sum(test1@gm, 1L)))
+  return(as.vector(tf$math$reduce_sum(x@gm, 1L)))
 })
 setMethod("colSums", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  return(as.vector(tf$math$reduce_sum(test1@gm, 0L)))
+  return(as.vector(tf$math$reduce_sum(x@gm, 0L)))
 })
 
 
 setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y,...){
 
   castMatrix <- castTypeOperations(x,y, todense=F)
+  yOrigin <- y
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -235,8 +236,9 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
     res <- gpu.matrix.tensorflow(cbind(x@gm,y@gm))
   }
 
-  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
-  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep(NA,ncol(x))
+  if (is.null(colnames(y)) & !is.null(colnames(x)) & !is.vector(yOrigin)) colnames(y) <- rep(NA,ncol(y))
+  if (is.null(colnames(y)) & !is.null(colnames(x)) & is.vector(yOrigin)) y@colnames <- NA
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
   rNames <- NULL
   if (!is.null(rownames(x))) rNames <- rownames(x)
@@ -253,8 +255,10 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
 setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y){
 
   castMatrix <- castTypeOperations(x,y, todense=F)
+  xOrigin <- x
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
+
 
   if (x@sparse & y@sparse) {
     res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(testGPUSparseMatrix@gm,testGPUSparseMatrix@gm), axis = 1L))
@@ -264,8 +268,9 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
     res <- gpu.matrix.tensorflow(cbind(x@gm,y@gm))
   }
 
-  if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep("",ncol(x))
-  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep("",ncol(y))
+  if (is.null(colnames(x)) & !is.null(colnames(y)) & !is.vector(xOrigin)) colnames(x) <- rep(NA,ncol(x))
+  if (is.null(colnames(x)) & !is.null(colnames(y)) & is.vector(xOrigin)) x@colnames <- NA
+  if (is.null(colnames(y)) & !is.null(colnames(x))) colnames(y) <- rep(NA,ncol(y))
   # rNames <- c(rownames(x),rownames(y))[c(1:nrow(res))]
   rNames <- NULL
   if (!is.null(rownames(x))) rNames <- rownames(x)
@@ -281,6 +286,7 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
 
 setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y){
   castMatrix <- castTypeOperations(x,y, todense=F)
+  yOrigin <- y
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -293,16 +299,21 @@ setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(
   }
 
 
-  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
-  # cNames <- c(colnames(x),colnames(y))[c(1:ncol(res))]
-  dimnames(res) <- list(c(rownames(x),rownames(y)),colnames(x))
+  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep(NA,nrow(x))
+  if (is.null(rownames(y)) & !is.null(rownames(x)) & !is.vector(yOrigin)) rownames(y) <- rep(NA,nrow(y))
+  if (is.null(rownames(y)) & !is.null(rownames(x)) & is.vector(yOrigin)) y@rownames <- NA
+  cNames <- NULL
+  if (!is.null(colnames(x))) cNames <- colnames(x)
+  if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
+  if (!is.null(colnames(x)) & !is.null(colnames(y))) cNames <- c(colnames(x),colnames(y))[c(1:ncol(x))]
+  dimnames(res) <- list(c(rownames(x),rownames(y)),cNames)
 
   return(res)
 })
 
 setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y){
   castMatrix <- castTypeOperations(x,y, todense=F)
+  xOrigin <- x
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
@@ -315,8 +326,9 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   }
 
 
-  if (is.null(rownames(x)) & !is.null(rownames(y))) rownames(x) <- rep("",nrow(x))
-  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep("",nrow(y))
+  if (is.null(rownames(x)) & !is.null(rownames(y)) & !is.vector(xOrigin)) rownames(x) <- rep(NA,nrow(x))
+  if (is.null(rownames(x)) & !is.null(rownames(y)) & is.vector(xOrigin)) x@rownames <- NA
+  if (is.null(rownames(y)) & !is.null(rownames(x))) rownames(y) <- rep(NA,nrow(y))
   cNames <- NULL
   if (!is.null(colnames(x))) cNames <- colnames(x)
   if (is.null(colnames(x)) & !is.null(colnames(y))) cNames <- colnames(y)
@@ -349,9 +361,9 @@ setMethod("ncol", signature(x = "gpu.matrix.tensorflow"), function(x){
 
 setMethod("t", signature(x = "gpu.matrix.tensorflow"), function(x){
   if (x@sparse) {
-    res <- gpu.matrix.tensorflow(data = tf$sparse$transpose(x@gm),rownames = colnames(x),colnames = rownames(x))
+    res <- gpu.matrix.tensorflow(data = tf$sparse$transpose(x@gm),rownames = colnames(x),colnames = rownames(x), dtype=dtype(x))
   }else{
-    res <- gpu.matrix.tensorflow(tf$transpose(x@gm),rownames = colnames(x),colnames = rownames(x))
+    res <- gpu.matrix.tensorflow(tf$transpose(x@gm),rownames = colnames(x),colnames = rownames(x), dtype=dtype(x))
   }
   return(res)
 })
@@ -701,27 +713,28 @@ setMethod("dtype<-", signature(x = "gpu.matrix.tensorflow", value="ANY"), functi
 #   }
 # })
 
-setMethod("colSums", signature(x = "gpu.matrix.tensorflow"), function(x){
-
-  if (x@sparse) {
-    res <- as.numeric(tf$sparse$reduce_sum(x@gm, 0L))
-  }else{
-    res <- as.vector(tf$reduce_sum(x@gm,axis=0L))
-  }
-  names(res) <- colnames(x)
-  return(res)
-
-  return(res)
-})
-setMethod("rowSums", signature(x = "gpu.matrix.tensorflow"), function(x){
-  if (x@sparse) {
-    res <- as.numeric(tf$sparse$reduce_sum(x@gm, 1L))
-  }else{
-    res <- as.vector(tf$reduce_sum(x@gm,axis=1L))
-  }
-  names(res) <- rownames(x)
-  return(res)
-})
+# setMethod("colSums", signature(x = "gpu.matrix.tensorflow"), function(x){
+#   print("hola tensor")
+#   if (x@sparse) {
+#     res <- as.numeric(tf$sparse$reduce_sum(x@gm, 0L))
+#   }else{
+#     res <- as.vector(tf$reduce_sum(x@gm,axis=0L))
+#   }
+#   names(res) <- colnames(x)
+#   return(res)
+#
+#   return(res)
+# })
+# setMethod("rowSums", signature(x = "gpu.matrix.tensorflow"), function(x){
+#   print("hola tensor")
+#   if (x@sparse) {
+#     res <- as.numeric(tf$sparse$reduce_sum(x@gm, 1L))
+#   }else{
+#     res <- as.vector(tf$reduce_sum(x@gm,axis=1L))
+#   }
+#   names(res) <- rownames(x)
+#   return(res)
+# })
 
 setMethod("min", signature(x = "gpu.matrix.tensorflow"), function(x){
   if(x@sparse){
@@ -932,23 +945,28 @@ setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y
 
 setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "ANY",use="missing", method = "character"), function(x,y,method){
   x <- warningSparseTensor(x)
-  if (!is.null(y)) {
-    castMatrix <- castTypeOperations(x,y)
-    x <- castMatrix[[1]]
-    y <- castMatrix[[2]]
-    if(method=="spearman"){
-      x <- gpu.matrix.tensorflow(t(colRanks(x))@gm,dtype = tf$float64, dimnames = dimnames(x))
-      y <- gpu.matrix.tensorflow(t(colRanks(y))@gm,dtype = tf$float64, dimnames = dimnames(y))
-    }
-    V <- cov(x,y)
 
-  }else{
-    if(method=="spearman"){
-      x <- gpu.matrix.tensorflow(t(colRanks(x))@gm,dtype = tf$float64, dimnames = dimnames(x))
-    }
-    V <- cov(x)
-
+  castMatrix <- castTypeOperations(x,y)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  if(method=="spearman"){
+    x <- gpu.matrix.tensorflow(t(colRanks(x))@gm,dtype = tf$float64, dimnames = dimnames(x))
+    y <- gpu.matrix.tensorflow(t(colRanks(y))@gm,dtype = tf$float64, dimnames = dimnames(y))
   }
+
+  V <- cov(x,y)
+
+  res <- cov2cor(V)
+  dimnames(res) <- dimnames(V)
+  return(res)
+})
+
+setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "missing", use="missing", method = "character"), function(x,y,method){
+  x <- warningSparseTensor(x)
+  if(method=="spearman"){
+    x <- gpu.matrix.tensorflow(t(colRanks(x))@gm,dtype = tf$float64, dimnames = dimnames(x))
+  }
+  V <- cov(x)
   res <- cov2cor(V)
   dimnames(res) <- dimnames(V)
   return(res)
@@ -957,13 +975,13 @@ setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "ANY",use="missing",
 
 setMethod("rowVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.numeric(tf$math$reduce_variance(x@gm,axis=1L))
+  res <- (as.numeric(tf$math$reduce_variance(x@gm,axis=1L))*nrow(x))/(nrow(x)-1)
   return(res)
 })
 # library(matrixStats)
 setMethod("colVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.numeric(tf$math$reduce_variance(x@gm,axis=0L))
+  res <- (as.numeric(tf$math$reduce_variance(x@gm,axis=0L))*ncol(x))/(ncol(x)-1)
   return(res)
 })
 
