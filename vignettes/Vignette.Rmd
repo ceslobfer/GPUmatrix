@@ -71,8 +71,6 @@ install_tensorflow(version = "nightly-gpu")
 install.packages("GPUmarix")
 ```
 
-TODO: Explain the hard part: intall CUDA 11.3 or 11.0 depending on torch or tensorflow, install torch and/or tensorflow, install GPUMatrix.
-
 # 1 Initialization GPUmatrix
 
 The GPUmatrix package is based on S4 objects in R and we have created a constructor function that acts similarly to the default `matrix()` constructor in R for CPU matrices. The constructor function is `gpu.matrix()` and accepts the same parameters as `matrix()`:
@@ -171,7 +169,7 @@ The default matrices in R have limitations. The numeric data types it allows are
 GPUmatrix allows for compatibility with sparse matrices and different data types such as float32. For this reason, casting operations between different matrix types from multiple packages to GPU matrix type have been implemented:
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -479,10 +477,6 @@ Similarly to arithmetic operators, mathematical operators follow the same operat
 |         `exp`          |   `exp(Gm)`   |
 |        `expm1`         |  `expm1(Gm)`  |
 
-## 3.2 Matrix factorizations and linear system solving
-
-TODO: include svd, qr, ... TODO: lu not yet implemented
-
 ## 3.2 Other functions
 
 In the manual, we can find a multitude of functions that can be applied to *gpu.matrix* type matrices. Most of the functions are functions from the base R package that can be used on *gpu.matrix* matrices in the same way they would be applied to regular matrices of R. There are other functions from other packages like **Matrix** or **matrixStats** that have been implemented due to their widespread use within the user community, such as `rankMatrix` or `colMaxs`. The output of these functions, which originally produced R default matrix type objects, will now return *gpu.matrix* type matrices if the input type of the function is *gpu.matrix*.
@@ -524,7 +518,7 @@ rownames: b c
 There is a wide variety of functions implemented in GPUmatrix, and they are adapted to be used just like regular R matrices.
 
 |   Functions   |                    Usage                    |    Package    |
-|:--------------:|:-------------------------------------:|:----------:|
+|:-------------:|:-------------------------------------------:|:-------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `det`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -592,46 +586,11 @@ There is a wide variety of functions implemented in GPUmatrix, and they are adap
 |  `to_dense`   |               `to_dense(Gm)`                |  `GPUmatrix`  |
 |  `to_sparse`  |               `to_sparse(Gm)`               |  `GPUmatrix`  |
 
-## 3.3 Sparse matrices
-
-GPUMatrix also deals with sparse matrices. Let's see an example.
-
-```{r}
-library(Matrix)
-library(GPUmatrix)
-i <- c(1,3:8); j <- c(2,9,6:10); x <- 7 * (1:7)
-(A <- sparseMatrix(i, j, x = x))                    ##  8 x 10 "dgCMatrix"
-summary(A)
-```
-
-We can convert it into a gpu.matrix as follows,
-
-```{r}
-Ag <- gpu.matrix(A)
-```
-
-A (and Ag) can be multiplied by a dense matrix B:
-
-```{r}
-B <- matrix(rnorm(10*3),10,3)
-Bg <- gpu.matrix(B)
-
-(A %*% B)[1:2,1:2]
-(Ag %*% Bg)[1:2,1:2]
-```
-
-Torch (or Tensorflow) have not implemented (yet) the multiplications of two sparse matrices. GPUmatrix automatically casts the smaller one to dense and gives a warning. The result is also dense.
-
-```{r}
-print(A %*% t(A))
-print(Ag %*% t(Ag))
-```
-
-## 3.4 Function time comparison
+## 3.3 Function time comparison
 
 The computation time for the different functions and operations differs depending on the operation to be performed (Fig 1). Although the default data type is float64, operations with float32 have no comparison in terms of computation time. For this reason, we recommend their use whenever the data types and the objective allow it. This comparison is made using the Intel MKL BLAS.
 
-![Computation time for GPU and R-base CPU for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension*.*](Rplot.png)
+![Computation time for GPU and R-base CPU for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension*.*](../images/Rplot.png)
 
 # 4. Toy example: Non negative factorization of a matrix
 
@@ -728,11 +687,32 @@ Interestingly, the standard R matrix operations are indeed slightly slower than 
 
 In addition, if MKL-R is not implemented for float32 -since R does not include this type of variable-. The multiplication of float32 matrices on MKL-R does not use MKL and is, in fact, much slower than multiplying float64 matrices (data not shown). Torch and Tensorflow do include MKL for float32 and there is an improvement in the performance (they are around two-fold faster).
 
-![Computation time for GPUMatrix on CPU and MKL-R for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension. There is a substantial speed performance in element-wise operations.](GPUmatrix_CPU.png)
+![Computation time for GPUMatrix on CPU and MKL-R for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension. There is a substantial speed performance in element-wise operations.](../images/GPUmatrix_CPU.png)
 
 ## 5.2 Using GPUMatrix with Tensorflow
 
-TODO: strongly recommended to use Torch.
+As commented in the introduction and dependency section, GPUmatrix can be used with both TensorFlow and Torch. By default, the GPU matrix constructor is initialized with Torch tensors because, in our opinion, it provides an advantage in terms of installation and usage compared to TensorFlow. Additionally, it allows the use of GPUmatrix not only with GPU tensors but also with CPU tensors. To use GPUmatrix with TensorFlow, simply use the `type` attribute in the constructor function and assign it the value **"tensorflow"** as shown in the following example:
+
+```{r, eval=FALSE}
+
+# library(GPUmatrix)
+>tensorflowGPUmatrix <- gpu.matrix(c(1:20)+40,10,2, type = "tensorflow")
+>tensorflowGPUmatrix
+
+GPUmatrix
+tf.Tensor(
+[[41. 51.]
+ [42. 52.]
+ [43. 53.]
+ [44. 54.]
+ [45. 55.]
+ [46. 56.]
+ [47. 57.]
+ [48. 58.]
+ [49. 59.]
+ [50. 60.]], shape=(10, 2), dtype=float64)
+
+```
 
 #### References
 

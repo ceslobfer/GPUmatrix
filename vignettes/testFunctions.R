@@ -657,6 +657,8 @@ library(GPUmatrix)
 # Crear dos matrices en la GPU
 A <- gpu.matrix(1:4, nrow = 2, dtype = "float64")
 B <- gpu.matrix(c(2, 4, 6, 8), nrow = 2)
+A <- matrix(1:4, nrow = 2)
+B <- matrix(c(2, 4, 6, 8), nrow = 2)
 
 # Realizar algunas operaciones algebraicas
 C <- A + B
@@ -675,6 +677,7 @@ print(D)
 
 # Aplicar una función a una matriz en la GPU
 E <- gpu.matrix(c(1, 2, 3, 4), nrow = 2)
+E <- matrix(c(1, 2, 3, 4), nrow = 2)
 F <- log(E)
 
 # Verificar que el resultado es correcto

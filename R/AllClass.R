@@ -202,6 +202,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
     res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="torch")
   }
   if(sparseCast) dtype(res) <- dtype
+  if (class(charDtype)[[1]] == "torch_dtype") charDtype <- writeDType_torch(charDtype)
   if (dtype(res) != charDtype & !is.null(charDtype)) dtype(res) <- charDtype
   if (is.null(dimnames)){
     dimnames(res) <- dimnames(data)
