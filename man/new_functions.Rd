@@ -14,8 +14,10 @@
 \alias{as.gpu.matrix,ANY-method}
 \alias{cor,gpu.matrix.tensorflow,ANY,ANY,ANY-method}
 \alias{cor,gpu.matrix.tensorflow,ANY,missing,character-method}
+\alias{cor,gpu.matrix.tensorflow,missing,missing,character-method}
 \alias{cor,gpu.matrix.torch,ANY,ANY,ANY-method}
 \alias{cor,gpu.matrix.torch,ANY,missing,character-method}
+\alias{cor,gpu.matrix.torch,missing,missing,character-method}
 \alias{determinant,gpu.matrix.tensorflow,logical-method}
 \alias{determinant,gpu.matrix.tensorflow,missing-method}
 \alias{determinant,gpu.matrix.torch,logical-method}
@@ -30,7 +32,8 @@
 \alias{round,gpu.matrix.tensorflow,ANY-method}
 \alias{round,gpu.matrix.torch,missing-method}
 \alias{round,gpu.matrix.torch,numeric-method}
-
+\alias{round,gpu.matrix.tensorflow,missing-method}
+\alias{round,gpu.matrix.tensorflow,numeric-method}
 
 
 
@@ -43,8 +46,10 @@ Mimic of functions applied to matrix or Matrix class objects.
 \S4method{as.gpu.matrix}{ANY}(x,\dots)
 \S4method{cor}{gpu.matrix.tensorflow,ANY,ANY,ANY}(x,y)
 \S4method{cor}{gpu.matrix.tensorflow,ANY,missing,character}(x,y,method)
+\S4method{cor}{gpu.matrix.tensorflow,missing,missing,character}(x,y,method)
 \S4method{cor}{gpu.matrix.torch,ANY,ANY,ANY}(x,y)
 \S4method{cor}{gpu.matrix.torch,ANY,missing,character}(x,y,method)
+\S4method{cor}{gpu.matrix.torch,missing,missing,character}(x,y,method)
 \S4method{determinant}{gpu.matrix.tensorflow,logical}(x,logarithm,\dots)
 \S4method{determinant}{gpu.matrix.tensorflow,missing}(x,logarithm,\dots)
 \S4method{determinant}{gpu.matrix.torch,logical}(x,logarithm,\dots)
@@ -59,6 +64,8 @@ Mimic of functions applied to matrix or Matrix class objects.
 \S4method{round}{gpu.matrix.tensorflow,ANY}(x)
 \S4method{round}{gpu.matrix.torch,missing}(x,digits)
 \S4method{round}{gpu.matrix.torch,numeric}(x,digits)
+\S4method{round}{gpu.matrix.tensorflow,missing}(x,digits)
+\S4method{round}{gpu.matrix.tensorflow,numeric}(x,digits)
 
 }
 
