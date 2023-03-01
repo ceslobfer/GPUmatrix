@@ -308,6 +308,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
     res <- new("gpu.matrix.tensorflow", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="tensorflow")
   }
 
+  if (class(charDtype)[[1]] == "tensorflow.python.framework.dtypes.DType") charDtype <- writeDType_tensorflow(charDtype)
   if (dtype(res) != charDtype & !is.null(charDtype)) dtype(res) <- charDtype
   if (is.null(dimnames)) dimnames(res) <- dimnames(data)
   else dimnames(res) <- dimnames

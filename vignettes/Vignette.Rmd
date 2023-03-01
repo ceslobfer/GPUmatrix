@@ -8,9 +8,9 @@ email:
   - arubio@unav.es
 date: "February 2023"
 output:
-  pdf_document: default
   word_document:
-    reference_docx: "../svm-rmarkdown-word.docx"
+    reference_docx: "D:/GPUmatrix/vignettes/svm-rmarkdown-word.docx"
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -169,7 +169,7 @@ The default matrices in R have limitations. The numeric data types it allows are
 GPUmatrix allows for compatibility with sparse matrices and different data types such as float32. For this reason, casting operations between different matrix types from multiple packages to GPU matrix type have been implemented:
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -518,7 +518,7 @@ rownames: b c
 There is a wide variety of functions implemented in GPUmatrix, and they are adapted to be used just like regular R matrices.
 
 |   Functions   |                    Usage                    |    Package    |
-|:-------------:|:-------------------------------------------:|:-------------:|
+|:---------------:|:------------------------------------:|:---------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `det`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -606,48 +606,60 @@ $$ to update the $\mathbf{W}$ and $\mathbf{H}$ respectively.
 
 It is straightforward to build two functions for these rules. The corresponding R code is:
 
-```{r,eval=TRUE}
-updateH <- function(V,W,H) {
-  H <- H * (t(W) %*% V)/((t(W) %*% W) %*% H)}
-updateW <- function(V,W,H) {
-  W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )}
+```{r,eval=FALSE}
+>updateH <- function(V,W,H) {
+>  H <- H * (t(W) %*% V)/((t(W) %*% W) %*% H)}
+>updateW <- function(V,W,H) {
+>  W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )}
 ```
 
 We include a simple script that builds a matrix and run this update rules 100 times.
 
-```{r,eval=TRUE}
-A <- matrix(runif(200*10),200,10)
-B <- matrix(runif(10*100),10,100)
-V <- A %*% B
+```{r,eval=FALSE}
+>A <- matrix(runif(200*10),200,10)
+>B <- matrix(runif(10*100),10,100)
+>V <- A %*% B
 
-W <- W1 <- matrix(runif(200*10),200,10)
-H <- H1 <- matrix(runif(10*100),10,100)
+>W <- W1 <- matrix(runif(200*10),200,10)
+>H <- H1 <- matrix(runif(10*100),10,100)
 
-for (iter in 1:100) {
-  W <- updateW(V,W,H)
-  H <- updateH(V,W,H)
-}
+>for (iter in 1:100) {
+>  W <- updateW(V,W,H)
+>  H <- updateH(V,W,H)
+>}
 
-print(W[1,1])
-print(H[1,1])
+>print(W[1,1])
+>print(H[1,1])
+
+[1] 0.5452606
+[1] 0.5010532
 ```
 
 We include now a similar script where the operations are done on the GPU:
 
-```{r,eval=TRUE}
-library(GPUmatrix)
-Vg <- gpu.matrix(V)
+```{r,eval=FALSE}
+>library(GPUmatrix)
+>Vg <- gpu.matrix(V)
 
-Wg <- gpu.matrix(W1)
-Hg <- gpu.matrix(H1)
+>Wg <- gpu.matrix(W1)
+>Hg <- gpu.matrix(H1)
 
-for (iter in 1:100) {
-  Wg <- updateW(Vg,Wg,Hg)
-  Hg <- updateH(Vg,Wg,Hg)
-}
+>for (iter in 1:100) {
+>  Wg <- updateW(Vg,Wg,Hg)
+>  Hg <- updateH(Vg,Wg,Hg)
+>}
 
-print(Wg[1,1])
-print(Hg[1,1])
+>print(Wg[1,1])
+>print(Hg[1,1])
+
+GPUmatrix
+torch_tensor
+ 0.5453
+[ CUDADoubleType{1,1} ]
+GPUmatrix
+torch_tensor
+ 0.5011
+[ CUDADoubleType{1,1} ]
 ```
 
 Results are identical since the initial values also coincide.

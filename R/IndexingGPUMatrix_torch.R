@@ -28,7 +28,7 @@ putValuesIndex_torch <- function(x, i, j, values){
     index <- as.matrix(expand.grid(i,j))
   }
   tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = "cuda"))
-  x@gm <- x@gm$index_put(indices=tensor_list, values = torch_tensor(values,dtype = dtype(x),device = "cuda"))
+  x@gm <- x@gm$index_put(indices=tensor_list, values = torch_tensor(values,dtype = x@gm$dtype,device = "cuda"))
   return(x@gm)
 }
 
