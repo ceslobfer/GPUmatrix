@@ -2,6 +2,7 @@ setMethod("Math",
           signature(x="gpu.matrix.tensorflow"),
           function(x)
           {
+            x <- warningInteger(x)
             op = .Generic[[1]]
             switch(op,
                    'log' = {
@@ -97,12 +98,12 @@ setMethod("Math",
                      return(x)
                    },
                    'ceiling' = {
-                     x <- warningInteger(x)
+                     x <- warningSparseTensor(x)
                      x@gm <- tf$math$ceil(x@gm)
                      return(x)
                    },
                    'floor' = {
-                     x <- warningInteger(x)
+                     x <- warningSparseTensor(x)
                      x@gm <- tf$math$floor(x@gm)
                      return(x)
                    },

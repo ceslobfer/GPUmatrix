@@ -92,7 +92,7 @@ divisionGPUmat_torch <- function(e1,e2){
     castMatrix <- castTypeOperations_torch(e1,e2,operator = T, todense = F)
     e1 <- castMatrix[[1]]
     e2 <- castMatrix[[2]]
-
+    e2 <- warningInteger(e2)
     #One sparse
     if (e2@sparse) {
       warning(message = "Not allowed with sparse matrix as denominator, matrix will be cast to dense for the operation. May cause memory problems")
@@ -282,6 +282,7 @@ setMethod("Arith",
                        return(e2)
                      },
                      '/' = {
+                       e2 <- warningInteger(e2)
                        e2@gm <- e1/e2@gm
                        return(e2)
                      },

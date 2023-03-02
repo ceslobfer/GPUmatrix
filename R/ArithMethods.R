@@ -5,7 +5,7 @@ warningSparseTensor <- function(x){
   }
   return(x)
 }
-castTypeOperations <- function(m1, m2, operator=FALSE, todense=TRUE){
+castTypeOperations <- function(m1, m2, operator=FALSE, todense=TRUE, sameType = F){
 
   m1Class <- class(m1)[1]
   m2Class <- class(m2)[1]
@@ -26,6 +26,7 @@ castTypeOperations <- function(m1, m2, operator=FALSE, todense=TRUE){
   }
 
 
+
   if (m2Class[1]!="gpu.matrix.tensorflow") {
     m2 <- gpu.matrix.tensorflow(data = m2, dimnames = dimnames(m2),dtype = m1@gm$dtype)
   }
@@ -37,6 +38,13 @@ castTypeOperations <- function(m1, m2, operator=FALSE, todense=TRUE){
     m2 <- warningSparseTensor(m2)
   }
 
+  if (sameType) {
+    if (is_dtype_greater(dtype(m1),dtype(m2))) {
+      dtype(m1) <- dtype(m2)
+    }else{
+      dtype(m2) <- dtype(m1)
+    }
+  }
 
   return(list(m1,m2))
 }
@@ -45,7 +53,7 @@ prodGPUmat <- function(e1,e2){
   # e1Class <- class(e1)[1]
   # e2Class <- class(e2)[1]
 
-  castMatrix <- castTypeOperations(e1,e2, operator = TRUE, todense = T)
+  castMatrix <- castTypeOperations(e1,e2, operator = TRUE, todense = T, sameType = T)
   e1 <- castMatrix[[1]]
   e2 <- castMatrix[[2]]
   resTensor <- e1@gm * e2@gm
@@ -57,10 +65,10 @@ prodGPUmat <- function(e1,e2){
 
 divisionGPUmat <- function(e1,e2){
 
-  castMatrix <- castTypeOperations(e1,e2,operator = T, todense = F)
+  castMatrix <- castTypeOperations(e1,e2,operator = T, todense = F, sameType = T)
   e1 <- castMatrix[[1]]
   e2 <- castMatrix[[2]]
-
+  e2 <- warningInteger(e2)
   #One sparse
   if (e2@sparse) {
     warning(message = "Not allowed with sparse matrix as denominator, matrix will be cast to dense for the operation. May cause memory problems")
@@ -76,7 +84,7 @@ divisionGPUmat <- function(e1,e2){
 
 sumGPUmat <- function(e1,e2, operator){
 
-  castMatrix <- castTypeOperations(e1,e2,operator = T,todense = T)
+  castMatrix <- castTypeOperations(e1,e2,operator = T,todense = T, sameType = T)
   e1 <- castMatrix[[1]]
   e2 <- castMatrix[[2]]
 
@@ -93,19 +101,13 @@ sumGPUmat <- function(e1,e2, operator){
 
 MatProdGPUmat <- function(x,y){
 
-  castMatrix <- castTypeOperations(x,y, todense = FALSE)
+  castMatrix <- castTypeOperations(x,y, todense = FALSE, sameType = T)
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
+  x <- warningInteger(x)
+  y <- warningInteger(y)
 
   if (ncol(x)==nrow(y)){
-
-    if (dtype(x) != dtype(y)) {
-      if (is_dtype_greater(dtype(x),dtype(y))) {
-        dtype(x) <- dtype(y)
-      }else{
-        dtype(y) <- dtype(x)
-      }
-    }
 
     #Both sparse
     if (x@sparse & y@sparse) {
@@ -164,6 +166,7 @@ setMethod("Arith",
                      res
                    },
                    '/' = {
+                     e1 <- warningInteger(e1)
                      divisionGPUmat(e1,e2)
                    },
                    '^'={
@@ -201,6 +204,7 @@ setMethod("Arith",
                      res
                    },
                    '/' = {
+                     e2 <- warningInteger(e2)
                      divisionGPUmat(e1,e2)
                    },
                    '^'={
