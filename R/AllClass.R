@@ -295,7 +295,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
 
   if(classData == "gpu.matrix.tensorflow"){
     if(!is.null(sparse) & sparse != data@sparse) if(sparse) data <- to_sparse_tensorflow(data)
-    if (dtype(data) != writeDType_torch(dtype)) dtype(data) <- dtype
+    if (dtype(data) != writeDType_tensorflow(dtype)) dtype(data) <- dtype
     res <- data
   }else{
     if (sparse & class(gm)[2] != "tensorflow.python.framework.sparse_tensor.SparseTensor") {

@@ -97,10 +97,12 @@ setMethod("Math",
                      return(x)
                    },
                    'ceiling' = {
+                     x <- warningInteger(x)
                      x@gm <- tf$math$ceil(x@gm)
                      return(x)
                    },
                    'floor' = {
+                     x <- warningInteger(x)
                      x@gm <- tf$math$floor(x@gm)
                      return(x)
                    },

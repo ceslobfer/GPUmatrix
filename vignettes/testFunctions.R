@@ -8,683 +8,495 @@ y <- gpu.matrix(a)
 yS <- gpu.matrix(a,sparse = T)
 
 
-determinant(y)
-determinant(yS)
-determinant(x)
-determinant(xS)
-determinant(x,logarithm = F)
-determinant(xS,logarithm = F)
-determinant(y,logarithm = F)
-determinant(yS,logarithm = F)
-
-det(x)
-det(xS)
-det(y)
-det(yS)
-
-fft(x)
-fft(xS)
-fft(y)
-fft(yS)
-
-sort(x)
-sort(xS)
-sort(y)
-sort(yS)
-
-sort(x,decreasing = T)
-sort(xS,decreasing = T)
-sort(y,decreasing = T)
-sort(yS,decreasing = T)
-
-round(x)
-round(xS)
-round(y)
-round(yS)
-
-round(x,digits = 1)
-round(xS,digits = 1)
-round(y,digits = 1)
-round(yS,digits = 1)
-
-length(x)
-length(xS)
-length(y)
-length(yS)
-
-dim(x)
-dim(xS)
-dim(y)
-dim(yS)
-
-dim(a)<- c(2,8)
-# a
-dim(x)<- c(2,8)
-# x
-dim(xS)<- c(2,8)
-# to_dense(xS)
-dim(y)<- c(2,8)
-# y
-dim(yS)<- c(2,8)
-# to_dense(yS)
-
-rownames(x) <- c("a","b")
-rownames(xS) <- c("a","b")
-rownames(y) <- c("a","b")
-rownames(yS) <- c("a","b")
-
-dimnames(x) <- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
-dimnames(a) <- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
-dimnames(xS)<- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
-dimnames(y)<- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
-dimnames(yS)<- list(c("b","b"),c("a","b","c","d","e","f","g","h"))
-
-# dimnames(x)
-# dimnames(xS)
-# dimnames(y)
-# dimnames(yS)
-
-x[,1]
-xS[,1]
-y[,1]
-yS[,1]
-x[,c(1,2)]
-xS[,c(1,2)]
-y[,c(1,2)]
-yS[,c(1,2)]
-x[1,]
-xS[1,]
-y[1,]
-yS[1,]
-x[c(1,2),]
-xS[c(1,2),]
-y[c(1,2),]
-yS[c(1,2),]
-a[16]
-x[16]
-xS[16]
-y[16]
-yS[16]
-x[c(1,16)]
-xS[c(1,16)]
-y[c(1,16)]
-yS[c(1,16)]
-x[c(1,1),c(1,2)]
-to_dense(xS[c(1,1),c(1,2)])
-y[c(1,1),c(1,2)]
-to_dense(yS[c(1,1),c(1,2)])
+generar_strings_aleatorios <- function(n, k) {
+  # n: número de strings a generar
+  # k: longitud de cada string
+  # caracteres: vector con los posibles caracteres a usar
+  caracteres <- c("a","c","f","u")
+  res <- replicate(n, paste(sample(caracteres, k, replace = T), collapse = ""))
+  return(res)
+}
+generar_strings_aleatorios(10, 8)
 
 
-rowSums(x)
-rowSums(xS)
-rowSums(y)
-rowSums(yS)
+testFunctions <- function(y){
 
-colSums(x)
-colSums(xS)
-colSums(y)
-colSums(yS)
+  determinant(y)
+  determinant(y,logarithm = F)
+  det(y)
+  fft(y)
+  sort(y)
+  sort(y,decreasing = T)
+  round(y)
+  round(y,digits = 1)
+  length(y)
+  dim(y) <- dim(y)
+  rownames(y) <- generar_strings_aleatorios(nrow(y),8)
+  colnames(y) <- generar_strings_aleatorios(ncol(y),8)
+  dimnames(y) <- list(generar_strings_aleatorios(nrow(y),8), generar_strings_aleatorios(ncol(y),8))
+  y[,c(1,2)]
+  y[,c(1,1,2)]
+  y[nrow(y),ncol(y)]
+  y[c(1,2),]
+  y[c(1,1,2),]
+  y[c(1,2)]
+  y[c(1,1,2)]
+  y[nrow(y)*ncol(y)]
+  rowSums(y)
+  colSums(y)
+  head(y)
+  head(y,1)
+  tail(y)
+  tail(y,1)
+  t(y)
+  if(y@sparse){
+    yS <- to_dense(y)
+  }else{
+    yS <- to_sparse(y)
+  }
 
 
-cbind(x,c(1,2))
-to_dense(cbind(xS,c(1,2)))
-cbind(y,c(1,2))
-to_dense(cbind(yS,c(1,2)))
+  a <- matrix(rnorm(nrow(y)*ncol(y)),nrow(y),ncol(y))
 
-rbind(x,c(1,2,3,4,1,2,3,4))
-to_dense(rbind(xS,c(1,2,3,4,1,2,3,4)))
-rbind(y,c(1,2,3,4,1,2,3,4))
-to_dense(rbind(yS,c(1,2,3,4,1,2,3,4)))
+  library(Matrix)
+  M <- as(a, "dgeMatrix")
+  crossprod(y,M)
+  M <- as(a, "dgCMatrix")
+  crossprod(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  crossprod(y,M)
+  library(float)
+  floatA <- fl(a)
+  crossprod(y,floatA)
+  crossprod(y)
+  crossprod(y,y)
+  crossprod(y,a)
+  crossprod(y,yS)
 
-cbind(x,x)
-to_dense(cbind(xS,xS))
-cbind(x,xS)
-cbind(xS,a)
-cbind(x,a)
-cbind(M,x)
-cbind(y,y)
-to_dense(cbind(yS,yS))
-cbind(y,yS)
-cbind(yS,a)
-cbind(y,a)
-cbind(M,y)
 
-rbind(x,x)
-to_dense(rbind(xS,xS))
-rbind(x,xS)
-rbind(xS,a)
-rbind(x,a)
-rbind(M,x)
-rbind(y,y)
-to_dense(rbind(yS,yS))
-rbind(y,yS)
-rbind(yS,a)
-rbind(y,a)
-rbind(M,y)
+  M <- as(a, "dgeMatrix")
+  tcrossprod(y,M)
+  M <- as(a, "dgCMatrix")
+  tcrossprod(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  tcrossprod(y,M)
+  floatA <- fl(a)
+  tcrossprod(y,floatA)
+  tcrossprod(y)
+  tcrossprod(y,y)
+  tcrossprod(y,a)
+  tcrossprod(y,yS)
 
-rbind(x,c(1,2,3,4,1,2,3,4))
-to_dense(rbind(xS,c(1,2,3,4,1,2,3,4)))
-rbind(y,c(1,2,3,4,1,2,3,4))
-to_dense(rbind(yS,c(1,2,3,4,1,2,3,4)))
+  M <- as(a, "dgeMatrix")
+  solve(y,M)
+  M <- as(a, "dgCMatrix")
+  solve(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  solve(t(y),M)
+  floatA <- fl(a)
+  solve(t(y),floatA)
+  solve(t(y))
+  solve(t(y),y)
+  solve(t(y),a)
+  solve(t(y),yS)
 
-head(x)
-head(xS)
-head(y)
-head(yS)
-head(x,1)
-head(xS,1)
-head(y,1)
-head(yS,1)
 
-tail(x)
-tail(xS)
-tail(y)
-tail(yS)
-tail(x,1)
-tail(xS,1)
-tail(y,1)
-tail(yS,1)
+  M <- as(a, "dgeMatrix")
+  cbind(y,M)
+  M <- as(a, "dgCMatrix")
+  cbind(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  cbind(y,M)
+  floatA <- fl(a)
+  cbind(y,gpu.matrix(floatA, device = GPUmatrix:::device(y)))
+  cbind(y,y)
+  cbind(y,a)
+  cbind(y,yS)
 
-nrow(x)
-nrow(xS)
-nrow(y)
-nrow(yS)
-ncol(x)
-ncol(xS)
-ncol(y)
-ncol(yS)
+  M <- as(a, "dgeMatrix")
+  rbind(y,M)
+  M <- as(a, "dgCMatrix")
+  rbind(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  rbind(y,M)
+  floatA <- fl(a)
+  rbind(y,gpu.matrix(floatA, device = GPUmatrix:::device(y)))
+  rbind(y,y)
+  rbind(y,a)
+  rbind(y,yS)
 
-t(x)
-to_dense(t(xS))
-t(y)
-to_dense(t(yS))
+  M <- as(a, "dgeMatrix")
+  chol_solve(y,M)
+  M <- as(a, "dgCMatrix")
+  chol_solve(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  chol_solve(y,M)
+  floatA <- fl(a)
+  chol_solve(y,gpu.matrix(floatA, device = GPUmatrix:::device(y)))
+  chol_solve(y,y)
+  chol_solve(y,a)
+  chol_solve(y,yS)
+
+  M <- as(a, "dgeMatrix")
+  cor(y,M)
+  M <- as(a, "dgCMatrix")
+  cor(y,M)
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  cor(y,M)
+  floatA <- fl(a)
+  cor(y,floatA)
+  cor(y)
+  cor(y,y)
+  cor(y,a)
+  cor(y,yS)
+
+  M <- as(a, "dgeMatrix")
+  cor(y,M, method = "spearman")
+  M <- as(a, "dgCMatrix")
+  cor(y,M, method = "spearman")
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  cor(y,M, method = "spearman")
+  floatA <- fl(a)
+  cor(y,floatA, method = "spearman")
+  cor(y, method = "spearman")
+  cor(y,y, method = "spearman")
+  cor(y,a, method = "spearman")
+  cor(y,yS, method = "spearman")
+
+  log(y)
+  log2(y)
+  log10(y)
+  log1p(y)
+  cos(y)
+  cosh(y)
+  acos(y)
+  acosh(y)
+  sin(y)
+  sinh(y)
+  asin(y)
+  asinh(y)
+  tan(y)
+  atan(y)
+  tanh(y)
+  atanh(y)
+  sqrt(y)
+  abs(y)
+  sign(y)
+  ceiling(y)
+  floor(y)
+  cumsum(y)
+  cumprod(y)
+  exp(y)
+  expm1(y)
+
+  M <- as(a, "dgeMatrix")
+  y * M
+  M <- as(a, "dgCMatrix")
+  y * M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y * M
+  floatA <- fl(a)
+  y * floatA
+  y * y
+  y * a
+  y * yS
+
+  M <- as(a, "dgeMatrix")
+  y + M
+  M <- as(a, "dgCMatrix")
+  y + M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y + M
+  floatA <- fl(a)
+  y + floatA
+  y + y
+  y + a
+  y + yS
+
+  M <- as(a, "dgeMatrix")
+  y - M
+  M <- as(a, "dgCMatrix")
+  y - M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y - M
+  floatA <- fl(a)
+  y - floatA
+  y - y
+  y - a
+  y - yS
+
+  M <- as(a, "dgeMatrix")
+  y / M
+  M <- as(a, "dgCMatrix")
+  y / M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y / M
+  floatA <- fl(a)
+  y / floatA
+  y / y
+  y / a
+  y / yS
+
+  M <- as(a, "dgeMatrix")
+  y %*% M
+  M <- as(a, "dgCMatrix")
+  y %*% M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y %*% M
+  floatA <- fl(a)
+  y %*% floatA
+  y %*% y
+  y %*% a
+  y %*% yS
+
+  M <- as(a, "dgeMatrix")
+  y %x% M
+  M <- as(a, "dgCMatrix")
+  y %x% M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y %x% M
+  floatA <- fl(a)
+  y %x% floatA
+  y %x% y
+  y %x% a
+  y %x% yS
+
+  M <- as(a, "dgeMatrix")
+  y %% M
+  M <- as(a, "dgCMatrix")
+  y %% M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y %% M
+  floatA <- fl(a)
+  y %% floatA
+  y %% y
+  y %% a
+  y %% yS
+
+  M <- as(a, "dgeMatrix")
+  y %o% M
+  M <- as(a, "dgCMatrix")
+  y %o% M
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  M <- as(X, "dpoMatrix")
+  y %o% M
+  floatA <- fl(a)
+  y %o% gpu.matrix(floatA, device = GPUmatrix:::device(y))
+  y %o% y
+  y %o% a
+  y %o% yS
+
+  y %^% 2
+
+  diag(y) <- diag(y)
+  qr(y)
+  rankMatrix(y)
+  eigen(y)
+  svd(y)
+  ginv(y)
+
+  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
+  X <- X+1
+  X <- nearPD(X, corr=TRUE)$mat
+  device = "cuda"
+  if(!y@gm$is_cuda) device="cpu"
+  X <- gpu.matrix(X, dtype = dtype(y), device = device, dimnames = dimnames(y) )
+  chol(X)
+
+  mean(y)
+  density(y)
+  plot <- hist(y)
+  colMeans(y)
+  rowMeans(y)
+  sum(y)
+  min(y)
+  max(y)
+  which.max(y)
+  which.min(y)
+  cov(y)
+  cov2cor(y)
+  rowVars(y)
+  colVars(y)
+  colMaxs(y)
+  colMins(y)
+  rowRanks(y)
+  res <- colRanks(y)
+
+}
+
+
+
+
+
+##MATRICES TORCH
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")))
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "int")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "float64")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "float32")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "bool")
+
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), sparse = T)
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T)
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T)
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T)
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T)
+
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), device = "cpu")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), sparse = T, device = "cpu")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T, device = "cpu")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T, device = "cpu")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T, device = "cpu")
+suppressWarnings(testFunctions(y))
+y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T, device = "cpu")
 
 library(Matrix)
-M <- Matrix(a)
-crossprod(x)
-crossprod(xS)
-crossprod(y)
-crossprod(yS)
-crossprod(x,a)
-crossprod(xS,a)
-crossprod(y,a)
-crossprod(yS,a)
-crossprod(x,M)
-crossprod(xS,M)
-crossprod(y,M)
-crossprod(yS,M)
-
-tcrossprod(x)
-tcrossprod(xS)
-tcrossprod(y)
-tcrossprod(yS)
-tcrossprod(x,a)
-tcrossprod(xS,a)
-tcrossprod(y,a)
-tcrossprod(yS,a)
-tcrossprod(x,M)
-tcrossprod(xS,M)
-tcrossprod(y,M)
-tcrossprod(yS,M)
-
-x %x% x
-x %x% xS
-x %x% a
-x %x% M
-xS %x% x
-xS %x% xS
-xS %x% a
-xS %x% M
-y %x% y
-y %x% yS
-y %x% a
-y %x% M
-yS %x% y
-yS %x% yS
-yS %x% a
-yS %x% M
-
-x + x
-x + xS
-x + a
-x + M
-xS + x
-xS + xS
-xS + a
-xS + M
-y + y
-y + yS
-y + a
-y + M
-yS + y
-yS + yS
-yS + a
-yS + M
-
-x * x
-x * xS
-x * a
-x * M
-xS * x
-xS * xS
-xS * a
-xS * M
-y * y
-y * yS
-y * a
-y * M
-yS * y
-yS * yS
-yS * a
-yS * M
-
-x / x
-x / xS
-x / a
-x / M
-xS / x
-xS / xS
-xS / a
-xS / M
-y / y
-y / yS
-y / a
-y / M
-yS / y
-yS / yS
-yS / a
-yS / M
-
-x + c(1,2)
-x + c(1,2)
-x + c(1,2)
-x + c(1,2)
-xS + c(1,2)
-xS + c(1,2)
-xS + c(1,2)
-xS + c(1,2)
-y + c(1,2)
-y + c(1,2)
-y + c(1,2)
-y + c(1,2)
-yS + c(1,2)
-yS + c(1,2)
-yS + c(1,2)
-yS + c(1,2)
-
-x %^% 2
-xS %^% 2
-y %^% 2
-yS %^% 2
-
-diag(x)
-diag(xS)
-diag(y)
-diag(yS)
-
-diag(x) <- c(1,2,3,4)
-diag(xS) <- c(1,2,3,4)
-diag(y) <- c(1,2,3,4)
-diag(yS) <- c(1,2,3,4)
-
-solve(x)
-solve(xS)
-solve(y)
-solve(yS)
-
-solve(x,t(x))
-solve(xS,t(xS))
-solve(y,t(y))
-solve(yS,t(yS))
-
-qr(x)
-qr(xS)
-qr(y)
-qr(yS)
-
-
-rankMatrix(x)
-rankMatrix(xS)
-rankMatrix(y)
-rankMatrix(yS)
-
-eigen(x)
-eigen(xS)
-eigen(y)
-eigen(yS)
-
-svd(x)
-svd(xS)
-svd(y)
-svd(yS)
-
-ginv(x)
-ginv(xS)
-ginv(y)
-ginv(yS)
-
-chol(a)
-chol(x)
-chol(xS)
-chol(y)
-chol(yS)
-
-chol_solve(a,a)
-chol_solve(x,x)
-chol_solve(xS,x)
-chol_solve(xS,xS)
-chol_solve(xS,a)
-chol_solve(y,y)
-chol_solve(yS,y)
-chol_solve(yS,yS)
-chol_solve(yS,a)
-
-
-mean(x)
-mean(xS)
-mean(y)
-mean(yS)
-
-density(x)
-density(xS)
-density(y)
-density(yS)
-
-hist(x)
-hist(xS)
-hist(y)
-hist(yS)
-
-colMeans(x)
-colMeans(xS)
-colMeans(y)
-colMeans(yS)
-
-rowMeans(x)
-rowMeans(xS)
-rowMeans(y)
-rowMeans(yS)
-
-sum(x)
-sum(xS)
-sum(y)
-sum(yS)
-
-dtype(x)
-dtype(xS)
-dtype(y)
-dtype(yS)
-
-dtype(x) <- "float32"
-dtype(xS) <- "float32"
-dtype(y) <- "float32"
-dtype(yS) <- "float32"
-
-
-min(x)
-min(xS)
-min(y)
-min(yS)
-
-max(x)
-max(xS)
-max(y)
-max(yS)
-
-which.max(x)
-which.max(xS)
-which.max(y)
-which.max(yS)
-
-which.min(x)
-which.min(xS)
-which.min(y)
-which.min(yS)
-
-cov(x)
-cov(xS)
-cov(y)
-cov(yS)
-
-cov2cor(x)
-cov2cor(xS)
-cov2cor(y)
-cov2cor(yS)
-
-cor(x)
-cor(xS)
-cor(y)
-cor(yS)
-
-cor(a,a)
-cor(x,x)
-cor(xS,x)
-cor(xS,xS)
-cor(xS,a)
-cor(y,y)
-cor(yS,y)
-cor(yS,yS)
-cor(yS,a)
-
-
-
-cor(a,a,method = "spearman")
-cor(x,x,method = "spearman")
-cor(xS,x,method = "spearman")
-cor(xS,xS,method = "spearman")
-cor(xS,a,method = "spearman")
-cor(y,y,method = "spearman")
-cor(yS,y,method = "spearman")
-cor(yS,yS,method = "spearman")
-cor(yS,a,method = "spearman")
-
-cor(a,method = "spearman")
-cor(x,method = "spearman")
-cor(xS,method = "spearman")
-cor(xS,method = "spearman")
-cor(xS,method = "spearman")
-cor(y,method = "spearman")
-cor(yS,method = "spearman")
-cor(yS,method = "spearman")
-cor(yS,method = "spearman")
-
-
-rowVars(x)
-rowVars(xS)
-rowVars(y)
-rowVars(yS)
-
-colVars(x)
-colVars(xS)
-colVars(y)
-colVars(yS)
-
-rowMaxs(x)
-rowMaxs(xS)
-rowMaxs(y)
-rowMaxs(yS)
-colMaxs(x)
-colMaxs(xS)
-colMaxs(y)
-colMaxs(yS)
-
-
-rowMins(x)
-rowMins(xS)
-rowMins(y)
-rowMins(yS)
-colMins(x)
-colMins(xS)
-colMins(y)
-colMins(yS)
-
-rowRanks(x)
-rowRanks(xS)
-rowRanks(y)
-rowRanks(yS)
-colRanks(x)
-colRanks(xS)
-colRanks(y)
-colRanks(yS)
-
-x==x
-xS == x
-y==y
-y==yS
-yS==y
-x>(2*x)
-xS>(2*x)
-y>(2*y)
-y>(2*yS)
-yS>(2*y)
-
-
-# Ejemplo de aplicación de cada función de la lista a cada una de las 4 matrices
-
-# Definimos las matrices
-x <- gpu.matrix(1:6, nrow = 2, type = "tensorflow", dtype = "float64")
-xS <- gpu.matrix(c(1,-1,2,-2,3,-3), nrow = 2, sparse=T, type = "tensorflow")
-y <- gpu.matrix(c(0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4), nrow = 2)
-yS <- gpu.matrix(c(0.5, 1, 2, 3, 4, 5, 6, 7), nrow = 2)
-
-# Aplicamos cada función a cada matriz
-log(x)
-log2(x)
-log10(x)
-log1p(x)
-cos(x)
-cosh(x)
-acos(x)
-acosh(xS)
-sin(x)
-sinh(x)
-asin(x)
-asinh(xS)
-tan(x)
-atan(x)
-tanh(x)
-atanh(xS)
-sqrt(y)
-abs(y)
-sign(y)
-ceiling(y)
-floor(y)
-cumsum(x)
-cumprod(x)
-exp(x)
-expm1(x)
-
-log(xS)
-log2(xS)
-log10(xS)
-log1p(xS)
-cos(xS)
-cosh(xS)
-acos(xS)
-acosh(xS)
-sin(xS)
-sinh(xS)
-asin(xS)
-asinh(xS)
-tan(xS)
-atan(xS)
-tanh(xS)
-atanh(xS)
-sqrt(yS)
-abs(yS)
-sign(yS)
-ceiling(yS)
-floor(yS)
-cumsum(xS)
-cumprod(xS)
-exp(xS)
-expm1(xS)
-
-log(y)
-log2(y)
-log10(y)
-log1p(y)
-cos(y)
-cosh(y)
-acos(y)
-acosh(yS)
-sin(y)
-sinh(y)
-asin(y)
-asinh(yS)
-tan(y)
-atan(y)
-tanh(y)
-atanh(yS)
-sqrt(y)
-abs(y)
-sign(y)
-ceiling(y)
-floor(y)
-cumsum(y)
-cumprod(y)
-exp(y)
-expm1(y)
-
-log(yS)
-log2(yS)
-log10(yS)
-log1p(yS)
-cos(yS)
-cosh(yS)
-acos(yS)
-acosh(yS)
-sin(yS)
-sinh(yS)
-asin(yS)
-asinh(yS)
-tan(yS)
-atan(yS)
-tanh(yS)
-atanh(yS)
-sqrt(yS)
-abs(yS)
-sign(yS)
-ceiling(yS)
-floor(yS)
-cumsum(yS)
-cumprod(yS)
-exp(yS)
-expm1(yS)
-
-library(GPUmatrix)
-
-# Crear dos matrices en la GPU
-A <- gpu.matrix(1:4, nrow = 2, dtype = "float64")
-B <- gpu.matrix(c(2, 4, 6, 8), nrow = 2)
-A <- matrix(1:4, nrow = 2)
-B <- matrix(c(2, 4, 6, 8), nrow = 2)
-
-# Realizar algunas operaciones algebraicas
-C <- A + B
-D <- A %*% B
-
-# Verificar que los resultados son correctos
-print(C)
-#>      [,1] [,2]
-#> [1,]    3    7
-#> [2,]    5    9
-
-print(D)
-#>      [,1] [,2]
-#> [1,]   14   20
-#> [2,]   30   44
-
-# Aplicar una función a una matriz en la GPU
-E <- gpu.matrix(c(1, 2, 3, 4), nrow = 2)
-E <- matrix(c(1, 2, 3, 4), nrow = 2)
-F <- log(E)
-
-# Verificar que el resultado es correcto
-print(F)
-#>           [,1]      [,2]
-#> [1,] 0.0000000 0.6931472
-#> [2,] 1.0986123 1.3862944
 
-
-
+# dgeMatrix: matriz densa
+M <- matrix(c(1, 2, 3, 4), nrow = 2)
+M <- as(M, "dgeMatrix")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")))
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T)
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T, device = "cpu")
+
+
+# ddiMatrix: matriz diagonal
+M <- diag(2)
+M <- as(M, "ddiMatrix")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")))
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T)
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T, device = "cpu")
+
+
+# dpoMatrix: matriz simétrica definida positiva
+M <- matrix(c(2, 1, 1, 2), nrow = 2)
+M <- as(M, "dpoMatrix")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")))
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T)
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T, device = "cpu")
+
+
+# dgCMatrix: matriz comprimida esparsa
+M <- matrix(c(1, 0, 0, 0), nrow = 2)
+M <- as(M, "dgCMatrix")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")))
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool")
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T)
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T)
+
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "int", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float64", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "float32", sparse = T, device = "cpu")
+y <- gpu.matrix(M, dimnames = list(c("a","b"),c("c","d")), dtype = "bool", sparse = T, device = "cpu")

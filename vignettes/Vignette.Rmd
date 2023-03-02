@@ -225,8 +225,10 @@ torch_tensor
 [ CUDADoubleType{10,2} ]
 
 #Create 'Gm' from 'mfloat32' with float package
+>library(float)
 >mfloat32 <- fl(m)
 >Gm <- gpu.matrix(mfloat32)
+>Gm
  
 GPUmatrix
 torch_tensor
@@ -382,7 +384,7 @@ size:
 
 ## 3.1 Arithmetic and comparison operators
 
-GPUmatrix supports all basic arithmetic operators in R: `+`, `-`, `*`, `^`, `/`, `%%` and `%%`. Its usage is the same as for basic R matrices, and it allows compatibility with other matrix objects from the previously mentioned packages, always returning the result in GPUmatrix format.
+GPUmatrix supports all basic arithmetic operators in R: `+`, `-`, `*`, `^`, `/`, `%*%` and `%%`. Its usage is the same as for basic R matrices, and it allows compatibility with other matrix objects from the previously mentioned packages, always returning the result in GPUmatrix format.
 
 ```{r, eval=FALSE}
 

@@ -1,5 +1,12 @@
 
 
+device <- function(x){
+  res <- "cuda"
+  if (!x@gm$is_cuda) {
+    res <- "cpu"
+  }
+  return(res)
+}
 select_rawIndex_torch <- function(A, rawIndex){
   rowsMatrix <- nrow(A)
   colIndex <- c()
@@ -27,8 +34,8 @@ putValuesIndex_torch <- function(x, i, j, values){
   }else{
     index <- as.matrix(expand.grid(i,j))
   }
-  tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = "cuda"))
-  x@gm <- x@gm$index_put(indices=tensor_list, values = torch_tensor(values,dtype = x@gm$dtype,device = "cuda"))
+  tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = device(x)))
+  x@gm <- x@gm$index_put(indices=tensor_list, values = torch_tensor(values,dtype = x@gm$dtype,device = device(x)))
   return(x@gm)
 }
 
@@ -49,7 +56,7 @@ indexSparse_torch <- function(x, i, j){
   matchIndex <- match(index,indices)
   resValues <- as.numeric(x@gm$values()$cpu())[matchIndex]
   resValues[is.na(resValues)] <- 0
-  resValues <- torch_tensor(resValues,dtype = x@gm$dtype, device = "cuda")
+  resValues <- torch_tensor(resValues,dtype = x@gm$dtype,device = device(x))
 
   ni <- c(1:length(i))
   nj <- c(1:length(j))
@@ -59,7 +66,7 @@ indexSparse_torch <- function(x, i, j){
   }else{
     nindex <- as.matrix(expand.grid(ni,nj))
   }
-  nindex <- t(gpu.matrix(nindex))
+  nindex <- t(gpu.matrix.torch(nindex, device = device(x)))
   dtype(nindex) <- torch_long()
 
   resIndex <- torch_sparse_coo_tensor(indices = nindex@gm, values = resValues, size = c(length(ni),length(nj)))
@@ -68,7 +75,7 @@ indexSparse_torch <- function(x, i, j){
   res <- gpu.matrix.torch(resIndex,sparse = T,
                                colnames = x@colnames[j+1],
                                rownames = x@rownames[i+1],
-                               dtype = x@gm$dtype)
+                               dtype = x@gm$dtype, device=device(x))
   return(res)
 }
 
@@ -96,7 +103,7 @@ assignValuesSparse_torch <- function(x, i, j, value){
   resValues <- as.numeric(x@gm$values()$cpu())
   resValues[newValuesIndex] <- replaceValues
   resValues <- c(resValues,value[!as.logical(matchIndex)] )
-  newValues <- torch_tensor(resValues,dtype = dtype(x), device = "cuda")
+  newValues <- torch_tensor(resValues,dtype = dtype(x), device = device(x))
 
   catIndex <- index[!as.logical(matchIndex),]
   if (length(catIndex) == 0 ){
@@ -249,7 +256,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missin
                        resValues <- as.numeric(x@gm$values()$cpu())
                        resValues[newValuesIndex] <- replaceValues
                        resValues <- c(resValues,value[!as.logical(matchIndex)] )
-                       newValues <- torch_tensor(resValues,dtype = x@gm$values()$dtype, device = "cuda")
+                       newValues <- torch_tensor(resValues,dtype = x@gm$values()$dtype, device = device(x))
                        catIndex <- index[!as.logical(matchIndex),]
                        if (length(catIndex) == 0 ){
                          newIndices <- t(indices) + 1
@@ -271,8 +278,8 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missin
 
                        listIndex <- select_rawIndex_torch(x,i)
                        index <- cbind(listIndex[[1]],listIndex[[2]])
-                       tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = "cuda"))
-                       x@gm <- x@gm$index_put(indices=tensor_list, value = torch_tensor(value,dtype = dtype(x),device = "cuda"))
+                       tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = device(x)))
+                       x@gm <- x@gm$index_put(indices=tensor_list, value = torch_tensor(value,dtype = dtype(x),device = device(x)))
                        res <- x
 
                      }else if(na == 4){
@@ -340,8 +347,8 @@ setReplaceMethod("[[", signature(x = "gpu.matrix.torch", i = "index",
                  function (x, i, ..., value) {
                    listIndex <- select_rawIndex_torch(x,i)
                    index <- cbind(listIndex[[1]],listIndex[[2]])
-                   tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = "cuda"))
-                   x@gm <- x@gm$index_put(indices=tensor_list, value = torch_tensor(value,dtype = dtype(x),device = "cuda"))
+                   tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = device(x)))
+                   x@gm <- x@gm$index_put(indices=tensor_list, value = torch_tensor(value,dtype = dtype(x),device = device(x)))
                    res <- x
 
                    return(res)

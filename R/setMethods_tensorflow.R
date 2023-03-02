@@ -40,7 +40,7 @@ logdetTensor <- function(x){
 warningInteger <- function(x){
   typeTensor <- dtype(x)
   if (typeTensor == "int"){
-    dtype(x) <- tf$float64
+    dtype(x) <- "float64"
     warning(message = "Not allowed with int32, parse to float64 by default")
   }
   return(x)

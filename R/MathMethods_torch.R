@@ -98,10 +98,12 @@ setMethod("Math",
                      return(x)
                    },
                    'ceiling' = {
+                     x <- warningInteger(x)
                      x@gm <- x@gm$ceil()
                      return(x)
                    },
                    'floor' = {
+                     x <- warningInteger(x)
                      x@gm <- x@gm$floor()
                      return(x)
                    },
