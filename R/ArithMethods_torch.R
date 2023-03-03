@@ -86,24 +86,20 @@ prodGPUmat_torch <- function(e1,e2){
 
 divisionGPUmat_torch <- function(e1,e2){
 
-  if(e1@sparse & length(e2)==1){
-    resTensor <- e1@gm/e2
-  }else{
-    castMatrix <- castTypeOperations_torch(e1,e2,operator = T, todense = F)
-    e1 <- castMatrix[[1]]
-    e2 <- castMatrix[[2]]
-    e2 <- warningInteger(e2)
-    #One sparse
-    if (e2@sparse) {
-      warning(message = "Not allowed with sparse matrix as denominator, matrix will be cast to dense for the operation. May cause memory problems")
-      e2 <- to_dense_torch(e2)
-    }
-    if (e1@sparse & (sum(dim(e1))>1)) {
-      e1 <- warningSparseTensor_torch(e1)
-    }
-
-    resTensor <- e1@gm/e2@gm
+  castMatrix <- castTypeOperations_torch(e1,e2,operator = T, todense = F)
+  e1 <- castMatrix[[1]]
+  e2 <- castMatrix[[2]]
+  e2 <- warningInteger(e2)
+  #One sparse
+  if (e2@sparse) {
+    warning(message = "Not allowed with sparse matrix as denominator, matrix will be cast to dense for the operation. May cause memory problems")
+    e2 <- to_dense_torch(e2)
   }
+  if (e1@sparse & (sum(dim(e1))>1)) {
+    e1 <- warningSparseTensor_torch(e1)
+  }
+
+  resTensor <- e1@gm/e2@gm
 
   e1@gm <- resTensor
 
@@ -225,7 +221,12 @@ setMethod("Arith",
                        return(e1)
                      },
                      '/' = {
-                       divisionGPUmat_torch(e1,e2)
+                       if(e1@sparse & length(e2)==1){
+                         e1@gm/e2
+                       }else{
+                         divisionGPUmat_torch(e1,e2)
+                       }
+
                      },
                      '^'={
                        # if (e1@sparse) e1<-to_dense_torch(e1)

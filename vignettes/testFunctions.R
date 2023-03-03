@@ -58,131 +58,214 @@ testFunctions <- function(y){
   library(Matrix)
   M <- as(a, "dgeMatrix")
   crossprod(y,M)
+  crossprod(M,y)
+  tcrossprod(y,M)
+  tcrossprod(M,y)
+  solve(y,M)
+  solve(M,y)
+  cbind(y,M)
+  cbind(M,y)
+  rbind(y,M)
+  rbind(M,y)
+  chol_solve(y,M)
+  chol_solve(M,y)
+  cor(y,M)
+  cor(M,y)
+  cor(y,M,method = "spearman")
+  cor(M,y,method = "spearman")
+  cov(y,M)
+  cov(M,y)
+  y * M
+  M * y
+  y + M
+  M + y
+  y - M
+  M - y
+  y %*% M
+  M %*% y
+  y %x% M
+  M %x% y
+  y %% M
+  M %% y
+  y / M
+  M / y
   M <- as(a, "dgCMatrix")
   crossprod(y,M)
+  crossprod(M,y)
+  tcrossprod(y,M)
+  tcrossprod(M,y)
+  solve(y,M)
+  solve(M,y)
+  cbind(y,M)
+  cbind(M,y)
+  rbind(y,M)
+  rbind(M,y)
+  chol_solve(y,M)
+  chol_solve(M,y)
+  cor(y,M)
+  cor(M,y)
+  cor(y,M,method = "spearman")
+  cor(M,y,method = "spearman")
+  cov(y,M)
+  cov(M,y)
+  y * M
+  M * y
+  y + M
+  M + y
+  y - M
+  M - y
+  y %*% M
+  M %*% y
+  y %x% M
+  M %x% y
+  y %% M
+  M %% y
+  y / M
+  M / y
   X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
   X <- X+1
   X <- nearPD(X, corr=TRUE)$mat
   M <- as(X, "dpoMatrix")
   crossprod(y,M)
+  crossprod(M,y)
+  tcrossprod(y,M)
+  tcrossprod(M,y)
+  solve(y,M)
+  solve(M,y)
+  cbind(y,M)
+  cbind(M,y)
+  rbind(y,M)
+  rbind(M,y)
+  chol_solve(y,M)
+  chol_solve(M,y)
+  cor(y,M)
+  cor(M,y)
+  cor(y,M,method = "spearman")
+  cor(M,y,method = "spearman")
+  cov(y,M)
+  cov(M,y)
+  y * M
+  M * y
+  y + M
+  M + y
+  y - M
+  M - y
+  y %*% M
+  M %*% y
+  y %x% M
+  M %x% y
+  y %% M
+  M %% y
+  y / M
+  M / y
   library(float)
   floatA <- fl(a)
   crossprod(y,floatA)
-  crossprod(y)
-  crossprod(y,y)
-  crossprod(y,a)
-  crossprod(y,yS)
-
-
-  M <- as(a, "dgeMatrix")
-  tcrossprod(y,M)
-  M <- as(a, "dgCMatrix")
-  tcrossprod(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  tcrossprod(y,M)
-  floatA <- fl(a)
+  crossprod(floatA,y)
   tcrossprod(y,floatA)
-  tcrossprod(y)
-  tcrossprod(y,y)
-  tcrossprod(y,a)
-  tcrossprod(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  solve(y,M)
-  M <- as(a, "dgCMatrix")
-  solve(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  solve(t(y),M)
-  floatA <- fl(a)
-  solve(t(y),floatA)
-  solve(t(y))
-  solve(t(y),y)
-  solve(t(y),a)
-  solve(t(y),yS)
-
-
-  M <- as(a, "dgeMatrix")
-  cbind(y,M)
-  M <- as(a, "dgCMatrix")
-  cbind(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  cbind(y,M)
-  floatA <- fl(a)
+  tcrossprod(floatA,y)
+  solve(y,floatA)
+  solve(gpu.matrix(floatA, device = GPUmatrix:::device(y)),y)
   cbind(y,gpu.matrix(floatA, device = GPUmatrix:::device(y)))
-  cbind(y,y)
-  cbind(y,a)
-  cbind(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  rbind(y,M)
-  M <- as(a, "dgCMatrix")
-  rbind(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  rbind(y,M)
-  floatA <- fl(a)
+  cbind(gpu.matrix(floatA, device = GPUmatrix:::device(y)),y)
   rbind(y,gpu.matrix(floatA, device = GPUmatrix:::device(y)))
-  rbind(y,y)
-  rbind(y,a)
-  rbind(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  chol_solve(y,M)
-  M <- as(a, "dgCMatrix")
-  chol_solve(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  chol_solve(y,M)
-  floatA <- fl(a)
+  rbind(gpu.matrix(floatA, device = GPUmatrix:::device(y) ),y)
   chol_solve(y,gpu.matrix(floatA, device = GPUmatrix:::device(y)))
-  chol_solve(y,y)
-  chol_solve(y,a)
-  chol_solve(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  cor(y,M)
-  M <- as(a, "dgCMatrix")
-  cor(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  cor(y,M)
-  floatA <- fl(a)
+  chol_solve(gpu.matrix(floatA, device = GPUmatrix:::device(y)),y)
   cor(y,floatA)
-  cor(y)
-  cor(y,y)
-  cor(y,a)
+  cor(floatA,y)
+  cor(y,floatA,method = "spearman")
+  cor(floatA,y,method = "spearman")
+  cov(y,floatA)
+  cov(floatA,y)
+  y * floatA
+  floatA * y
+  y + floatA
+  floatA + y
+  y - floatA
+  floatA - y
+  y %*% floatA
+  floatA %*% y
+  y %x% floatA
+  floatA %x% y
+  y %% floatA
+  floatA %% y
+  y / floatA
+  floatA / y
+  #Sparse
+  crossprod(y,yS)
+  tcrossprod(y,yS)
+  solve(y,yS)
+  cbind(y,yS)
+  rbind(y,yS)
+  crossprod(yS,y)
+  tcrossprod(yS,y)
+  solve(yS,y)
+  cbind(yS,y)
+  rbind(yS,y)
+  chol_solve(y,yS)
+  chol_solve(yS,y)
   cor(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  cor(y,M, method = "spearman")
-  M <- as(a, "dgCMatrix")
-  cor(y,M, method = "spearman")
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  cor(y,M, method = "spearman")
-  floatA <- fl(a)
-  cor(y,floatA, method = "spearman")
-  cor(y, method = "spearman")
-  cor(y,y, method = "spearman")
-  cor(y,a, method = "spearman")
-  cor(y,yS, method = "spearman")
+  cor(yS,y)
+  cor(y,yS,method = "spearman")
+  cor(yS,y,method = "spearman")
+  cov(y,yS)
+  cov(yS,y)
+  y * yS
+  yS * y
+  y + yS
+  yS + y
+  y - yS
+  yS - y
+  y %*% yS
+  yS %*% y
+  y %x% yS
+  yS %x% y
+  y %% yS
+  yS %% y
+  y / yS
+  yS / y
+  #SINGLE
+  crossprod(y)
+  tcrossprod(y)
+  solve(y)
+  chol_solve(M,y)
+  cor(y)
+  cor(y,method = "spearman")
+  cov(y)
+  #A
+  crossprod(y,a)
+  crossprod(a,y)
+  tcrossprod(y,a)
+  tcrossprod(a,y)
+  solve(y,a)
+  solve(a,y)
+  cbind(y,a)
+  cbind(a,y)
+  rbind(y,a)
+  rbind(a,y)
+  chol_solve(y,a)
+  chol_solve(a,y)
+  cor(y,a)
+  cor(a,y)
+  cor(y,a,method = "spearman")
+  cor(a,y,method = "spearman")
+  cov(y,a)
+  cov(a,y)
+  y * a
+  a * y
+  y + a
+  a + y
+  y - a
+  a - y
+  y %*% a
+  a %*% y
+  y %x% a
+  a %x% y
+  y %% a
+  a %% y
+  y / a
+  a / y
 
   log(y)
   log2(y)
@@ -209,128 +292,6 @@ testFunctions <- function(y){
   cumprod(y)
   exp(y)
   expm1(y)
-
-  M <- as(a, "dgeMatrix")
-  y * M
-  M <- as(a, "dgCMatrix")
-  y * M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y * M
-  floatA <- fl(a)
-  y * floatA
-  y * y
-  y * a
-  y * yS
-
-  M <- as(a, "dgeMatrix")
-  y + M
-  M <- as(a, "dgCMatrix")
-  y + M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y + M
-  floatA <- fl(a)
-  y + floatA
-  y + y
-  y + a
-  y + yS
-
-  M <- as(a, "dgeMatrix")
-  y - M
-  M <- as(a, "dgCMatrix")
-  y - M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y - M
-  floatA <- fl(a)
-  y - floatA
-  y - y
-  y - a
-  y - yS
-
-  M <- as(a, "dgeMatrix")
-  y / M
-  M <- as(a, "dgCMatrix")
-  y / M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y / M
-  floatA <- fl(a)
-  y / floatA
-  y / y
-  y / a
-  y / yS
-
-  M <- as(a, "dgeMatrix")
-  y %*% M
-  M <- as(a, "dgCMatrix")
-  y %*% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %*% M
-  floatA <- fl(a)
-  y %*% floatA
-  y %*% y
-  y %*% a
-  y %*% yS
-
-  M <- as(a, "dgeMatrix")
-  y %x% M
-  M <- as(a, "dgCMatrix")
-  y %x% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %x% M
-  floatA <- fl(a)
-  y %x% floatA
-  y %x% y
-  y %x% a
-  y %x% yS
-
-  M <- as(a, "dgeMatrix")
-  y %% M
-  M <- as(a, "dgCMatrix")
-  y %% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %% M
-  floatA <- fl(a)
-  y %% floatA
-  y %% y
-  y %% a
-  y %% yS
-
-  M <- as(a, "dgeMatrix")
-  y %o% M
-  M <- as(a, "dgCMatrix")
-  y %o% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %o% M
-  floatA <- fl(a)
-  y %o% gpu.matrix(floatA, device = GPUmatrix:::device(y))
-  y %o% y
-  y %o% a
-  y %o% yS
-
-  y %^% 2
 
   diag(y) <- diag(y)
   qr(y)
@@ -408,134 +369,218 @@ testFunctions_tensorflow <- function(y){
 
   a <- matrix(rnorm(nrow(y)*ncol(y)),nrow(y),ncol(y))
 
+
   library(Matrix)
   M <- as(a, "dgeMatrix")
   crossprod(y,M)
+  crossprod(M,y)
+  tcrossprod(y,M)
+  tcrossprod(M,y)
+  solve(y,M)
+  solve(M,y)
+  cbind(y,M)
+  cbind(M,y)
+  rbind(y,M)
+  rbind(M,y)
+  chol_solve(y,M)
+  chol_solve(M,y)
+  cor(y,M)
+  cor(M,y)
+  cor(y,M,method = "spearman")
+  cor(M,y,method = "spearman")
+  cov(y,M)
+  cov(M,y)
+  y * M
+  M * y
+  y + M
+  M + y
+  y - M
+  M - y
+  y %*% M
+  M %*% y
+  y %x% M
+  M %x% y
+  y %% M
+  M %% y
+  y / M
+  M / y
   M <- as(a, "dgCMatrix")
   crossprod(y,M)
+  crossprod(M,y)
+  tcrossprod(y,M)
+  tcrossprod(M,y)
+  solve(y,M)
+  solve(M,y)
+  cbind(y,M)
+  cbind(M,y)
+  rbind(y,M)
+  rbind(M,y)
+  chol_solve(y,M)
+  chol_solve(M,y)
+  cor(y,M)
+  cor(M,y)
+  cor(y,M,method = "spearman")
+  cor(M,y,method = "spearman")
+  cov(y,M)
+  cov(M,y)
+  y * M
+  M * y
+  y + M
+  M + y
+  y - M
+  M - y
+  y %*% M
+  M %*% y
+  y %x% M
+  M %x% y
+  y %% M
+  M %% y
+  y / M
+  M / y
   X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
   X <- X+1
   X <- nearPD(X, corr=TRUE)$mat
   M <- as(X, "dpoMatrix")
   crossprod(y,M)
+  crossprod(M,y)
+  tcrossprod(y,M)
+  tcrossprod(M,y)
+  solve(y,M)
+  solve(M,y)
+  cbind(y,M)
+  cbind(M,y)
+  rbind(y,M)
+  rbind(M,y)
+  chol_solve(y,M)
+  chol_solve(M,y)
+  cor(y,M)
+  cor(M,y)
+  cor(y,M,method = "spearman")
+  cor(M,y,method = "spearman")
+  cov(y,M)
+  cov(M,y)
+  y * M
+  M * y
+  y + M
+  M + y
+  y - M
+  M - y
+  y %*% M
+  M %*% y
+  y %x% M
+  M %x% y
+  y %% M
+  M %% y
+  y / M
+  M / y
   library(float)
   floatA <- fl(a)
   crossprod(y,floatA)
-  crossprod(y)
-  crossprod(y,y)
-  crossprod(y,a)
-  crossprod(y,yS)
-
-
-  M <- as(a, "dgeMatrix")
-  tcrossprod(y,M)
-  M <- as(a, "dgCMatrix")
-  tcrossprod(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  tcrossprod(y,M)
-  floatA <- fl(a)
+  crossprod(floatA,y)
   tcrossprod(y,floatA)
-  tcrossprod(y)
-  tcrossprod(y,y)
-  tcrossprod(y,a)
-  tcrossprod(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  solve(y,M)
-  M <- as(a, "dgCMatrix")
-  solve(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  solve(t(y),M)
-  floatA <- fl(a)
-  solve(t(y),floatA)
-  solve(t(y))
-  solve(t(y),y)
-  solve(t(y),a)
-  solve(t(y),yS)
-
-
-  M <- as(a, "dgeMatrix")
-  cbind(y,M)
-  M <- as(a, "dgCMatrix")
-  cbind(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  cbind(y,M)
-  floatA <- fl(a)
+  tcrossprod(floatA,y)
+  solve(y,floatA)
+  solve(gpu.matrix(floatA, type="tensorflow"),y)
   cbind(y,gpu.matrix(floatA, type = "tensorflow"))
-  cbind(y,y)
-  cbind(y,a)
-  cbind(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  rbind(y,M)
-  M <- as(a, "dgCMatrix")
-  rbind(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  rbind(y,M)
-  floatA <- fl(a)
+  cbind(gpu.matrix(floatA, type = "tensorflow"),y)
   rbind(y,gpu.matrix(floatA, type = "tensorflow"))
-  rbind(y,y)
-  rbind(y,a)
-  rbind(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  chol_solve(y,M)
-  M <- as(a, "dgCMatrix")
-  chol_solve(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  chol_solve(y,M)
-  floatA <- fl(a)
+  rbind(gpu.matrix(floatA, type = "tensorflow"),y)
   chol_solve(y,gpu.matrix(floatA, type = "tensorflow"))
-  chol_solve(y,y)
-  chol_solve(y,a)
-  chol_solve(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  cor(y,M)
-  M <- as(a, "dgCMatrix")
-  cor(y,M)
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  cor(y,M)
-  floatA <- fl(a)
+  chol_solve(gpu.matrix(floatA, type = "tensorflow"),y)
   cor(y,floatA)
-  cor(y)
-  cor(y,y)
-  cor(y,a)
+  cor(floatA,y)
+  cor(y,floatA,method = "spearman")
+  cor(floatA,y,method = "spearman")
+  cov(y,floatA)
+  cov(floatA,y)
+  y * floatA
+  floatA * y
+  y + floatA
+  floatA + y
+  y - floatA
+  floatA - y
+  y %*% floatA
+  floatA %*% y
+  y %x% floatA
+  floatA %x% y
+  y %% floatA
+  floatA %% y
+  y / floatA
+  floatA / y
+  #Sparse
+  crossprod(y,yS)
+  tcrossprod(y,yS)
+  solve(y,yS)
+  cbind(y,yS)
+  rbind(y,yS)
+  crossprod(yS,y)
+  tcrossprod(yS,y)
+  solve(yS,y)
+  cbind(yS,y)
+  rbind(yS,y)
+  chol_solve(y,yS)
+  chol_solve(yS,y)
   cor(y,yS)
-
-  M <- as(a, "dgeMatrix")
-  cor(y,M, method = "spearman")
-  M <- as(a, "dgCMatrix")
-  cor(y,M, method = "spearman")
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  cor(y,M, method = "spearman")
-  floatA <- fl(a)
-  cor(y,floatA, method = "spearman")
-  cor(y, method = "spearman")
-  cor(y,y, method = "spearman")
-  cor(y,a, method = "spearman")
-  cor(y,yS, method = "spearman")
+  cor(yS,y)
+  cor(y,yS,method = "spearman")
+  cor(yS,y,method = "spearman")
+  cov(y,yS)
+  cov(yS,y)
+  y * yS
+  yS * y
+  y + yS
+  yS + y
+  y - yS
+  yS - y
+  y %*% yS
+  yS %*% y
+  y %x% yS
+  yS %x% y
+  y %% yS
+  yS %% y
+  y / yS
+  yS / y
+  #SINGLE
+  crossprod(y)
+  tcrossprod(y)
+  solve(y)
+  chol_solve(M,y)
+  cor(y)
+  cor(y,method = "spearman")
+  cov(y)
+  #A
+  crossprod(y,a)
+  crossprod(a,y)
+  tcrossprod(y,a)
+  tcrossprod(a,y)
+  solve(y,a)
+  solve(a,y)
+  cbind(y,a)
+  cbind(a,y)
+  rbind(y,a)
+  rbind(a,y)
+  chol_solve(y,a)
+  chol_solve(a,y)
+  cor(y,a)
+  cor(a,y)
+  cor(y,a,method = "spearman")
+  cor(a,y,method = "spearman")
+  cov(y,a)
+  cov(a,y)
+  y * a
+  a * y
+  y + a
+  a + y
+  y - a
+  a - y
+  y %*% a
+  a %*% y
+  y %x% a
+  a %x% y
+  y %% a
+  a %% y
+  y / a
+  a / y
 
   log(y)
   log2(y)
@@ -563,125 +608,6 @@ testFunctions_tensorflow <- function(y){
   exp(y)
   expm1(y)
 
-  M <- as(a, "dgeMatrix")
-  y * M
-  M <- as(a, "dgCMatrix")
-  y * M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y * M
-  floatA <- fl(a)
-  y * floatA
-  y * y
-  y * a
-  y * yS
-
-  M <- as(a, "dgeMatrix")
-  y + M
-  M <- as(a, "dgCMatrix")
-  y + M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y + M
-  floatA <- fl(a)
-  y + floatA
-  y + y
-  y + a
-  y + yS
-
-  M <- as(a, "dgeMatrix")
-  y - M
-  M <- as(a, "dgCMatrix")
-  y - M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y - M
-  floatA <- fl(a)
-  y - floatA
-  y - y
-  y - a
-  y - yS
-
-  M <- as(a, "dgeMatrix")
-  y / M
-  M <- as(a, "dgCMatrix")
-  y / M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y / M
-  floatA <- fl(a)
-  y / floatA
-  y / y
-  y / a
-  y / yS
-
-  M <- as(a, "dgeMatrix")
-  y %*% M
-  M <- as(a, "dgCMatrix")
-  y %*% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %*% M
-  floatA <- fl(a)
-  y %*% floatA
-  y %*% y
-  y %*% a
-  y %*% yS
-
-  M <- as(a, "dgeMatrix")
-  y %x% M
-  M <- as(a, "dgCMatrix")
-  y %x% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %x% M
-  floatA <- fl(a)
-  y %x% floatA
-  y %x% y
-  y %x% a
-  y %x% yS
-
-  M <- as(a, "dgeMatrix")
-  y %% M
-  M <- as(a, "dgCMatrix")
-  y %% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %% M
-  floatA <- fl(a)
-  y %% floatA
-  y %% y
-  y %% a
-  y %% yS
-
-  M <- as(a, "dgeMatrix")
-  y %o% M
-  M <- as(a, "dgCMatrix")
-  y %o% M
-  X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
-  X <- X+1
-  X <- nearPD(X, corr=TRUE)$mat
-  M <- as(X, "dpoMatrix")
-  y %o% M
-  floatA <- fl(a)
-  y %o% gpu.matrix(floatA, type = "tensorflow")
-  y %o% y
-  y %o% a
-  y %o% yS
 
   y %^% 2
 
@@ -695,8 +621,6 @@ testFunctions_tensorflow <- function(y){
   X <- matrix(rnorm(nrow(y)*ncol(y), mean=0, sd=1), nrow(y), ncol(y))
   X <- X+1
   X <- nearPD(X, corr=TRUE)$mat
-  # device = "cuda"
-  # if(!y@gm$is_cuda) device="cpu"
   X <- gpu.matrix(X, dtype = dtype(y), dimnames = dimnames(y) )
   chol(X)
 
@@ -723,7 +647,7 @@ testFunctions_tensorflow <- function(y){
 
 
 ##MATRICES TENSORFLOW
-y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), type = "tensorflow")
+y <- gpu.matrix(rnorm(9),3,3, type = "tensorflow")
 suppressWarnings(testFunctions_tensorflow(y))
 y <- gpu.matrix(1:4,2,2, dimnames = list(c("a","b"),c("c","d")), dtype = "int", type = "tensorflow")
 suppressWarnings(testFunctions_tensorflow(y))

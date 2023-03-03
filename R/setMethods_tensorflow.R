@@ -371,44 +371,35 @@ setMethod("t", signature(x = "gpu.matrix.tensorflow"), function(x){
 })
 
 setMethod("crossprod", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y, ...){
-  if (is.null(y)) {
-    return(t(x) %*% x)
-  }else{
     castMatrix <- castTypeOperations(x,y, todense=FALSE)
     x <- castMatrix[[1]]
     y <- castMatrix[[2]]
     return(t(x) %*% y)
-  }
+} )
 
+setMethod("crossprod", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y, ...){
+  castMatrix <- castTypeOperations(x,y, todense = FALSE)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  return(t(x) %*% y)
 } )
 
 setMethod("crossprod", signature(x = "gpu.matrix.tensorflow", y = "missing"), function(x,y, ...){
     return(t(x) %*% x)
-
-} )
-
-setMethod("crossprod", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y, ...){
-  if (is.null(y)) {
-    return(t(x) %*% x)
-  }else{
-    castMatrix <- castTypeOperations(x,y, todense = FALSE)
-    x <- castMatrix[[1]]
-    y <- castMatrix[[2]]
-    return(t(x) %*% y)
-  }
 } )
 
 setMethod("tcrossprod", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y, ...){
-
-  if (is.null(y)) {
-    return(x %*% t(x))
-  }else{
     castMatrix <- castTypeOperations(x,y, todense = FALSE)
     x <- castMatrix[[1]]
     y <- castMatrix[[2]]
     return(x %*% t(y))
-  }
+} )
 
+setMethod("tcrossprod", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y, ...){
+    castMatrix <- castTypeOperations(x,y, todense = FALSE)
+    x <- castMatrix[[1]]
+    y <- castMatrix[[2]]
+    return(x %*% t(y))
 } )
 
 setMethod("tcrossprod", signature(x = "gpu.matrix.tensorflow", y = "missing"), function(x,y, ...){
@@ -416,16 +407,7 @@ setMethod("tcrossprod", signature(x = "gpu.matrix.tensorflow", y = "missing"), f
     return(x %*% t(x))
 } )
 
-setMethod("tcrossprod", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y, ...){
-  if (is.null(y)) {
-    return(x %*% t(x))
-  }else{
-    castMatrix <- castTypeOperations(x,y, todense = FALSE)
-    x <- castMatrix[[1]]
-    y <- castMatrix[[2]]
-    return(x %*% t(y))
-  }
-} )
+
 
 # setMethod("outer", signature(X = "gpu.matrix.tensorflow", Y = "ANY"), function(X,Y, ...){
 #
@@ -533,7 +515,7 @@ setMethod("solve", signature(a = "gpu.matrix.tensorflow", b = "ANY"), function(a
 })
 setMethod("solve", signature(a = "ANY", b = "gpu.matrix.tensorflow"), function(a, b){
   b <- warningSparseTensor(b)
-  y <- warningInteger(b)
+  b <- warningInteger(b)
   castMatrix <- castTypeOperations(a,b,sameType = T)
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
@@ -613,7 +595,7 @@ setMethod("chol_solve", signature(x="ANY", y="gpu.matrix.tensorflow"), function(
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
-  res <- gpu.matrix.tensorflow(tf$linalg$cholesky_solve(x,y))
+  res <- gpu.matrix.tensorflow(tf$linalg$cholesky_solve(x@gm,y@gm))
   return(res)
 })
 
@@ -908,19 +890,35 @@ setMethod("apply", signature(X="gpu.matrix.tensorflow"), function(X, MARGIN, FUN
 setMethod("cov", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y){
   x <- warningInteger(x)
   x <- warningSparseTensor(x)
-  if (!is.null(y)) {
-    castMatrix <- castTypeOperations(x,y)
-    x <- castMatrix[[1]]
-    y <- castMatrix[[2]]
-    x_ <- t(x) - colMeans(x)
-    y_ <- t(y) - colMeans(y)
 
-    res <- tcrossprod(x_, y_)/(ncol(x)-1)
-  }else{
-    res <- tcrossprod(t(x) - colMeans(x))/(ncol(x)-1)
-  }
+  castMatrix <- castTypeOperations(x,y)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  x_ <- t(x) - colMeans(x)
+  y_ <- t(y) - colMeans(y)
 
+  res <- tcrossprod(x_, y_)/(ncol(x)-1)
+  return(res)
+})
 
+setMethod("cov", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y){
+  y <- warningInteger(y)
+  y <- warningSparseTensor(y)
+
+  castMatrix <- castTypeOperations(x,y)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  x_ <- t(x) - colMeans(x)
+  y_ <- t(y) - colMeans(y)
+
+  res <- tcrossprod(x_, y_)/(ncol(x)-1)
+  return(res)
+})
+
+setMethod("cov", signature(x = "gpu.matrix.tensorflow", y = "missing"), function(x,y){
+  x <- warningInteger(x)
+  x <- warningSparseTensor(x)
+  res <- tcrossprod(t(x) - colMeans(x))/(ncol(x)-1)
   return(res)
 })
 
@@ -939,15 +937,29 @@ setMethod("cov2cor", signature(V="gpu.matrix.tensorflow"), function(V){
 
 setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y){
   x <- warningSparseTensor(x)
-  if (!is.null(y)) {
-    castMatrix <- castTypeOperations(x,y)
-    x <- castMatrix[[1]]
-    y <- castMatrix[[2]]
-    V <- cov(x,y)
-  }else{
-    V <- cov(x)
+  castMatrix <- castTypeOperations(x,y)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  V <- cov(x,y)
+  res <- cov2cor(V)
+  dimnames(res) <- dimnames(V)
+  return(res)
+})
 
-  }
+setMethod("cor", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y){
+  y <- warningSparseTensor(y)
+  castMatrix <- castTypeOperations(x,y)
+  x <- castMatrix[[1]]
+  y <- castMatrix[[2]]
+  V <- cov(x,y)
+  res <- cov2cor(V)
+  dimnames(res) <- dimnames(V)
+  return(res)
+})
+
+setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "missing"), function(x,y){
+  x <- warningSparseTensor(x)
+  V <- cov(x)
   res <- cov2cor(V)
   dimnames(res) <- dimnames(V)
   return(res)
