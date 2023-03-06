@@ -33,6 +33,15 @@ setMethod("as.array",  signature(x = "gpu.matrix.tensorflow"), function(x, ...){
   return(as(x@gm,"matrix"))
 } )
 
+setMethod("is.numeric",  signature(x = "gpu.matrix.tensorflow"), function(x){
+  dtype <-dtype(x)
+  res <- F
+  if (dtype(x) != "bool" & dtype(x) != "complex32" & dtype(x) != "complex64") {
+    res <-T
+  }
+  return(res)
+} )
+
 setMethod("as.vector", "gpu.matrix.tensorflow", function(x, mode){
   if (x@sparse) {
     res <- as.vector(t(x)@gm$values)

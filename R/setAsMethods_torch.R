@@ -15,7 +15,7 @@ setAs("gpu.matrix.torch", "matrix",
         return(res)
       })
 setGeneric("as.gpu.matrix", function(x,...) standardGeneric("as.gpu.matrix"))
-setMethod("as.gpu.matrix", signature(x = "ANY"), function(x, ...) gpu.matrix.torch(x,...) )
+setMethod("as.gpu.matrix", signature(x = "ANY"), function(x, ...) gpu.matrix(x,...) )
 # setAs("gpu.matrix.torch","double", function(from){
 #   return(as.double(as.vector(from)))
 # })
