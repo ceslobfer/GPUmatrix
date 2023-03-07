@@ -3,7 +3,13 @@
 \docType{class}
 \alias{gpu.matrix-class}
 \description{
-The matrix stored in the GPU.
+
+GPU computational power is a great resource for computational biology specifically in statistics and linear algebra. the gpu.matrix class is an object of the GPUmatrix package, that store a matrix in the GPU.
+
+The GPUmatrix package is based on S4 objects in R and we have created a constructor function that acts similarly to the default \code{matrix} constructor in R for CPU matrices. The constructor function is \code{gpu.matrix} and accepts the same parameters as \code{matrix}.
+
+
+
 }
 \section{Slots}{
   \describe{
@@ -11,8 +17,10 @@ The matrix stored in the GPU.
     \item{colnames}{the colunm names of the gpu.matrix}
     \item{gm}{the corresponding tensor}
     \item{sparse}{Logical: indicates if the gpu.matrix is sparse or not}
+    \item{type}{If it is tensorflow or torch}
   }
 }
-\examples{
-a <- 5
+
+\seealso{
+See Also \code{\link[GPUmatrix]{gpu.matrix}}.
 }

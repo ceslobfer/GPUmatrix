@@ -19,9 +19,8 @@
 
 
 \description{
-Mimiks the cbind and rbind of base classes.
-These functions take a sequence of vector, matrix or data-frame arguments and no GPUmatrix class
-and combine by columns or rows, respectively.
+Mimiks the \code{cbind} and \code{rbind} functions.
+These functions take a sequence of vector, matrix, data-frame arguments and or GPUmatrix class and combine by columns or rows, respectively.
 }
 
 
@@ -42,3 +41,40 @@ and combine by columns or rows, respectively.
 \item{\dots}{(generalized) vectors or matrices. These can be given as named arguments.}
 
 }
+
+\seealso{
+\code{\link[base]{cbind}}, and \code{\link[base]{rbind}}
+}
+
+\examples{
+
+\donttest{
+
+\dontrun{
+
+a <- gpu.matrix(1:9,nrow=3,ncol=3,type = "tensorflow")
+
+#add new row
+newrow <- c(1,2,3)
+a <- rbind2(a,newrow)
+
+#add new column
+newcolumn <- c(1,2,3,4)
+a <- cbind(a,newcolumn)
+
+#add new rows from other gpu.marix
+b <- gpu.matrix(1:16,nrow=4,ncol=4,type = "tensorflow")
+d <- rbind(a,b)
+
+#add new columns from other gpu.marix
+b <- gpu.matrix(1:16,nrow=4,ncol=4,type = "tensorflow")
+d <- cbind(a,b)
+
+
+}
+
+}
+
+
+}
+

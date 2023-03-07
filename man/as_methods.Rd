@@ -9,6 +9,7 @@
 \alias{as.matrix-methods}
 \alias{as.numeric-methods}
 \alias{as.vector-methods}
+\alias{is.numeric-methods}
 
 \alias{as.array,gpu.matrix.tensorflow-method}
 \alias{as.array,gpu.matrix.torch-method}
@@ -20,6 +21,7 @@
 \alias{as.numeric,gpu.matrix.torch-method}
 \alias{as.vector,gpu.matrix.tensorflow-method}
 \alias{as.vector,gpu.matrix.torch-method}
+\alias{is.numeric,gpu.matrix.torch-method}
 
 
 
@@ -29,6 +31,7 @@ as.matrix attempts to turn its argument into a matrix.
 as.list attempts to turn its argument into a list.
 as.numeric attempts to turn its argument into a numeric.
 as.vector attempts to turn its argument into a vector.
+is.numeric is a general test of an object being interpretable as numbers
 }
 
 
@@ -44,6 +47,7 @@ as.vector attempts to turn its argument into a vector.
 \S4method{as.numeric}{gpu.matrix.torch}(x,\dots)
 \S4method{as.vector}{gpu.matrix.tensorflow}(x,mode)
 \S4method{as.vector}{gpu.matrix.torch}(x,mode)
+\S4method{is.numeric}{gpu.matrix.torch}(x)
 
 }
 
@@ -53,5 +57,14 @@ as.vector attempts to turn its argument into a vector.
 \item{x}{A gpu.matrix.tensorflow o gpu.matrix.torch object}
 \item{\dots}{(generalized) vectors or matrices. These can be given as named arguments.}
 \item{mode}{character string naming an atomic mode or "list" or "expression" or (except for vector) "any".}
+
+}
+
+
+\seealso{
+\code{\link[base]{numeric}},
+\code{\link[base]{array}},
+\code{\link[base]{list}},
+\code{\link[base]{matrix}},
 
 }

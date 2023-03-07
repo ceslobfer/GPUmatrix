@@ -16,8 +16,8 @@
 
 
 \description{
-Mimic of solve base function: This generic function
-solves the equation ax=b for x, where b can be either a vector or a matrix.
+Mimic of the base function \code{solve}: This generic function
+solves the equation ax=b for x, where b can be either a vector or a matrix (gpu.matrix).
 }
 
 
@@ -43,3 +43,25 @@ solves the equation ax=b for x, where b can be either a vector or a matrix.
                           identity matrix and solve will return the inverse of a.}
 
 }
+
+\seealso{
+See also \code{\link[base]{solve}}.
+}
+
+\examples{
+\donttest{
+\dontrun{
+
+a <- gpu.matrix(rnorm(9),nrow=3,ncol=3,type="tensorflow")
+inv <- solve(a) #the inverse matrix
+a %*% inv
+
+b <- c(1,1,1)
+betas <- solve(a,b)
+a%*%betas
+
+
+}
+}
+}
+

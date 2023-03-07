@@ -18,14 +18,19 @@ Comput the kth power of a squere matrix, i.e., multiply the matrix by itself as 
   \item{k}{the power of the matrix}
 }
 \details{
-x needs to be a squere matrix
+x needs to be a squere matrix.
 }
 \value{
-the nth power of the input matrix
-}
-\author{
-Cesar Lobato
+the nth power of the input gpu.matrix. The returned matrix is also a gpu.matrix.
 }
 \examples{
-a <- 5
+\donttest{
+\dontrun{
+
+a <- gpu.matrix(1:9,nrow=3,ncol=3,type="tensorflow")
+a \%^\% 5
+
+
+}
+}
 }

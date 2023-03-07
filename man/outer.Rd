@@ -2,8 +2,6 @@
 \title{outer}
 \docType{methods}
 
-
-
 \alias{\%o\%-methods}
 \alias{outer-methods}
 \alias{\%o\%,ANY,gpu.matrix.tensorflow-method}
@@ -20,7 +18,7 @@
 
 
 \description{
-Equivalent outer producto for GPUmatrix
+Equivalent outer producto for GPUmatrix. In mimics the base functions \code{outer} and \code{\%o\%}.
 }
 
 
@@ -42,9 +40,16 @@ Equivalent outer producto for GPUmatrix
 
 \arguments{
 
-\item{X}{A gpu.matrix.tensorflow o gpu.matrix.torch object.}
-\item{Y}{A gpu.matrix.tensorflow o gpu.matrix.torch object or a matrix or a numeric variable.}
+\item{X,Y}{First and second arguments for function \code{FUN}. Tipicalle are a vector or an array. With this implementation can be also a gpu.matrix.}
 \item{FUN}{a function to use on the outer products.}
 \item{\dots}{ptional arguments to be passed to FUN.}
 
 }
+
+\seealso{
+See Also \code{\link[base]{outer}}.
+}
+
+
+
+

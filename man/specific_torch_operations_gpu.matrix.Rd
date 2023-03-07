@@ -12,7 +12,6 @@
 \alias{to_dense-methods}
 \alias{to_sparse-methods}
 \alias{ginv-methods}
-\alias{is.numeric-methods}
 \alias{dtype-methods}
 \alias{dtype<--methods}
 
@@ -29,8 +28,6 @@
 
 \alias{ginv,gpu.matrix.torch-method}
 \alias{ginv,gpu.matrix.tensorflow-method}
-
-\alias{is.numeric,gpu.matrix.torch-method}
 
 \alias{dtype,gpu.matrix.torch-method}
 \alias{dtype,gpu.matrix.tensorflow-method}
@@ -58,7 +55,6 @@ Specific functions for gpu.matrix.torch object
 \S4method{to_sparse}{gpu.matrix.tensorflow}(x)
 \S4method{ginv}{gpu.matrix.torch}(X,tol)
 \S4method{ginv}{gpu.matrix.tensorflow}(X,tol)
-\S4method{is.numeric}{gpu.matrix.torch}(x)
 \S4method{dtype}{gpu.matrix.torch}(x)
 \S4method{dtype}{gpu.matrix.tensorflow}(x)
 \S4method{dtype}{gpu.matrix.torch}(x) <- value
