@@ -625,7 +625,7 @@ setMethod("colMeans", signature(x = "gpu.matrix.tensorflow"), function(x){
   }else{
     res <- as.vector(tf$reduce_mean(x@gm,axis=0L))
   }
-  names(res) <- rownames(x)
+  names(res) <- colnames(x)
 
   return(res)
 })
