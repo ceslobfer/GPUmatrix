@@ -22,7 +22,7 @@
 \alias{as.vector,gpu.matrix.tensorflow-method}
 \alias{as.vector,gpu.matrix.torch-method}
 \alias{is.numeric,gpu.matrix.torch-method}
-
+\alias{is.numeric,gpu.matrix.tensorflow-method}
 
 
 
@@ -48,6 +48,7 @@ is.numeric is a general test of an object being interpretable as numbers
 \S4method{as.vector}{gpu.matrix.tensorflow}(x,mode)
 \S4method{as.vector}{gpu.matrix.torch}(x,mode)
 \S4method{is.numeric}{gpu.matrix.torch}(x)
+\S4method{is.numeric}{gpu.matrix.tensorflow}(x)
 
 }
 

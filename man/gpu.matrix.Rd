@@ -36,7 +36,7 @@ The same as  function 'matrix': "logical. If FALSE (the default) the matrix is f
 The same as in  function 'matrix': "A dimnames attribute for the matrix: NULL or a list of length 2 giving the row and column names respectively. An empty list is treated as NULL, and a list of length one as row names. The list can be named, and the list names will be used as names for the dimensions."
 }
   \item{dtype}{
-By default "float64". User can indicate "float32" or "int" for "int32".
+By default "float64". User can indicate "float32" or "int" for "int64".
 }
   \item{sparse}{
 The same as in function 'Matrix' of the library 'Matrix': "logical or NULL, specifying if the result should be sparse or not. By default, it is made sparse when more than half of the entries are 0."

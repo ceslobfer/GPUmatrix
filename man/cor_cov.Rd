@@ -1,6 +1,6 @@
 \name{cor_cov}
 \title{Correlation, Variance and Covariance for gpu.matrix}
-
+\docType{methods}
 \description{
 \code{cov} and \code{cor} compute the covariance and correlation of x and y if these are vectors. If x and y are matrices then the covariances (or correlations) between the columns of x and the columns of y are computed.
 
@@ -22,6 +22,7 @@ If x and y are object of GPUmatrix, then the corresponding operations are comput
 \alias{cor,gpu.matrix.torch,missing,missing,character-method}
 \alias{cor,ANY,gpu.matrix.torch,ANY,ANY-method}
 \alias{cor,gpu.matrix.torch,missing,ANY,ANY-method}
+\alias{cor,gpu.matrix.torch,missing,missing,missing-method}
 
 
 \alias{cov2cor-methods}
@@ -46,25 +47,25 @@ If x and y are object of GPUmatrix, then the corresponding operations are comput
 \S4method{cor}{gpu.matrix.tensorflow,ANY,ANY,ANY}(x,y)
 \S4method{cor}{gpu.matrix.tensorflow,ANY,missing,character}(x,y,method)
 \S4method{cor}{gpu.matrix.tensorflow,missing,missing,character}(x,y,method)
-\S4method{cor}{ANY,gpu.matrix.tensorflow,ANY,ANY}(x,y,method)
-\S4method{cor}{gpu.matrix.tensorflow,missing,ANY,ANY}(x,y,method)
+\S4method{cor}{ANY,gpu.matrix.tensorflow,ANY,ANY}(x,y)
+\S4method{cor}{gpu.matrix.tensorflow,missing,ANY,ANY}(x,y)
 
 \S4method{cor}{gpu.matrix.torch,ANY,ANY,ANY}(x,y)
 \S4method{cor}{gpu.matrix.torch,ANY,missing,character}(x,y,method)
 \S4method{cor}{gpu.matrix.torch,missing,missing,character}(x,y,method)
-\S4method{cor}{ANY,gpu.matrix.torch,ANY,ANY}(x,y,method)
+\S4method{cor}{ANY,gpu.matrix.torch,ANY,ANY}(x,y)
 \S4method{cor}{gpu.matrix.torch,missing,ANY,ANY}(x,y,method)
 
 \S4method{cov}{gpu.matrix.tensorflow}(x,y)
-\S4method{cov}{ANY,gpu.matrix.tensorflow-method}(x,y)
-\S4method{cov}{gpu.matrix.tensorflow,ANY-method}(x,y)
-\S4method{cov}{gpu.matrix.tensorflow,missing-method}(x,y)
+\S4method{cov}{ANY,gpu.matrix.tensorflow}(x,y)
+\S4method{cov}{gpu.matrix.tensorflow,ANY}(x,y)
+\S4method{cov}{gpu.matrix.tensorflow,missing}(x,y)
 
 
 \S4method{cov}{gpu.matrix.torch}(x,y)
-\S4method{cov}{ANY,gpu.matrix.torch-method}(x,y)
-\S4method{cov}{gpu.matrix.torch,ANY-method}(x,y)
-\S4method{cov}{gpu.matrix.torch,missing-method}(x,y)
+\S4method{cov}{ANY,gpu.matrix.torch}(x,y)
+\S4method{cov}{gpu.matrix.torch,ANY}(x,y)
+\S4method{cov}{gpu.matrix.torch,missing}(x,y)
 
 \S4method{cov2cor}{gpu.matrix.tensorflow}(V)
 \S4method{cov2cor}{gpu.matrix.torch}(V)
