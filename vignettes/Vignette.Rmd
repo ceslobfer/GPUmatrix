@@ -557,7 +557,7 @@ There is a wide variety of functions implemented in GPUmatrix, and they are adap
 | `rankMatrix`  |              `rankMatrix(Gm)`               |   `Matrix`    |
 |    `eigen`    |                 `eigen(Gm)`                 |    `base`     |
 |     `svd`     |                  `svd(Gm)`                  |    `base`     |
-|    `ginv`     | `ginv(Gm, tol = sqrt(.Machine$double.eps))` |    `base`     |
+|    `ginv`     | `ginv(Gm, tol = sqrt(.Machine$double.eps))` |    `MASS`     |
 |    `chol`     |                 `chol(Gm)`                  |    `base`     |
 | `chol_solve`  |             `chol_solve(Gm, …)`             |  `GPUmatrix`  |
 |    `mean`     |                 `mean(Gm)`                  |    `base`     |
