@@ -8,7 +8,7 @@ It mimics the function \code{fft} of library \code{stats}. It Computes the Discr
 
 }
 
-
+\alias{fft}
 \alias{fft-methods}
 \alias{fft,gpu.matrix.tensorflow-method}
 \alias{fft,gpu.matrix.torch-method}

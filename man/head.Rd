@@ -11,6 +11,10 @@ The function \code{show} mimics the function \code{show} of \code{methods}. It D
 }
 
 
+\alias{tail}
+\alias{show}
+\alias{head}
+
 \alias{tail-methods}
 \alias{show-methods}
 \alias{head-methods}

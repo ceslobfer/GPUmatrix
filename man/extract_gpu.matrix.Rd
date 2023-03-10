@@ -3,11 +3,15 @@
 \docType{methods}
 
 
-
+\alias{-}
 \alias{--methods}
 \alias{-,gpu.matrix.tensorflow,missing-method}
 \alias{-,gpu.matrix.torch,missing-method}
 
+\alias{[}
+\alias{[<-}
+\alias{[[}
+\alias{[[<-}
 \alias{[-methods}
 \alias{[<--methods}
 \alias{[[-methods}

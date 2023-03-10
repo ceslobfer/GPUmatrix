@@ -7,10 +7,12 @@
 These functions mimics the corresponding function of \code{base}, \code{matrixStats} and \code{Matrix} libraries. See also section for more details.
 }
 
-
+\alias{rowMaxs}
 \alias{rowMaxs-methods}
 \alias{rowMaxs,gpu.matrix.tensorflow-method}
 \alias{rowMaxs,gpu.matrix.torch-method}
+
+\alias{colMaxs}
 \alias{colMaxs-methods}
 \alias{colMaxs,gpu.matrix.tensorflow-method}
 \alias{colMaxs,gpu.matrix.torch-method}
@@ -20,6 +22,12 @@ These functions mimics the corresponding function of \code{base}, \code{matrixSt
 \alias{max,gpu.matrix.torch-method}
 \alias{which.max,gpu.matrix.tensorflow-method}
 \alias{which.max,gpu.matrix.torch-method}
+
+
+\alias{rowMins}
+\alias{colMins}
+\alias{min}
+\alias{which.min}
 
 \alias{rowMins-methods}
 \alias{colMins-methods}
@@ -34,6 +42,9 @@ These functions mimics the corresponding function of \code{base}, \code{matrixSt
 \alias{which.min,gpu.matrix.tensorflow-method}
 \alias{which.min,gpu.matrix.torch-method}
 
+\alias{rowMeans}
+\alias{colMeans}
+\alias{mean}
 \alias{rowMeans-methods}
 \alias{colMeans-methods}
 \alias{mean-methods}
@@ -44,6 +55,8 @@ These functions mimics the corresponding function of \code{base}, \code{matrixSt
 \alias{mean,gpu.matrix.tensorflow-method}
 \alias{mean,gpu.matrix.torch-method}
 
+\alias{rowVars}
+\alias{colVars}
 \alias{rowVars-methods}
 \alias{colVars-methods}
 \alias{rowVars,gpu.matrix.tensorflow-method}
@@ -51,6 +64,9 @@ These functions mimics the corresponding function of \code{base}, \code{matrixSt
 \alias{colVars,gpu.matrix.tensorflow-method}
 \alias{colVars,gpu.matrix.torch-method}
 
+\alias{rowRanks}
+\alias{colRanks}
+\alias{rankMatrix}
 \alias{rowRanks-methods}
 \alias{colRanks-methods}
 \alias{rankMatrix-methods}
@@ -61,7 +77,9 @@ These functions mimics the corresponding function of \code{base}, \code{matrixSt
 \alias{rankMatrix,gpu.matrix.tensorflow-method}
 \alias{rankMatrix,gpu.matrix.torch-method}
 
-
+\alias{rowSums}
+\alias{colSums}
+\alias{sum}
 \alias{rowSums-methods}
 \alias{colSums-methods}
 \alias{sum-methods}

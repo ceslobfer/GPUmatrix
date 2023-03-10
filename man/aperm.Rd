@@ -8,6 +8,8 @@
 \code{t} returns the transpose of a matrix of two dimension.
 }
 
+\alias{aperm}
+\alias{t}
 
 \alias{aperm-methods}
 \alias{aperm,gpu.matrix.tensorflow-method}

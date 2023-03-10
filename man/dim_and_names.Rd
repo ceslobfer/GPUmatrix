@@ -5,6 +5,15 @@
 Functions to set or obtain the dimension of a gpu.matrix and to set or obtain the corresponding names of the rows and the columns.
 }
 
+\alias{rownames}
+\alias{colnames}
+\alias{dimnames}
+\alias{dim}
+\alias{length}
+\alias{ncol}
+\alias{nrow}
+
+
 \alias{rownames-methods}
 \alias{colnames-methods}
 \alias{dimnames-methods}
@@ -26,6 +35,10 @@ Functions to set or obtain the dimension of a gpu.matrix and to set or obtain th
 \alias{ncol,gpu.matrix.torch-method}
 \alias{nrow,gpu.matrix.tensorflow-method}
 \alias{nrow,gpu.matrix.torch-method}
+
+
+\alias{dim<-}
+\alias{dimnames<-}
 
 \alias{dim<--methods}
 \alias{dimnames<--methods}

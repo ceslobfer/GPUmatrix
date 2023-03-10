@@ -10,10 +10,12 @@ The function \code{hist} mimics the function \code{hist} of the library \code{gr
 
 }
 
+\alias{density}
 \alias{density-methods}
 \alias{density,gpu.matrix.tensorflow-method}
 \alias{density,gpu.matrix.torch-method}
 
+\alias{hist}
 \alias{hist-methods}
 \alias{hist,gpu.matrix.tensorflow-method}
 \alias{hist,gpu.matrix.torch-method}

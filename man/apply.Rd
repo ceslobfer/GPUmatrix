@@ -6,7 +6,7 @@
 This function mimics the base function \code{apply} that returns a vector or array or list of values obtained by applying a function to margins of an array or matrix.
 
 }
-
+\alias{apply}
 \alias{apply-methods}
 \alias{apply,gpu.matrix.tensorflow-method}
 \alias{apply,gpu.matrix.torch-method}

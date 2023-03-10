@@ -16,18 +16,22 @@ These function compute different decomposition of a matrix using the GPU.
 
 }
 
+\alias{eigen}
 \alias{eigen-methods}
 \alias{eigen,gpu.matrix.tensorflow-method}
 \alias{eigen,gpu.matrix.torch-method}
 
+\alias{svd}
 \alias{svd-methods}
 \alias{svd,gpu.matrix.tensorflow-method}
 \alias{svd,gpu.matrix.torch-method}
 
+\alias{qr}
 \alias{qr-methods}
 \alias{qr,gpu.matrix.tensorflow-method}
 \alias{qr,gpu.matrix.torch-method}
 
+\alias{chol}
 \alias{chol-methods}
 \alias{chol,gpu.matrix.tensorflow-method}
 \alias{chol,gpu.matrix.torch-method}

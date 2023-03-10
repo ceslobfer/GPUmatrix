@@ -2,6 +2,7 @@
 \title{kroneker}
 \docType{methods}
 
+\alias{\%x\%}
 \alias{\%x\%-methods}
 \alias{\%x\%,ANY,gpu.matrix.tensorflow-method}
 \alias{\%x\%,ANY,gpu.matrix.torch-method}

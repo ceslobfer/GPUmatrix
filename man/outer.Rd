@@ -2,7 +2,10 @@
 \title{outer}
 \docType{methods}
 
-\alias{\%o\%-methods}
+\alias{\%o\%}
+\alias{outer}
+
+\alias{\%o\%methods}
 \alias{outer-methods}
 \alias{\%o\%,ANY,gpu.matrix.tensorflow-method}
 \alias{\%o\%,ANY,gpu.matrix.torch-method}

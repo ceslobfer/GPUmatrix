@@ -7,10 +7,12 @@ It mimics the function \code{mimics} that Extract or replace the diagonal of a m
 
 }
 
+\alias{diag}
 \alias{diag-methods}
 \alias{diag,gpu.matrix.tensorflow-method}
 \alias{diag,gpu.matrix.torch-method}
 
+\alias{diag<-}
 \alias{diag<--methods}
 \alias{diag<-,gpu.matrix.tensorflow,numeric-method}
 \alias{diag<-,gpu.matrix.torch,numeric-method}

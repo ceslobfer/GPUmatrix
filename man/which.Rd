@@ -7,7 +7,7 @@ It mimics the base function \code{which}. It gives the TRUE indices of alogical 
 
 }
 
-
+\alias{which}
 \alias{which-methods}
 \alias{which,gpu.matrix.tensorflow-method}
 \alias{which,gpu.matrix.torch-method}

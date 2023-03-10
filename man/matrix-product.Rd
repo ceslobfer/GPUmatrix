@@ -2,12 +2,14 @@
 \title{Matrix Products}
 \docType{methods}
 
+\alias{\%*\%}
 \alias{\%*\%-methods}
 \alias{\%*\%,ANY,gpu.matrix.tensorflow-method}
 \alias{\%*\%,ANY,gpu.matrix.torch-method}
 \alias{\%*\%,gpu.matrix.tensorflow,ANY-method}
 \alias{\%*\%,gpu.matrix.torch,ANY-method}
 
+\alias{crossprod}
 \alias{crossprod-methods}
 \alias{crossprod,ANY,gpu.matrix.tensorflow-method}
 \alias{crossprod,gpu.matrix.tensorflow,ANY-method}
@@ -17,6 +19,7 @@
 \alias{crossprod,gpu.matrix.torch,missing-method}
 
 
+\alias{tcrossprod}
 \alias{tcrossprod-methods}
 \alias{tcrossprod,ANY,gpu.matrix.tensorflow-method}
 \alias{tcrossprod,gpu.matrix.tensorflow,ANY-method}

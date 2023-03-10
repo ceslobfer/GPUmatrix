@@ -3,7 +3,7 @@
 \docType{methods}
 
 
-
+\alias{sort}
 \alias{sort-methods}
 \alias{sort,gpu.matrix.tensorflow,logical-method}
 \alias{sort,gpu.matrix.tensorflow,missing-method}

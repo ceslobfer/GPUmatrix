@@ -3,6 +3,13 @@
 \docType{methods}
 
 
+\alias{as.array}
+\alias{as.list}
+\alias{as.matrix}
+\alias{as.numeric}
+\alias{as.vector}
+\alias{is.numeric}
+
 
 \alias{as.array-methods}
 \alias{as.list-methods}

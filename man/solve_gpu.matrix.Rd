@@ -2,6 +2,7 @@
 \title{Solve a System of Equations}
 \docType{methods}
 
+\alias{solve}
 \alias{solve-methods}
 \alias{solve,ANY,gpu.matrix.tensorflow-method}
 \alias{solve,ANY,gpu.matrix.torch-method}
@@ -10,6 +11,7 @@
 \alias{solve,gpu.matrix.torch,ANY-method}
 \alias{solve,gpu.matrix.torch,missing-method}
 
+\alias{ginv}
 \alias{ginv-methods}
 \alias{ginv,gpu.matrix.torch-method}
 \alias{ginv,gpu.matrix.tensorflow-method}

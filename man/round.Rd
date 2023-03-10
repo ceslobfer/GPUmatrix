@@ -8,7 +8,7 @@ Mimic of the base function \code{round} that rounds the values in its first argu
 }
 
 
-
+\alias{round}
 \alias{round-methods}
 \alias{round,gpu.matrix.tensorflow,ANY-method}
 \alias{round,gpu.matrix.torch,missing-method}

@@ -8,13 +8,14 @@ Mimic of the base functions \code{det} and \code{determinant}: \code{det} calcul
 
 }
 
-
+\alias{determinant}
 \alias{determinant-methods}
 \alias{determinant,gpu.matrix.tensorflow,logical-method}
 \alias{determinant,gpu.matrix.tensorflow,missing-method}
 \alias{determinant,gpu.matrix.torch,logical-method}
 \alias{determinant,gpu.matrix.torch,missing-method}
 
+\alias{det}
 \alias{det-methods}
 \alias{det,gpu.matrix.tensorflow-method}
 \alias{det,gpu.matrix.torch-method}

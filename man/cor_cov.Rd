@@ -10,6 +10,7 @@ If x and y are object of GPUmatrix, then the corresponding operations are comput
 
 }
 
+\alias{cor}
 \alias{cor-methods}
 \alias{cor,gpu.matrix.tensorflow,ANY,ANY,ANY-method}
 \alias{cor,gpu.matrix.tensorflow,ANY,missing,character-method}
@@ -24,7 +25,8 @@ If x and y are object of GPUmatrix, then the corresponding operations are comput
 \alias{cor,gpu.matrix.torch,missing,ANY,ANY-method}
 \alias{cor,gpu.matrix.torch,missing,missing,missing-method}
 
-
+\alias{cov2cor}
+\alias{cov}
 \alias{cov2cor-methods}
 \alias{cov-methods}
 \alias{cov2cor,gpu.matrix.tensorflow-method}

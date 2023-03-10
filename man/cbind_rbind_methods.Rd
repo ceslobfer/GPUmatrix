@@ -3,7 +3,8 @@
 \docType{methods}
 
 
-
+\alias{cbind2}
+\alias{rbind2}
 \alias{cbind2-methods}
 \alias{rbind2-methods}
 \alias{cbind2,ANY,gpu.matrix.tensorflow-method}
