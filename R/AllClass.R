@@ -99,7 +99,11 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
     }
   }
 
-  if (is.null(device)) device <- "cuda"
+  if (is.null(device) & cuda_is_available()){
+    device <- "cuda"
+  }else{
+    device <- "cpu"
+  }
   device_torch <- torch_device(type = device)
   sparseCast <- F
 
