@@ -1,14 +1,16 @@
 
-# .onLoad <- function(libname, pkgname) {
-#   # library(GPUmatrix)
-#   # use_condaenv("work_with_gpu")
-library(tensorflow)
-# use_condaenv("tf")
 
-#   res <- as_tensor(2)
-#   # n <- 50
-#   # a <- matrix(rnorm(n*n),nrow = n)
-#   # aa <- GPUmatrix::gpu.matrix(a)
-#
-# }
-# as_tensor(2)
+.onAttach <- function (libname, pkgname) {
+
+  installedTORCH <- requireNamespace("torch", quietly = T)
+  installedTENSORFLOW <- requireNamespace("tensorflow", quietly = T)
+  if (installedTORCH) attachNamespace("torch")
+  if (installedTENSORFLOW) attachNamespace("tensorflow")
+
+  if (installedTORCH) packageStartupMessage("Torch tensors allowed")
+  if (installedTENSORFLOW) packageStartupMessage("Tensorflow tensors allowed")
+  if(!installedTORCH & !installedTENSORFLOW) packageStartupMessage("Not torch or tensorflow installed")
+
+}
+
+

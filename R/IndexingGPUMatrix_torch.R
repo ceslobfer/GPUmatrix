@@ -185,7 +185,6 @@ setMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missing"),
             return(res)
           })
 
-
 setMethod("[[", signature(x = "gpu.matrix.torch", i = "index"),
           function(x,i,...){
             if (typeof(i) == "character") i <- match(i, x@rownames)

@@ -1,4 +1,5 @@
-
+setClassUnion("index",
+              members = c("logical", "numeric", "character"))
 select_rows <- function(A,row_to_show){
 
 
@@ -210,6 +211,10 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "missing", j = "index"
             return(res)
           })
 
+#' @name [
+#' @aliases [,gpu.matrix.tensorflow-method
+#' @docType methods
+#' @rdname extract-methods
 setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "index"),
           function (x, i, j) {
             if (x@sparse) {

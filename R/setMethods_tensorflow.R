@@ -534,6 +534,7 @@ setMethod("qr", signature(x="gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
+setGeneric("rankMatrix", function(x) standardGeneric("rankMatrix"))
 setMethod("rankMatrix", signature(x="gpu.matrix.tensorflow"), function(x){
 
   if (x@sparse) {
@@ -561,7 +562,7 @@ setMethod("svd", signature(x="gpu.matrix.tensorflow"), function(x){
 
   return(res)
 })
-
+setGeneric("ginv", function(X,tol) standardGeneric("ginv"))
 setMethod("ginv", signature(X="gpu.matrix.tensorflow", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
 {
   X <- warningSparseTensor(X)
@@ -994,7 +995,7 @@ setMethod("cor", signature(x = "gpu.matrix.tensorflow", y = "missing", use="miss
   return(res)
 })
 # library(matrixStats)
-
+setGeneric("rowVars", function(x) standardGeneric("rowVars"))
 setMethod("rowVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   x <- warningInteger(x)
@@ -1002,6 +1003,7 @@ setMethod("rowVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 # library(matrixStats)
+setGeneric("colVars", function(x,y) standardGeneric("colVars"))
 setMethod("colVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   x <- warningInteger(x)
@@ -1009,14 +1011,14 @@ setMethod("colVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
-# setGeneric("colMaxs", function(x,y) standardGeneric("colMaxs"))
+setGeneric("colMaxs", function(x,y) standardGeneric("colMaxs"))
 setMethod("colMaxs", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   res <- as.vector(tf$reduce_max(x@gm,axis=0L))
   names(res) <- colnames(x)
   return(res)
 })
-# setGeneric("rowMaxs", function(x,y) standardGeneric("rowMaxs"))
+setGeneric("rowMaxs", function(x,y) standardGeneric("rowMaxs"))
 setMethod("rowMaxs", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   res <- as.vector(tf$reduce_max(x@gm,axis=1L))
@@ -1024,24 +1026,24 @@ setMethod("rowMaxs", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
-
+setGeneric("rowRanks", function(x) standardGeneric("rowRanks"))
 setMethod("rowRanks", signature(x="gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   return(gpu.matrix.tensorflow(tf$argsort(tf$argsort(x@gm,axis=1L), axis=1L) + 1))
 } )
-
+setGeneric("colRanks", function(x) standardGeneric("colRanks"))
 setMethod("colRanks", signature(x="gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   return(t(gpu.matrix.tensorflow(tf$argsort(tf$argsort(x@gm,axis=0L), axis=0L) + 1)))
 } )
-
+setGeneric("colMins", function(x) standardGeneric("colMins"))
 setMethod("colMins", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   res <- as.vector(tf$reduce_min(x@gm,axis=0L))
   names(res) <- colnames(x)
   return(res)
 })
-
+setGeneric("rowMins", function(x) standardGeneric("rowMins"))
 setMethod("rowMins", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   res <- as.vector(tf$reduce_min(x@gm,axis=1L))

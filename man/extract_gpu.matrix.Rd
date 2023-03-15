@@ -3,39 +3,39 @@
 \docType{methods}
 
 
-\alias{-}
-\alias{--methods}
-\alias{-,gpu.matrix.tensorflow,missing-method}
-\alias{-,gpu.matrix.torch,missing-method}
-
-\alias{[}
-\alias{[<-}
-\alias{[[}
-\alias{[[<-}
 \alias{[-methods}
-\alias{[<--methods}
-\alias{[[-methods}
-\alias{[[<--methods}
-\alias{[,gpu.matrix.tensorflow,index,index,ANY-method}
-\alias{[,gpu.matrix.tensorflow,index,missing,ANY-method}
-\alias{[,gpu.matrix.tensorflow,matrix,missing,ANY-method}
-\alias{[,gpu.matrix.tensorflow,missing,index,ANY-method}
-\alias{[,gpu.matrix.torch,index,index,ANY-method}
-\alias{[,gpu.matrix.torch,index,missing,ANY-method}
-\alias{[,gpu.matrix.torch,matrix,missing,ANY-method}
-\alias{[,gpu.matrix.torch,missing,index,ANY-method}
-\alias{[<-,gpu.matrix.tensorflow,index,index,ANY-method}
-\alias{[<-,gpu.matrix.tensorflow,index,missing,ANY-method}
-\alias{[<-,gpu.matrix.tensorflow,matrix,missing,ANY-method}
-\alias{[<-,gpu.matrix.tensorflow,missing,index,ANY-method}
-\alias{[<-,gpu.matrix.torch,index,index,ANY-method}
-\alias{[<-,gpu.matrix.torch,index,missing,ANY-method}
-\alias{[<-,gpu.matrix.torch,matrix,missing,ANY-method}
-\alias{[<-,gpu.matrix.torch,missing,index,ANY-method}
+\alias{[,gpu.matrix.tensorflow,index,index-method}
+\alias{[,gpu.matrix.tensorflow,index,missing-method}
+\alias{[,gpu.matrix.tensorflow,matrix,missing-method}
+\alias{[,gpu.matrix.tensorflow,missing,index-method}
+\alias{[,gpu.matrix.torch,index,index-method}
+\alias{[,gpu.matrix.torch,index,missing-method}
+\alias{[,gpu.matrix.torch,matrix,missing-method}
+\alias{[,gpu.matrix.torch,missing,index-method}
+\alias{[<-,gpu.matrix.tensorflow,index,index-method}
+\alias{[<-,gpu.matrix.tensorflow,index,missing-method}
+\alias{[<-,gpu.matrix.tensorflow,matrix,missing-method}
+\alias{[<-,gpu.matrix.tensorflow,missing,index-method}
+\alias{[<-,gpu.matrix.torch,index,index-method}
+\alias{[<-,gpu.matrix.torch,index,missing-method}
+\alias{[<-,gpu.matrix.torch,matrix,missing-method}
+\alias{[<-,gpu.matrix.torch,missing,index-method}
 \alias{[[,gpu.matrix.tensorflow,index-method}
 \alias{[[,gpu.matrix.torch,index-method}
 \alias{[[<-,gpu.matrix.tensorflow,index-method}
 \alias{[[<-,gpu.matrix.torch,index-method}
+\alias{[}
+\alias{[<-}
+\alias{[[}
+\alias{[[<-}
+\alias{--methods}
+\alias{-}
+\alias{-,gpu.matrix.tensorflow,missing-method}
+\alias{-,gpu.matrix.torch,missing-method}
+\alias{[-methods}
+\alias{[<--methods}
+\alias{[[-methods}
+\alias{[[<--methods}
 
 
 
@@ -47,22 +47,22 @@ Mimick the \code{[,[<-, [[, and [[<-} base functions. These operators act on GPU
 \usage{
 \S4method{-}{gpu.matrix.tensorflow,missing}(e1,e2)
 \S4method{-}{gpu.matrix.torch,missing}(e1,e2)
-\S4method{[}{gpu.matrix.tensorflow,index,index,ANY}(x,i,j)
-\S4method{[}{gpu.matrix.tensorflow,index,missing,ANY}(x,i,j,\dots,drop = TRUE)
-\S4method{[}{gpu.matrix.tensorflow,matrix,missing,ANY}(x,i,j,\dots,drop = TRUE)
-\S4method{[}{gpu.matrix.tensorflow,missing,index,ANY}(x,i,j)
-\S4method{[}{gpu.matrix.torch,index,index,ANY}(x,i,j)
-\S4method{[}{gpu.matrix.torch,index,missing,ANY}(x,i,j,\dots,drop = TRUE)
-\S4method{[}{gpu.matrix.torch,matrix,missing,ANY}(x,i,j,\dots,drop = TRUE)
-\S4method{[}{gpu.matrix.torch,missing,index,ANY}(x,i,j)
-\S4method{[}{gpu.matrix.tensorflow,index,index,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.tensorflow,index,missing,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.tensorflow,matrix,missing,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.tensorflow,missing,index,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.torch,index,index,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.torch,index,missing,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.torch,matrix,missing,ANY}(x,i,j) <- value
-\S4method{[}{gpu.matrix.torch,missing,index,ANY}(x,i,j) <- value
+\S4method{[}{gpu.matrix.tensorflow,index,index}(x,i,j)
+\S4method{[}{gpu.matrix.tensorflow,index,missing}(x,i,j,\dots,drop = TRUE)
+\S4method{[}{gpu.matrix.tensorflow,matrix,missing}(x,i,j,\dots,drop = TRUE)
+\S4method{[}{gpu.matrix.tensorflow,missing,index}(x,i,j)
+\S4method{[}{gpu.matrix.torch,index,index}(x,i,j)
+\S4method{[}{gpu.matrix.torch,index,missing}(x,i,j,\dots,drop = TRUE)
+\S4method{[}{gpu.matrix.torch,matrix,missing}(x,i,j,\dots,drop = TRUE)
+\S4method{[}{gpu.matrix.torch,missing,index}(x,i,j)
+\S4method{[}{gpu.matrix.tensorflow,index,index}(x,i,j) <- value
+\S4method{[}{gpu.matrix.tensorflow,index,missing}(x,i,j) <- value
+\S4method{[}{gpu.matrix.tensorflow,matrix,missing}(x,i,j) <- value
+\S4method{[}{gpu.matrix.tensorflow,missing,index}(x,i,j) <- value
+\S4method{[}{gpu.matrix.torch,index,index}(x,i,j) <- value
+\S4method{[}{gpu.matrix.torch,index,missing}(x,i,j) <- value
+\S4method{[}{gpu.matrix.torch,matrix,missing}(x,i,j) <- value
+\S4method{[}{gpu.matrix.torch,missing,index}(x,i,j) <- value
 \S4method{[[}{gpu.matrix.tensorflow,index}(x,i,j,\dots)
 \S4method{[[}{gpu.matrix.torch,index}(x,i,j,\dots)
 \S4method{[[}{gpu.matrix.tensorflow,index}(x,i) <- value
