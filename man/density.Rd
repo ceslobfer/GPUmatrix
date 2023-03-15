@@ -46,7 +46,7 @@ For more information see:
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(20*100),20,100,type="tensorflow")
+a <- gpu.matrix(rnorm(20*100),20,100)
 
 density(a[1,]) #density information
 plot(density(a[1,])) #plot the estimated density function

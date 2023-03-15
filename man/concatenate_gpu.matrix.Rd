@@ -55,14 +55,14 @@ It will return a vector with the combined values. It is equivalent to working wi
 \dontrun{
 
 #add new value
-a <- gpu.matrix(1:5,nrow=1,ncol=5,type = "tensorflow")
+a <- gpu.matrix(1:5,nrow=1,ncol=5)
 c(a,3)
 
 #add other vector
 c(a,a)
 
 #add value to a gpu.matrix
-a <- gpu.matrix(1:9,nrow=3,ncol=3,type = "tensorflow")
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
 c(a,a)
 #it will return a vector as in original c function.
 

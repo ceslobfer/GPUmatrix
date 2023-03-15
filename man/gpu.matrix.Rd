@@ -76,6 +76,32 @@ See \code{\linkS4class{Matrix}} and \code{\linkS4class{matrix}}.
 
 \donttest{
 \dontrun{
+## create a gpu.matrix.torch and check it is stored in the GPU.
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
+class(a)
+a@gm$is_cuda
+
+# the output of class(a) should be:
+#[1] "gpu.matrix.torch"
+#attr(,"package")
+#[1] "GPUmatrix"
+
+#the output of a@gm@device should have a similar shape:
+#[1] TRUE
+
+## create a gpu.matrix.torch and check it is stored in the CPU.
+a <- gpu.matrix(1:9,nrow=3,ncol=3, device="cpu")
+class(a)
+a@gm$is_cuda
+
+# the output of class(a) should be:
+#[1] "gpu.matrix.torch"
+#attr(,"package")
+#[1] "GPUmatrix"
+
+#the output of a@gm@device should have a similar shape:
+#[1] FALSE
+
 ## create a gpu.matrix.tensorflow and check it is stored in the GPU.
 a <- gpu.matrix(1:9,nrow=3,ncol=3,type="tensorflow")
 class(a)

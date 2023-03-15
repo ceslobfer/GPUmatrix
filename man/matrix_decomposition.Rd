@@ -75,7 +75,7 @@ For more information see:
 \examples{
 \donttest{
 \dontrun{
-a <- gpu.matrix(rnorm(9),3,3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),3,3)
 ein <- eigen(a) #eigenvalues and eigenvectors
 svd_return <- svd(a) #svd of gpu.matrix a
 qr_return <- qr(a) #qr decompostion

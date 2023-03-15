@@ -53,7 +53,7 @@ These functions take a sequence of vector, matrix, data-frame arguments and or G
 
 \dontrun{
 
-a <- gpu.matrix(1:9,nrow=3,ncol=3,type = "tensorflow")
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
 
 #add new row
 newrow <- c(1,2,3)
@@ -64,11 +64,11 @@ newcolumn <- c(1,2,3,4)
 a <- cbind(a,newcolumn)
 
 #add new rows from other gpu.marix
-b <- gpu.matrix(1:16,nrow=4,ncol=4,type = "tensorflow")
+b <- gpu.matrix(1:16,nrow=4,ncol=4)
 d <- rbind(a,b)
 
 #add new columns from other gpu.marix
-b <- gpu.matrix(1:16,nrow=4,ncol=4,type = "tensorflow")
+b <- gpu.matrix(1:16,nrow=4,ncol=4)
 d <- cbind(a,b)
 
 

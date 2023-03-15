@@ -48,7 +48,7 @@ Returns a vector of class numeric. In order to store the resultin vector in the 
 \examples{
 \donttest{
 \dontrun{
-a <- gpu.matrix(rnorm(9),nrow=3,ncol=3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
 sort(a) #returns a vector with the data sorted.
 }
 }

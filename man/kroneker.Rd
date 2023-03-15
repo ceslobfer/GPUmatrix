@@ -39,7 +39,7 @@ See Also \code{\link[base]{kronecker}}.
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(1:9,nrow=3,ncol=3,type="tensorflow")
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
 a %x% diag(1,3)
 
 

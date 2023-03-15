@@ -93,7 +93,7 @@ See Also \code{\link[base]{Extract}}.
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(1:9,nrow=3,ncol=3,type = "tensorflow")
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
 rownames(a) <- c("R1","R2","R3")
 colnames(a) <- c("C1","C2","C3")
 
