@@ -80,7 +80,7 @@ setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
   return(res)
 })
 
-setMethod("xtfrm", signature(x="gpu.matrix.torch"), function(x){
+setMethod("xtfrm", signature(x="gpu.matrix.tensorflow"), function(x){
   return(as.numeric(x))
 })
 

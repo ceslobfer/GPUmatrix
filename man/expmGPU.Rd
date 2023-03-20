@@ -2,6 +2,7 @@
 \alias{expmGPU}
 \alias{expmGPU-methods}
 \alias{expmGPU,gpu.matrix.tensorflow-method}
+\alias{expmGPU,gpu.matrix.torch-method}
 \title{
 GPUMatrix Exponential.
 }
@@ -11,6 +12,7 @@ It is a mimic of the function \code{expm} of the library \code{Matrix}. It compu
 \usage{
 expmGPU(x)
 \S4method{expmGPU}{gpu.matrix.tensorflow}(x)
+\S4method{expmGPU}{gpu.matrix.torch}(x)
 }
 \arguments{
   \item{x}{a gpu.matrix build with float numbers}
