@@ -27,7 +27,7 @@
 \description{
 These functions are used to solve a system of equations or to compute the inverse of a matrix.
 
-Mimic of the base function \code{solve}: This generic function
+They mimic of the base function \code{solve}: This generic function
 solves the equation ax=b for x, where b can be either a vector or a matrix (gpu.matrix).
 
 \code{ginv} mimics the function \code{ginv} of package MASS: it calculates the Moore-Penrose generalized inverse of a gpu.matrix.
@@ -106,7 +106,7 @@ b <- gpu.matrix(rnorm(3))
 
 x_solve <- solve(A,b) #using solve to compare results
 x_chol_solve <- chol_solve(chol(A),b) #using chol_solve
-#NOTE: notice that the input for chol_solve is the cholesky decomposition
+#NOTE: notice that the input for chol_solve is the Cholesky decomposition
 # of matrix A.
 
 }

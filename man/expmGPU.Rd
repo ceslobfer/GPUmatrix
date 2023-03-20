@@ -16,10 +16,10 @@ expmGPU(x)
   \item{x}{a gpu.matrix build with float numbers}
 }
 \value{
-the matrix exponential of x as GPUmatrix class.
+the matrix exponential of x as GPUmatrix tensorflow class.
 }
 \details{
-This functios works with float numbers. If the numbers used to create the gpu.matrix are integers, this function will not work. An example is shown below.
+This function works with float numbers (either float32 or float64). If the data type of gpu.matrix is integer, this function will not work. An example is shown below.
 }
 
 \seealso{

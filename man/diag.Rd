@@ -3,7 +3,7 @@
 
 \description{
 
-It mimics the function \code{mimics} that Extract or replace the diagonal of a matrix, or construct a diagonal matrix.
+It mimics the function \code{diag} that extractx or replacex the diagonal of a matrix, or constructs a diagonal matrix.
 
 }
 

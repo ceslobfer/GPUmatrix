@@ -2,9 +2,16 @@
 \docType{methods}
 \title{Get different statistics for a matrix or get the same statistics for each row or column.}
 
-\description{Functions to obtain the following information from a matrix or its rows (columns): maximum value,index of maximum value,minimum value,index of minimum value,mean,variance,sum of values,ranking of values.
+\description{Functions to summarize the values of a matrix by rows (columns):
+maximum value,
+index of maximum value,
+minimum value,
+index of minimum value,
+mean,variance,
+sum of values,
+ranking of values.
 
-These functions mimics the corresponding function of \code{base}, \code{matrixStats} and \code{Matrix} libraries. See also section for more details.
+These functions mimic the corresponding function of \code{base}, \code{matrixStats} and \code{Matrix} libraries. See also section for more details.
 }
 
 \alias{rowMaxs}

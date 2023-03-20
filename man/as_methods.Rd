@@ -34,11 +34,15 @@
 
 
 \description{
-as.matrix attempts to turn its argument into a matrix.
-as.list attempts to turn its argument into a list.
-as.numeric attempts to turn its argument into a numeric.
-as.vector attempts to turn its argument into a vector.
-is.numeric is a general test of an object being interpretable as numbers
+Function as.matrix attempts to turn its argument into a matrix.
+
+Function as.list attempts to turn its argument into a list.
+
+Function as.numeric attempts to turn its argument into a numeric.
+
+Function as.vector attempts to turn its argument into a vector.
+
+Function is.numeric is a general test of an object being interpretable as numbers
 }
 
 

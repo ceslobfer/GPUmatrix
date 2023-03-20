@@ -8,11 +8,11 @@ email:
   - arubio@unav.es
 date: "February 2023"
 output:
-  html_document:
-    df_print: paged
-  pdf_document: default
   word_document:
     reference_docx: "D:/GPUmatrix/vignettes/svm-rmarkdown-word.docx"
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ------------------------------------------------------------------------

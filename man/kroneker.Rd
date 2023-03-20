@@ -10,7 +10,7 @@
 \alias{\%x\%,gpu.matrix.torch,ANY-method}
 
 \description{
-Kroneker for GPU matrices. Mimics the base function \code{kronecker}.
+Kroneker product of two gpu.matrix matrices. It mimics the base function \code{kronecker}.
 }
 
 

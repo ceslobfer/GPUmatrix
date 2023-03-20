@@ -3,9 +3,9 @@
 \docType{methods}
 
 \description{
-\code{aperm} transposes a GPUmatrix by permuting its dimensions and optionally resizing it.
+\code{aperm} transposes a gpu.matrix by permuting its dimensions and optionally resizing it.
 
-\code{t} returns the transpose of a matrix of two dimension.
+\code{t} returns the transpose of a matrix of two dimensions.
 }
 
 \alias{aperm}

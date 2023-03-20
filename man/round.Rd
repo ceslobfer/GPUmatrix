@@ -4,7 +4,7 @@
 
 
 \description{
-Mimic of the base function \code{round} that rounds the values in its first argument to the specified number of decimal places (default 0).
+It mimics the base function \code{round} that rounds the values in its first argument to the specified number of decimal places (default 0).
 }
 
 

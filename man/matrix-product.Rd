@@ -32,7 +32,7 @@
 
 \description{
  Mimics the base function for matrix multiplication.
- Given the matrices \code{x} and \code{y} as inputs, return a matrix cross-product. The input \code{x} and \code{y} can be of class gpu.matrix. Thus, the operation will be performed by the GPU.
+ Given the matrices \code{x} and \code{y} as inputs, return a matrix standard product. The input \code{x} and \code{y} can be of class gpu.matrix. Thus, the operation will be performed by the GPU.
 }
 \usage{
 \S4method{\%*\%}{gpu.matrix.tensorflow,ANY}(x, y)
@@ -54,7 +54,7 @@
 }
 \arguments{
   \item{x}{a gpu.matrix}
-  \item{y}{a gpu.matrix or matrix or Matrix object, or for \code{[t]crossprod()}
+  \item{y}{a gpu.matrix, matrix or Matrix object, or for \code{[t]crossprod()}
     \code{NULL} (by default); the latter case is formally equivalent to
     \code{y = x}.}
     \item{\dots}{potentially more arguments passed to and from methods.}

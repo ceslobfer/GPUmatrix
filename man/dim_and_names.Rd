@@ -2,7 +2,9 @@
 \title{Number of rows and columns and its corresponding names}
 
 \description{
-Functions to set or obtain the dimension of a gpu.matrix and to set or obtain the corresponding names of the rows and the columns.
+The dim family of functions set or get the dimension of a gpu.matrix.
+
+The rownames family of functions set or get the corresponding names of rows and columns.
 }
 
 \alias{rownames}

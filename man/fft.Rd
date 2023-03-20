@@ -4,7 +4,7 @@
 
 \description{
 
-It mimics the function \code{fft} of library \code{stats}. It Computes the Discrete Fourier Transform (DFT) of an array with a fast algorithm, the “Fast Fourier Transform” (FFT).
+It mimics the function \code{fft} of library \code{stats}. It computes the Discrete Fourier Transform (DFT) of an array with a fast algorithm, the “Fast Fourier Transform” (FFT).
 
 }
 

@@ -21,7 +21,7 @@
 
 
 \description{
-Equivalent outer producto for GPUmatrix. In mimics the base functions \code{outer} and \code{\%o\%}.
+Equivalent outer product for a gpu.matrix. In mimics the base functions \code{outer} and \code{\%o\%}.
 }
 
 
@@ -45,7 +45,7 @@ Equivalent outer producto for GPUmatrix. In mimics the base functions \code{oute
 
 \item{X,Y}{First and second arguments for function \code{FUN}. Tipicalle are a vector or an array. With this implementation can be also a gpu.matrix.}
 \item{FUN}{a function to use on the outer products.}
-\item{\dots}{ptional arguments to be passed to FUN.}
+\item{\dots}{Optional arguments to be passed to FUN.}
 
 }
 

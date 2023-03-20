@@ -3,7 +3,7 @@
 
 \description{
 
-These function compute different decomposition of a matrix using the GPU.
+These functions compute different decompositions of a matrix using the GPU.
 
 \code{eigen} mimics the base function \code{eigen} that computes the eigenvalues and eigenvectors of a numeric (double, integer, logical) or complex matrix.
 
@@ -55,7 +55,10 @@ These function compute different decomposition of a matrix using the GPU.
 
 \arguments{
 
-\item{x}{a numeric or complex gpu.matrix whose spectral decomposition or whose SVD decomposition or whose QR decomposition or whose Cholesky factorization is to be computed. For the Cholesky factorization, x must be real symmetric positive-definite square gpu.matrix.}
+\item{x}{a numeric or complex gpu.matrix whose spectral decomposition or whose
+SVD decomposition or whose QR decomposition or whose Cholesky factorization is
+to be computed. For the Cholesky factorization, x must be real symmetric
+positive-definite square gpu.matrix.}
 
 }
 

@@ -48,12 +48,12 @@ A vector with the column names.
 A vector with the row names.
 }
 \item{type}{If gpu.matrix is "torch"(default) or "tensorflow."}
-\item{device}{By deafult "cuda". indicates de devide to load cuda.}
+\item{device}{By default "cuda" (alternative "cpu" only with torch). Indicates de devide to load cuda.}
 \item{\dots}{additional arguments to be passed to or from methods.}
 
 }
 \details{
-gpu.matrix.tensorflow mimics the functions Matrix of the library Matrix and the base function matrix. If tensorflow and/or torch are properly installed then the gpu.matrix will be stored on the GPU. The example shows how to check this.
+gpu.matrix. mimics the functions Matrix of the library Matrix and the base function matrix. If tensorflow and/or torch are properly installed then the gpu.matrix will be stored on the GPU. The example shows how to check this.
 
 User can apply -using the same operator- to this matrix the basic functions that can be applied to a matrix of class 'matrix' or class 'Matrix'.
 
