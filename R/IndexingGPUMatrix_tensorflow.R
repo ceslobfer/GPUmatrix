@@ -183,8 +183,15 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "missing"
 
               }else {
                 if((na <- nargs()) == 2){
-                  index <- do.call(cbind,select_rawIndex(x,i))
-                  res <- as.vector(tf$gather_nd(x@gm, indices = index))
+                  if (typeof(i) ==  "logical"){
+                    vecSearch <- as.numeric(x)
+                    i <- c(1:length(vecSearch))[i]
+                    res <- vecSearch[i]
+                  }else{
+                    index <- do.call(cbind,select_rawIndex(x,i))
+                    res <- as.vector(tf$gather_nd(x@gm, indices = index))
+                  }
+
                 }
               }
             }
