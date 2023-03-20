@@ -1,6 +1,6 @@
 ---
 title: "Get started with GPUmatrix package"
-subtitle: "Seamlessly harness the power of GPU compu-ting in R"
+subtitle: "Seamlessly harness the power of GPU computing in R"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 email: 
   - clobatofern@unav.es
@@ -8,18 +8,18 @@ email:
   - arubio@unav.es
 date: "February 2023"
 output:
+  html_document:
+    df_print: paged
   pdf_document: default
   word_document:
     reference_docx: "D:/GPUmatrix/vignettes/svm-rmarkdown-word.docx"
-  html_document:
-    df_print: paged
 ---
 
 ------------------------------------------------------------------------
 
 ## Abstract
 
-**Motivation:** GPU computational power is a great resource for computational biology specifically in statistics and linear algebra. Unfortunately, very few packages connect R with the GPU and none of them are transparent enough to perform the computations on the GPU without substantial changes of the code. Another problem of these packages is lacking proper maintenance: several of the previous attempts were removed from CRAN. It would be desirable to have a R package, properly maintained, that exploits the use of the GPU with minimal changes in the existing code.
+**Motivation:** GPU computational power is a great resource for computational biology. specifically in statistics and linear algebra. Unfortunately, very few packages connect R with the GPU and none of them are transparent enough to perform the computations on the GPU without substantial changes in the code. Another problem of these packages is lacking proper maintenance: several of the previous attempts were removed from CRAN. It would be desirable to have a R package, properly maintained, that exploits the use of the GPU with minimal changes in the existing code.
 
 **Results:** We have developed the GPUMatrix package (available at CRAN). GPUMatrix mimics the behavior of the Matrix package. Therefore, is easy to learn and very few changes in the code are required to work on the GPU. GPUMatrix relies on either the tensorflow or the torch R packages to perform the GPU operations.
 
@@ -37,6 +37,8 @@ GPUmatrix is an R package that utilizes tensors through the **torch** or **tenso
 
 ```{r,eval=F}
 install.packages("torch")
+library(torch)
+install_torch() # In some cases is required.
 ```
 
 -   **MUST INSTALL:**
@@ -167,6 +169,10 @@ The default matrices in R have limitations. The numeric data types it allows are
 ## 2.1 Cast from other packages
 
 GPUmatrix allows for compatibility with sparse matrices and different data types such as float32. For this reason, casting operations between different matrix types from multiple packages to GPU matrix type have been implemented:
+
+```{r, echo=FALSE}
+knitr::kable(NULL,caption = "Table 1. Casting operations between different packages")
+```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
 |:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
@@ -452,6 +458,11 @@ As seen in the previous example, the comparison operators (`==`, `!=`, `>`, `<`,
 
 Similarly to arithmetic operators, mathematical operators follow the same operation they would perform on regular matrices of R. `Gm` is a *gpu.matrix* variable:
 
+```{r, echo=FALSE}
+knitr::kable(NULL,caption = "Table 2. Mathematical operators that accept a gpu.matrix as input")
+```
+
+
 | Mathematical operators |     Usage     |
 |:----------------------:|:-------------:|
 |         `log`          |   `log(Gm)`   |
@@ -519,10 +530,15 @@ rownames: b c
 
 There is a wide variety of functions implemented in GPUmatrix, and they are adapted to be used just like regular R matrices.
 
+```{r, echo=FALSE}
+knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.matrix matrices as input")
+```
+
+
 |   Functions   |                    Usage                    |    Package    |
 |:-------------:|:-------------------------------------------:|:-------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
-|     `det`     |                  `fft(Gm)`                  |    `base`     |
+|     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
 |    `round`    |            `round(Gm, digits=0)`            |    `base`     |
 |    `show`     |                 `show(Gm)`                  |    `base`     |
