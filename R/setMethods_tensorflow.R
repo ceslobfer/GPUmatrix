@@ -80,6 +80,10 @@ setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
   return(res)
 })
 
+setMethod("xtfrm", signature(x="gpu.matrix.torch"), function(x){
+  return(as.numeric(x))
+})
+
 setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "missing"), function(x,decreasing){
   if (x@sparse) {
     res <- as.vector(sort(x@gm$values))
@@ -469,9 +473,9 @@ setMethod("%^%", signature(x = "gpu.matrix.tensorflow", k = "numeric"), function
 setGeneric("expmGPU", function(x) standardGeneric("expmGPU"))
 setMethod("expmGPU", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- tf$linalg$expm(x@gm)
+  x@gm <- tf$linalg$expm(x@gm)
   message("The exponential is computed using a combination of the scaling and squaring method and the Pade approximation.SIAM J. Matrix Anal. Applic., 26:1179-1193, 2005")
-  return(res)
+  return(x)
 })
 
 setMethod("diag", signature(x = "gpu.matrix.tensorflow"), function(x){
@@ -536,12 +540,8 @@ setMethod("qr", signature(x="gpu.matrix.tensorflow"), function(x){
 
 setGeneric("rankMatrix", function(x) standardGeneric("rankMatrix"))
 setMethod("rankMatrix", signature(x="gpu.matrix.tensorflow"), function(x){
-
-  if (x@sparse) {
-    res <- as.numeric(tf$rank(x@gm))
-  }else{
-    res <- rankMatrix(x@gm)
-  }
+  x <- warningSparseTensor(x)
+  res <- Matrix::rankMatrix(x@gm)
   return(res)
 })
 

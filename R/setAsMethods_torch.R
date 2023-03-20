@@ -45,7 +45,9 @@ setMethod("as.vector", "gpu.matrix.torch", function(x, mode){
 setMethod("as.list", signature(x = "gpu.matrix.torch"), function(x, ...){
   return(as.list(as.matrix(x)))
 })
-
+# setMethod("is.matrix",  signature(x = "gpu.matrix.torch"), function(x){
+#   return(T)
+# })
 setMethod("is.numeric",  signature(x = "gpu.matrix.torch"), function(x){
   dtype <-dtype(x)
   res <- F

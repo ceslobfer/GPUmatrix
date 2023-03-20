@@ -33,6 +33,10 @@ setMethod("as.array",  signature(x = "gpu.matrix.tensorflow"), function(x, ...){
   return(as(x@gm,"matrix"))
 } )
 
+# setMethod("is.matrix",  signature(x = "gpu.matrix.tensorflow"), function(x){
+#   return(T)
+# })
+
 setMethod("is.numeric",  signature(x = "gpu.matrix.tensorflow"), function(x){
   dtype <-dtype(x)
   res <- F

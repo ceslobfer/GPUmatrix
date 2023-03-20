@@ -105,6 +105,37 @@ setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "logical"), funct
   return(res)
 })
 
+# setGeneric("order", function(x,decreasing) standardGeneric("order"))
+setMethod("xtfrm", signature(x="gpu.matrix.torch"), function(x){
+  # if (x@sparse) {
+  #   # res <- as.numeric(torch_sort(x@gm$values())[[2]]$cpu())
+  # }else{
+  #   # res<- as.numeric(torch_sort(x@gm$reshape(length(x)))[[2]]$cpu())
+  #   res <-
+  # }
+
+  return(as.numeric(x))
+})
+
+# setMethod("xtfrm", signature(x="gpu.matrix.torch", decreasing = "logical"), function(x,decreasing){
+#
+#   if (!decreasing) {
+#     res <- sort(x)
+#     # res <- gpu.matrix.torch(tf$sort(x@gm,direction='ASCENDING'), dimnames = dimnames(x))
+#   }else{
+#     if (x@sparse) {
+#       res <- as.numeric(torch_sort(x@gm$values(),descending =T)[[2]]$cpu())
+#     }else{
+#       res <- as.numeric(torch_sort(x@gm$reshape(length(x)),descending =T)[[2]]$cpu())
+#     }
+#
+#     # res <- gpu.matrix.torch(tf$sort(tf$reshape(x@gm,length(x)),direction='DESCENDING'), dimnames = dimnames(x),nrow = nrow(x), ncol=ncol(x))
+#
+#   }
+#
+#   return(res)
+# })
+
 setMethod("round", signature(x= "gpu.matrix.torch",digits="missing"), function(x,digits){
   x <- warningInteger(x)
   if(x@sparse){
@@ -483,15 +514,13 @@ setMethod("%^%", signature(x = "gpu.matrix.torch", k = "numeric"), function(x,k)
   }
   return(res)
 })
-# setGeneric("expmGPU", function(x) standardGeneric("expmGPU"))
-# setMethod("expmGPU", signature(x = "gpu.matrix.torch"), function(x){
-#   if (x@sparse) {
-#     x <- to_dense(X)
-#   }
-#   res <- tf$linalg$expm(x@gm)
-#   message("The exponential is computed using a combination of the scaling and squaring method and the Pade approximation.SIAM J. Matrix Anal. Applic., 26:1179-1193, 2005")
-#   return(res)
-# })
+setGeneric("expmGPU", function(x) standardGeneric("expmGPU"))
+setMethod("expmGPU", signature(x = "gpu.matrix.torch"), function(x){
+  x <- warningSparseTensor_torch(x)
+  x@gm <- torch_matrix_exp(x@gm)
+  # message("The exponential is computed using a combination of the scaling and squaring method and the Pade approximation.SIAM J. Matrix Anal. Applic., 26:1179-1193, 2005")
+  return(x)
+})
 
 setMethod("diag", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
@@ -563,7 +592,7 @@ setMethod("qr", signature(x="gpu.matrix.torch"), function(x){
 setMethod("rankMatrix", signature(x="gpu.matrix.torch"), function(x){
 
   x <- warningSparseTensor_torch(x)
-  res <- rankMatrix(x@gm$cpu())
+  res <- Matrix::rankMatrix(x@gm$cpu())
   return(res)
 })
 
