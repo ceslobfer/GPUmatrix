@@ -73,6 +73,12 @@ install_tensorflow(version = "nightly-gpu")
 install.packages("GPUmarix")
 ```
 
+Alternatively, it is possible to install the package from GitHub ot get the last version of the package.
+```{r,eval=FALSE}
+devtools::install_github(" ceslobfer/GPUmatrix")
+```
+
+
 # 1 Initialization GPUmatrix
 
 The GPUmatrix package is based on S4 objects in R and we have created a constructor function that acts similarly to the default `matrix()` constructor in R for CPU matrices. The constructor function is `gpu.matrix()` and accepts the same parameters as `matrix()`:
