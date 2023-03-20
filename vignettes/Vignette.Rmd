@@ -175,7 +175,7 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -536,7 +536,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 
 
 |   Functions   |                    Usage                    |    Package    |
-|:---------------:|:------------------------------------:|:---------------:|
+|:-------------:|:-------------------------------------------:|:-------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -608,7 +608,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 
 The computation time for the different functions and operations differs depending on the operation to be performed (Fig 1). Although the default data type is float64, operations with float32 have no comparison in terms of computation time. For this reason, we recommend their use whenever the data types and the objective allow it. This comparison is made using the Intel MKL BLAS.
 
-![Computation time for GPU and R-base CPU for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension*.*](../images/Rplot.png)
+![Computation time for GPU and R-base CPU for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension*.*](./images/Rplot.png)
 
 # 4. Toy example: Non negative factorization of a matrix
 
@@ -717,7 +717,7 @@ Interestingly, the standard R matrix operations are indeed slightly slower than 
 
 In addition, if MKL-R is not implemented for float32 -since R does not include this type of variable-. The multiplication of float32 matrices on MKL-R does not use MKL and is, in fact, much slower than multiplying float64 matrices (data not shown). Torch and Tensorflow do include MKL for float32 and there is an improvement in the performance (they are around two-fold faster).
 
-![Computation time for GPUMatrix on CPU and MKL-R for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension. There is a substantial speed performance in element-wise operations.](../images/GPUmatrix_CPU.png)
+![Computation time for GPUMatrix on CPU and MKL-R for different operations. Time is in seconds and Size=n where matrix is *(n x n)* dimension. There is a substantial speed performance in element-wise operations.](./images/GPUmatrix_CPU.png)
 
 ## 5.2 Using GPUMatrix with Tensorflow
 
