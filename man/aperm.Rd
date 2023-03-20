@@ -59,7 +59,7 @@ The resulting matrix can be easily converted to a \code{gpu.matrix} class object
 
   #change the first with the second subscript.
   #this example corresponds to transposing the matrix
-  a <- gpu.matrix(1:9,nrow=3,ncol=3,type = "tensorflow")
+  a <- gpu.matrix(1:9,nrow=3,ncol=3)
   b <- aperm(a,perm = c(2,1))
 
   t(a) #transpose of a.

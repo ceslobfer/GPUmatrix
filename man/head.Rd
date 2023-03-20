@@ -57,7 +57,7 @@ For more information see:
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(20*5),20,5,type="tensorflow")
+a <- gpu.matrix(rnorm(20*5),20,5)
 
 head(a) #shows the first six row of every column
 tail(a) #shows the las six row of every column

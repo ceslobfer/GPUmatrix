@@ -52,7 +52,7 @@ For more information see:
 \donttest{
 \dontrun{
 
-x <- gpu.matrix(1:4,nrow=2, ncol = 2,type="tensorflow")
+x <- gpu.matrix(1:4,nrow=2, ncol = 2)
 unlist(determinant(x)) #modulus of the determinant.
 det(x)#the determinant.
 

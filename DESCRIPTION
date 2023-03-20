@@ -1,10 +1,10 @@
 Package: GPUmatrix
 Type: Package
 Title: Basic Linear algebra with GPU
-Version: 0.0.0.9000
+Version: 1.0
 Authors@R: 
-    c(person("Cesar Lobato", "Developer", role = c("aut", "cre"),
-                     email = "clobato@unav.es"),
+    c(person("Cesar Lobato-Fernandez", "Developer", role = c("aut", "cre"),
+                     email = "clobatofern@unav.es"),
               person("Juan A. Ferrer-Bonsoms", "Developer", role = "aut"),
               person("Angel Rubio", "User", role = c("aut","ctb"),
                      email = "arubio@tecnun.es"))
@@ -12,15 +12,15 @@ Description: I will put here a summary of the abastract of our paper.
 Depends:
   R (>= 4.2)
 Imports:
+  stats,
+  methods
+Suggests:
   tensorflow,
   torch,
   matrixStats,
   float,
-  stats,
   MASS,
   Matrix,
-  methods
-Suggests:
   knitr,
   rmarkdown
 License: Artistic-2.0

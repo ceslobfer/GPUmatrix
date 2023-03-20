@@ -27,7 +27,7 @@ the nth power of the input gpu.matrix. The returned matrix is also a gpu.matrix.
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(1:9,nrow=3,ncol=3,type="tensorflow")
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
 a \%^\% 5
 
 

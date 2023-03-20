@@ -84,7 +84,7 @@ For cholesky decomposition see \code{\link[base]{chol}} from base or
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(9),nrow=3,ncol=3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
 inv <- solve(a) #the inverse matrix
 a \%*\% inv
 
@@ -100,9 +100,9 @@ a \%*\% inv_2
 
 #chol_solve: it can be applies only if
 # in the equation Ax=b A is real symmetric positive-definite square matrix.
-a <- gpu.matrix(rnorm(9),3,3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),3,3)
 A <- tcrossprod(a) #A is symmetrix positive-definite
-b <- gpu.matrix(rnorm(3),type="tensorflow")
+b <- gpu.matrix(rnorm(3))
 
 x_solve <- solve(A,b) #using solve to compare results
 x_chol_solve <- chol_solve(chol(A),b) #using chol_solve

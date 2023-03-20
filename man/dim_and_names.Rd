@@ -122,7 +122,7 @@ For more information:
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(9),type="tensorflow")
+a <- gpu.matrix(rnorm(9))
 
 dim(a) <- c(3,3) #sets the number of rows and columns.
 dim(a) #shows the number of rows and the number of columns

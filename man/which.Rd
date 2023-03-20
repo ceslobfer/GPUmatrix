@@ -39,7 +39,7 @@ Can be also of interest:
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(1:9,3,3,type="tensorflow")
+a <- gpu.matrix(1:9,3,3)
 
 which(a==2) #index
 which(a==2,arr.ind = TRUE) #index with row and columns

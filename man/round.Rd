@@ -43,7 +43,7 @@ Mimic of the base function \code{round} that rounds the values in its first argu
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(9),3,3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),3,3)
 round(a,digits = 3) #round to the third digit
 
 

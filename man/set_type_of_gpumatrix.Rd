@@ -63,7 +63,7 @@ See also \code{\link[GPUmatrix]{gpu.matrix}}.
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(9),3,3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),3,3)
 
 dtype(a) #bits used to store the numbers: it is float64 by default.
 
@@ -76,7 +76,7 @@ dtype(b) <- "int" #change to integer64 (int64)
 b
 
 #sparse or dense matrices
-A <- gpu.matrix(data=c(1,1,1,0,0,1,0,1,0),3,3,type="tensorflow")
+A <- gpu.matrix(data=c(1,1,1,0,0,1,0,1,0),3,3)
 A #A is a dense gpu.matrix
 
 A_sparse <- to_sparse(A) #transform A to a sparse matrix.

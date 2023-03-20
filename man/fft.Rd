@@ -33,7 +33,7 @@ For more information see:
 \donttest{
 \dontrun{
 
-x <- gpu.matrix(1:4,type="tensorflow")
+x <- gpu.matrix(1:4)
 fft(x)
 
 

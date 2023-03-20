@@ -44,7 +44,7 @@ For more information see:
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(9),3,3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),3,3)
 
 diag(a) #shows the diagonal of matrix a
 

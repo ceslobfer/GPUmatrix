@@ -106,8 +106,8 @@ For more information:
 \examples{
 \donttest{
 \dontrun{
-a <- gpu.matrix(1:10,type="tensorflow")
-b <- gpu.matrix(11:20,type="tensorflow")
+a <- gpu.matrix(1:10)
+b <- gpu.matrix(11:20)
 cor(a,b)
 
 #example taken from stats corresponding help page:

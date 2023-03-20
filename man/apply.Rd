@@ -34,7 +34,7 @@ For more information see:
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(rnorm(9),3,3,type="tensorflow")
+a <- gpu.matrix(rnorm(9),3,3)
 
 apply(a, 1, mean) #computes the mean of each row
 apply(a, 2, mean) #computes the mean of each column
