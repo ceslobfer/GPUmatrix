@@ -4,7 +4,7 @@
 
 \description{
 
-It mimics the function \code{fft} of library \code{stats}. It computes the Discrete Fourier Transform (DFT) of an array with a fast algorithm, the “Fast Fourier Transform” (FFT).
+Computes the fft of the rows of a matrix. It is equivalent to the base R  \code{apply(A,1,fft)}.
 
 }
 
