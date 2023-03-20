@@ -1,5 +1,5 @@
 \name{which}
-\title{which indices are TRUE?}
+\title{Which indices are TRUE?}
 
 \description{
 
