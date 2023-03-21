@@ -1119,7 +1119,7 @@ made using the Intel MKL BLAS.
 
 ![Computation time for GPU and R-base CPU for different operations. Time
 is in seconds and Size=n where matrix is *(n x n)*
-dimension*.*](./images/Rplot.png)
+dimension*.*](../vignettes/images/Rplot.png)
 
 # 4. Toy example: Non negative factorization of a matrix
 
@@ -1257,7 +1257,7 @@ around two-fold faster).
 ![Computation time for GPUMatrix on CPU and MKL-R for different
 operations. Time is in seconds and Size=n where matrix is *(n x n)*
 dimension. There is a substantial speed performance in element-wise
-operations.](./images/GPUmatrix_CPU.png)
+operations.](../vignettes/images/GPUmatrix_CPU.png)
 
 ## 5.2 Using GPUMatrix with Tensorflow
 
