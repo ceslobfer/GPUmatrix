@@ -99,8 +99,14 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
     }
   }
 
-  if (is.null(device) & cuda_is_available()){
-    device <- "cuda"
+  if (is.null(device) | device == "cuda"){
+    if (cuda_is_available()){
+      device <- "cuda"
+    }else{
+      warning(message = "Not cuda available")
+      device<-"cpu"
+    }
+
   }else{
     device <- "cpu"
   }

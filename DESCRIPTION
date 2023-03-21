@@ -1,14 +1,11 @@
 Package: GPUmatrix
 Type: Package
-Title: Basic Linear algebra with GPU
+Title: Basic Linear Algebra with GPU
 Version: 0.1.0
-Authors@R: 
-    c(person("Cesar Lobato-Fernandez", "Developer", role = c("aut", "cre"),
-                     email = "clobatofern@unav.es"),
+Authors@R: c(person("Cesar Lobato-Fernandez", "Developer", role = c("aut", "cre"), email = "clobatofern@unav.es"),
               person("Juan A. Ferrer-Bonsoms", "Developer", role = "aut"),
-              person("Angel Rubio", "User", role = c("aut","ctb"),
-                     email = "arubio@tecnun.es"))
-Description: Motivation: GPU power is a great resource for computational biology specifically in statistics and linear algebra. Unfortunately, very few packages connect R with the GPU and none of them are transparent enough to perform the computations on the GPU without substantial changes to the code. Most of them lack proper maintenance: several of the previous attempts were removed from the corresponding repositories. It would be desirable to have an R package, properly maintained, that exploits the use of the GPU with minimal changes in the existing code. Results: We have developed the GPUMatrix package. GPUMatrix mimics the behavior of the Matrix package and extends R to use the GPU for computations. It is easy to learn and very few changes in the code are required to work on the GPU. GPUMatrix relies on either Tensorflow or Torch R packages to perform the GPU operations. Its vignette shows some toy ex-amples on non-negative factorization and other factorization used in bioinformatics.
+              person("Angel Rubio", "User", role = c("aut","ctb"), email = "arubio@tecnun.es"))
+Description: Motivation: GPU power is a great resource for computational biology specifically in statistics and linear algebra. Unfortunately, very few packages connect R with the GPU and none of them are transparent enough to perform the computations on the GPU without substantial changes to the code. Most of them lack proper maintenance: several of the previous attempts were removed from the corresponding repositories. It would be desirable to have an R package, properly maintained, that exploits the use of the GPU with minimal changes in the existing code. Results: We have developed the 'GPUMatrix' package. 'GPUMatrix' mimics the behavior of the Matrix package and extends R to use the GPU for computations. It is easy to learn and very few changes in the code are required to work on the GPU. 'GPUMatrix' relies on either 'Tensorflow' or 'Torch' R packages to perform the GPU operations. Its vignette shows some toy examples on non-negative factorization and other factorization used in 'bioinformatics'.
 Depends:
   R (>= 4.2)
 Imports:

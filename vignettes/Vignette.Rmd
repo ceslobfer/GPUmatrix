@@ -181,7 +181,7 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:------------:|:------------:|:------------:|:--------------:|:------------:|
+|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -540,7 +540,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:--------------:|:--------------------------------------:|:--------------:|
+|:-------------:|:-------------------------------------------:|:-------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
