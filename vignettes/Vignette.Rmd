@@ -1,19 +1,20 @@
 ---
 title: "Get started with GPUmatrix package"
-subtitle: "Seamlessly harness the power of GPU computing in R"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
-email: 
-  - clobatofern@unav.es
-  - jafhernandez@unav.es
-  - arubio@unav.es
 date: "February 2023"
 output:
   md_document: default
   pdf_document: default
+  variant: markdown_github
   html_document:
     df_print: paged
   word_document:
     reference_docx: "D:/GPUmatrix/vignettes/svm-rmarkdown-word.docx"
+subtitle: Seamlessly harness the power of GPU computing in R
+email:
+- clobatofern@unav.es
+- jafhernandez@unav.es
+- arubio@unav.es
 ---
 
 ------------------------------------------------------------------------
@@ -757,3 +758,4 @@ Schmidt D (2022). "float: 32-Bit Floats." R package version 0.3-0, <https://cran
 Falbel D, Luraschi J (2022). torch: Tensors and Neural Networks with 'GPU' Acceleration. R package version 0.9.0, <https://CRAN.R-project.org/package=torch>.
 
 Allaire J, Tang Y (2022). tensorflow: R Interface to 'TensorFlow'. R package version 2.11.0,  <https://CRAN.R-project.org/package=tensorflow>.
+
