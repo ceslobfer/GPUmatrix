@@ -17,10 +17,10 @@ Imports:
 Suggests:
   tensorflow,
   torch,
+  Matrix,
   matrixStats,
   float,
   MASS,
-  Matrix,
   knitr,
   rmarkdown
 License: Artistic-2.0

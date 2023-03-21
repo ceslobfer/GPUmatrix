@@ -5,6 +5,7 @@ importFrom("stats",rnorm)
 importFrom("methods", as, new, cbind2, rbind2)
 
 
+
 exportMethods("as.matrix",
               "as.gpu.matrix",
               "as.vector",
@@ -24,7 +25,6 @@ exportMethods("as.matrix",
               "rowMins",
               "rowRanks",
               "colRanks",
-              "rankMatrix",
               "sort",
               "xtfrm",
               "determinant",

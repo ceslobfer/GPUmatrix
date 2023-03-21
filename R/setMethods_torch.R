@@ -589,12 +589,13 @@ setMethod("qr", signature(x="gpu.matrix.torch"), function(x){
   return(res)
 })
 
-setMethod("rankMatrix", signature(x="gpu.matrix.torch"), function(x){
-
-  x <- warningSparseTensor_torch(x)
-  res <- Matrix::rankMatrix(x@gm$cpu())
-  return(res)
-})
+# setMethod("rankMatrix", signature(x="gpu.matrix.torch"), function(x){
+#
+#   x <- warningSparseTensor_torch(x)
+#
+#   res <- Matrix::rankMatrix(x@gm$cpu())
+#   return(res)
+# })
 
 #Se debe mejorar
 setMethod("eigen", signature(x="gpu.matrix.torch"), function(x){

@@ -74,10 +74,10 @@ install.packages("GPUmarix")
 ```
 
 Alternatively, it is possible to install the package from GitHub ot get the last version of the package.
+
 ```{r,eval=FALSE}
 devtools::install_github(" ceslobfer/GPUmatrix")
 ```
-
 
 # 1 Initialization GPUmatrix
 
@@ -181,7 +181,7 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
+|:------------:|:------------:|:------------:|:--------------:|:------------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -468,7 +468,6 @@ Similarly to arithmetic operators, mathematical operators follow the same operat
 knitr::kable(NULL,caption = "Table 2. Mathematical operators that accept a gpu.matrix as input")
 ```
 
-
 | Mathematical operators |     Usage     |
 |:----------------------:|:-------------:|
 |         `log`          |   `log(Gm)`   |
@@ -540,9 +539,8 @@ There is a wide variety of functions implemented in GPUmatrix, and they are adap
 knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.matrix matrices as input")
 ```
 
-
 |   Functions   |                    Usage                    |    Package    |
-|:-------------:|:-------------------------------------------:|:-------------:|
+|:--------------:|:--------------------------------------:|:--------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -576,7 +574,6 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 |   `diag<-`    |             `diag(Gm) <- c(…)`              |    `base`     |
 |    `solve`    |               `solve(Gm, …)`                |    `base`     |
 |     `qr`      |                  `qr(Gm)`                   |    `base`     |
-| `rankMatrix`  |              `rankMatrix(Gm)`               |   `Matrix`    |
 |    `eigen`    |                 `eigen(Gm)`                 |    `base`     |
 |     `svd`     |                  `svd(Gm)`                  |    `base`     |
 |    `ginv`     | `ginv(Gm, tol = sqrt(.Machine$double.eps))` |    `MASS`     |

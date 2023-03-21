@@ -538,12 +538,12 @@ setMethod("qr", signature(x="gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
-setGeneric("rankMatrix", function(x) standardGeneric("rankMatrix"))
-setMethod("rankMatrix", signature(x="gpu.matrix.tensorflow"), function(x){
-  x <- warningSparseTensor(x)
-  res <- Matrix::rankMatrix(x@gm)
-  return(res)
-})
+# setGeneric("rankMatrix", function(x) standardGeneric("rankMatrix"))
+# setMethod("rankMatrix", signature(x="gpu.matrix.tensorflow"), function(x){
+#   x <- warningSparseTensor(x)
+#   res <- Matrix::rankMatrix(x@gm)
+#   return(res)
+# })
 
 #Se debe mejorar
 setMethod("eigen", signature(x="gpu.matrix.tensorflow"), function(x){
