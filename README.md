@@ -1,3 +1,9 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 ------------------------------------------------------------------------
 
 ## Abstract
@@ -24,7 +30,7 @@ Before starting, please be advised that this R package is designed to
 have the lowest learning curve for the R user to perform algebraic
 operations using the GPU. Therefore, this tutorial will mostly cover
 procedures that will go beyond the operations that the user can already
-perform with R’s CPU matrices.
+perform with R's CPU matrices.
 
 # 0 Installation
 
@@ -222,7 +228,7 @@ different matrix types from multiple packages to GPU matrix type have
 been implemented:
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -607,7 +613,7 @@ There is a wide variety of functions implemented in GPUmatrix, and they
 are adapted to be used just like regular R matrices.
 
 |   Functions   |                    Usage                    |    Package    |
-|:----------------:|:----------------------------------:|:----------------:|
+|:-------------:|:-------------------------------------------:|:-------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -688,7 +694,7 @@ made using the Intel MKL BLAS.
 
 ![Computation time for GPU and R-base CPU for different operations. Time
 is in seconds and Size=n where matrix is *(n x n)*
-dimension*.*](./images/Rplot.png)
+dimension*.*](./vignettes/images/Rplot.png)
 
 # 4. Toy example: Non negative factorization of a matrix
 
@@ -700,12 +706,9 @@ The rules are
 
 $$
 \mathbf{W}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{W}\_{\[i, j\]}^n \frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}{\left(\mathbf{W}^n \mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}
-$$
-and
-$$
+$$ and $$
 \mathbf{H}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{H}\_{\[i, j\]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)\_{\[i, j\]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)\_{\[i, j\]}}
-$$
-to update the **W** and **H** respectively.
+$$ to update the **W** and **H** respectively.
 
 It is straightforward to build two functions for these rules. The
 corresponding R code is:
@@ -780,7 +783,7 @@ with the CPU. As a package, as its name suggests, oriented towards
 algebraic operations in R using the GPU, it will by default be hosted on
 the GPU, but it allows the same functionalities using the CPU. To do
 this, we use the `device` attribute of the constructor and assign it the
-value ***“cpu”***.
+value ***"cpu"***.
 
 ``` r
 #GPUmatrix initialization with CPU option
@@ -834,7 +837,7 @@ around two-fold faster).
 ![Computation time for GPUMatrix on CPU and MKL-R for different
 operations. Time is in seconds and Size=n where matrix is *(n x n)*
 dimension. There is a substantial speed performance in element-wise
-operations.](./images/GPUmatrix_CPU.png)
+operations.](./vignettes/images/GPUmatrix_CPU.png)
 
 ## 5.2 Using GPUMatrix with Tensorflow
 
@@ -845,7 +848,7 @@ it provides an advantage in terms of installation and usage compared to
 TensorFlow. Additionally, it allows the use of GPUmatrix not only with
 GPU tensors but also with CPU tensors. To use GPUmatrix with TensorFlow,
 simply use the `type` attribute in the constructor function and assign
-it the value **“tensorflow”** as shown in the following example:
+it the value **"tensorflow"** as shown in the following example:
 
 ``` r
 # library(GPUmatrix)
@@ -872,13 +875,13 @@ Bates D, Maechler M, Jagan M (2022). Matrix: Sparse and Dense Matrix
 Classes and Methods. R package version 1.5-3,
 <https://CRAN.R-project.org/package=Matrix>.
 
-Schmidt D (2022). “float: 32-Bit Floats.” R package version 0.3-0,
+Schmidt D (2022). "float: 32-Bit Floats." R package version 0.3-0,
 <https://cran.r-project.org/package=float>.
 
 Falbel D, Luraschi J (2022). torch: Tensors and Neural Networks with
-‘GPU’ Acceleration. R package version 0.9.0,
+'GPU' Acceleration. R package version 0.9.0,
 <https://CRAN.R-project.org/package=torch>.
 
-Allaire J, Tang Y (2022). tensorflow: R Interface to ‘TensorFlow’. R
+Allaire J, Tang Y (2022). tensorflow: R Interface to 'TensorFlow'. R
 package version 2.11.0, 
 <https://CRAN.R-project.org/package=tensorflow>.
