@@ -700,9 +700,8 @@ $\mathbf{W}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{W}\_{\[i, j\]}^n \frac{\left(\m
 
 and 
 
-$$
-\mathbf{H}_{[i, j]}^{n+1} \leftarrow \mathbf{H}_{[i, j]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)_{[i, j]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)_{[i, j]}}
-$$ 
+$\mathbf{H}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{H}\_{\[i, j\]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)\_{\[i, j\]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)\_{\[i, j\]}}$
+
 to update the $\mathbf{W}$ and $\mathbf{H}$ respectively.
 
 It is straightforward to build two functions for these rules. The
