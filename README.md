@@ -1,11 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
-------------------------------------------------------------------------
-
 ## Abstract
 
 **Motivation:** GPU computational power is a great resource for
@@ -706,9 +698,12 @@ The rules are
 
 $$
 \mathbf{W}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{W}\_{\[i, j\]}^n \frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}{\left(\mathbf{W}^n \mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}
-$$ and $$
+$$ 
+and 
+$$
 \mathbf{H}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{H}\_{\[i, j\]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)\_{\[i, j\]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)\_{\[i, j\]}}
-$$ to update the **W** and **H** respectively.
+$$ 
+to update the **W** and **H** respectively.
 
 It is straightforward to build two functions for these rules. The
 corresponding R code is:
