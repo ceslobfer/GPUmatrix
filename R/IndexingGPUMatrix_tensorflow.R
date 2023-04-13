@@ -11,9 +11,9 @@ select_rows <- function(A,row_to_show){
 
   }else{
     row_to_show <- row_to_show - 1
-    gm <- tf$gather_nd(A@gm, indices = lapply(as.integer(row_to_show),function(x){list(x)}))
+    gm <- tensorflow::tf$gather_nd(A@gm, indices = lapply(as.integer(row_to_show),function(x){list(x)}))
   }
-  # gm <- tf$gather_nd(A@gm, indices = lapply(as.integer(row_to_show),function(x){list(x)}))
+  # gm <- tensorflow::tf$gather_nd(A@gm, indices = lapply(as.integer(row_to_show),function(x){list(x)}))
   # res <- gpu.matrix.tensorflow(gm , rownames = A@rownames[row_to_show], colnames = A@colnames)
 
   A@gm <- gm
@@ -39,7 +39,7 @@ select_cols <- function(A,col_to_show){
   }else{
     col_to_show <- col_to_show - 1
     A <- t(A)
-    gm <- tf$gather_nd(A@gm, indices = lapply(as.integer(col_to_show),function(x){list(x)}))
+    gm <- tensorflow::tf$gather_nd(A@gm, indices = lapply(as.integer(col_to_show),function(x){list(x)}))
     # res <- gpu.matrix.tensorflow(gm, rownames = A@rownames[col_to_show], colnames = A@colnames)
     A@gm <- gm
     A <- t(A)
@@ -126,17 +126,17 @@ assignValuesSparse <- function(x, i, j, value){
   resValues <- as.vector(x@gm$values)
   resValues[newValuesIndex] <- replaceValues
   resValues <- c(resValues,value[!as.logical(matchIndex)] )
-  newValues <- as_tensor(resValues,dtype = x@gm$values$dtype)
+  newValues <- tensorflow::as_tensor(resValues,dtype = x@gm$values$dtype)
 
   catIndex <- index[!as.logical(matchIndex),]
   if (length(catIndex) <= 2 ){
     catIndex <- list(catIndex)
   }
-  newIndices <- tf$concat(c(indices,as_tensor(catIndex,dtype = indices$dtype)),0L)
-  res <- tf$SparseTensor(indices = newIndices,
+  newIndices <- tensorflow::tf$concat(c(indices,tensorflow::as_tensor(catIndex,dtype = indices$dtype)),0L)
+  res <- tensorflow::tf$SparseTensor(indices = newIndices,
                          values = newValues,
                          dense_shape = c(nrow(x),ncol(x)))
-  res <- tf$sparse$reorder(res)
+  res <- tensorflow::tf$sparse$reorder(res)
   return(res)
 }
 setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "matrix", j = "missing"),
@@ -147,7 +147,7 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "matrix", j = "missing
               res <- gpu.matrix.tensorflow(mIndex, dimnames = dimnames(mIndex))
             }else {
               if((na <- nargs()) == 2){
-                # res <- gpu.matrix.tensorflow(suppressWarnings(tf$reshape(tf$transpose(x@gm), as_tensor(c(length(x),1L),shape = c(2L),dtype = tf$int32))[i]))
+                # res <- gpu.matrix.tensorflow(suppressWarnings(tensorflow::tf$reshape(tensorflow::tf$transpose(x@gm), tensorflow::as_tensor(c(length(x),1L),shape = c(2L),dtype = tensorflow::tf$int32))[i]))
                 res <- x[i]
                 return(res)
               }
@@ -189,7 +189,7 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "missing"
                     res <- vecSearch[i]
                   }else{
                     index <- do.call(cbind,select_rawIndex(x,i))
-                    res <- as.vector(tf$gather_nd(x@gm, indices = index))
+                    res <- as.vector(tensorflow::tf$gather_nd(x@gm, indices = index))
                   }
 
                 }
@@ -202,7 +202,7 @@ setMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "missing"
 setMethod("[[", signature(x = "gpu.matrix.tensorflow", i = "index"),
           function(x,i,...){
             index <- do.call(cbind,select_rawIndex(x,i))
-            res <- as.vector(tf$gather_nd(x@gm, indices = index))
+            res <- as.vector(tensorflow::tf$gather_nd(x@gm, indices = index))
 
             return(res)
           })
@@ -261,16 +261,16 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "m
                        resValues <- as.vector(x@gm$values)
                        resValues[newValuesIndex] <- replaceValues
                        resValues <- c(resValues,value[!as.logical(matchIndex)] )
-                       newValues <- as_tensor(resValues,dtype = x@gm$values$dtype)
+                       newValues <- tensorflow::as_tensor(resValues,dtype = x@gm$values$dtype)
                        catIndex <- index[!as.logical(matchIndex),]
                        if (length(catIndex) <= 2 ){
                          catIndex <- list(catIndex)
                        }
-                       newIndices <- tf$concat(c(indices,as_tensor(catIndex,dtype = indices$dtype)),0L)
-                       res <- tf$SparseTensor(indices = newIndices,
+                       newIndices <- tensorflow::tf$concat(c(indices,tensorflow::as_tensor(catIndex,dtype = indices$dtype)),0L)
+                       res <- tensorflow::tf$SparseTensor(indices = newIndices,
                                               values = newValues,
                                               dense_shape = c(nrow(x),ncol(x)))
-                       x@gm <- tf$sparse$reorder(res)
+                       x@gm <- tensorflow::tf$sparse$reorder(res)
                        res <- x
                      }else if(na == 4){
                        x@gm <- assignValuesSparse(x, i, j=c(1:ncol(x)), value)
@@ -283,7 +283,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "m
                        if (length(i) == 1) value <- list(value)
 
                        index <- do.call(cbind,select_rawIndex(x,i))
-                       res <- tf$tensor_scatter_nd_update(
+                       res <- tensorflow::tf$tensor_scatter_nd_update(
                          x@gm,
                          indices = index,
                          updates = value
@@ -293,7 +293,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "m
                        if (typeof(i) == "character") i <- match(i, x@rownames)
                        i <- i - 1
                        indices = lapply(as.integer(i),function(y){list(y)})
-                       res <- tf$tensor_scatter_nd_update(
+                       res <- tensorflow::tf$tensor_scatter_nd_update(
                          x@gm,
                          indices = indices,
                          updates = matrix(value, ncol = ncol(x))
@@ -332,7 +332,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "missing", j = 
                      j <- j - 1
                      indices = lapply(as.integer(j),function(y){list(y)})
                      x <- t(x)
-                     res <- tf$tensor_scatter_nd_update(
+                     res <- tensorflow::tf$tensor_scatter_nd_update(
                        x@gm,
                        indices = indices,
                        updates = matrix(value, ncol = ncol(x))
@@ -365,9 +365,9 @@ setReplaceMethod("[", signature(x = "gpu.matrix.tensorflow", i = "index", j = "i
                        index <- as.matrix(expand.grid(i,j))
                      }
                      if (length(i) == 1) value <- list(value)
-                     res <- tf$tensor_scatter_nd_update(
+                     res <- tensorflow::tf$tensor_scatter_nd_update(
                        x@gm,
-                       indices = as_tensor(index),
+                       indices = tensorflow::as_tensor(index),
                        updates = value
                      )
 
@@ -385,7 +385,7 @@ setReplaceMethod("[[", signature(x = "gpu.matrix.tensorflow", i = "index",
                    if (length(i) == 1) value <- list(value)
 
                    index <- do.call(cbind,select_rawIndex(x,i))
-                   res <- tf$tensor_scatter_nd_update(
+                   res <- tensorflow::tf$tensor_scatter_nd_update(
                      x@gm,
                      indices = index,
                      updates = value

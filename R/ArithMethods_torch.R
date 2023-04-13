@@ -16,48 +16,48 @@ is_dtype_greater <- function(dtype1, dtype2) {
   }
 }
 castTypeOperations_torch <- function(m1, m2, operator=FALSE, todense=TRUE, sameType = FALSE){
-
-  m1Class <- class(m1)[1]
-  m2Class <- class(m2)[1]
-  defaultType = torch_float64()
-  if (m1Class=="float32") {
-    m1 <- gpu.matrix.torch(data = m1, dtype = "float32", dimnames = dimnames(m1), device=device(m2))
+  if(requireNamespace('torch')){
     m1Class <- class(m1)[1]
-  }else if (m2Class=="float32"){
-    m2 <- gpu.matrix.torch(data = m2, dtype = "float32", dimnames = dimnames(m2), device=device(m1))
     m2Class <- class(m2)[1]
-  }
+    defaultType = torch::torch_float64()
+    if (m1Class=="float32") {
+      m1 <- gpu.matrix.torch(data = m1, dtype = "float32", dimnames = dimnames(m1), device=device(m2))
+      m1Class <- class(m1)[1]
+    }else if (m2Class=="float32"){
+      m2 <- gpu.matrix.torch(data = m2, dtype = "float32", dimnames = dimnames(m2), device=device(m1))
+      m2Class <- class(m2)[1]
+    }
 
-  if (operator & (m1Class=="integer" | m1Class=="numeric")) {
-    m1 <- gpu.matrix.torch(data = m1, nrow = nrow(m2), ncol = ncol(m2), dimnames = dimnames(m1), dtype = m2@gm$dtype, device=device(m2) )
-    m1Class <- class(m1)[1]
-  }else if (operator & (m2Class=="integer" | m2Class=="numeric")){
-    m2 <- gpu.matrix.torch(data = m2, nrow = nrow(m1), ncol = ncol(m1), dimnames = dimnames(m2),dtype = m1@gm$dtype, device=device(m1))
-    m2Class <- class(m2)[1]
-  }
+    if (operator & (m1Class=="integer" | m1Class=="numeric")) {
+      m1 <- gpu.matrix.torch(data = m1, nrow = nrow(m2), ncol = ncol(m2), dimnames = dimnames(m1), dtype = m2@gm$dtype, device=device(m2) )
+      m1Class <- class(m1)[1]
+    }else if (operator & (m2Class=="integer" | m2Class=="numeric")){
+      m2 <- gpu.matrix.torch(data = m2, nrow = nrow(m1), ncol = ncol(m1), dimnames = dimnames(m2),dtype = m1@gm$dtype, device=device(m1))
+      m2Class <- class(m2)[1]
+    }
 
 
-  if (m1Class[1]!="gpu.matrix.torch") {
-    m1 <- gpu.matrix.torch(data = m1, dimnames = dimnames(m1), device=device(m2))
-  }
-  if (m2Class[1]!="gpu.matrix.torch") {
-    m2 <- gpu.matrix.torch(data = m2, dimnames = dimnames(m2), device=device(m1))
-  }
+    if (m1Class[1]!="gpu.matrix.torch") {
+      m1 <- gpu.matrix.torch(data = m1, dimnames = dimnames(m1), device=device(m2))
+    }
+    if (m2Class[1]!="gpu.matrix.torch") {
+      m2 <- gpu.matrix.torch(data = m2, dimnames = dimnames(m2), device=device(m1))
+    }
 
-  if (sameType) {
-    if (is_dtype_greater(dtype(m1),dtype(m2))) {
-      dtype(m1) <- dtype(m2)
-    }else{
-      dtype(m2) <- dtype(m1)
+    if (sameType) {
+      if (is_dtype_greater(dtype(m1),dtype(m2))) {
+        dtype(m1) <- dtype(m2)
+      }else{
+        dtype(m2) <- dtype(m1)
+      }
+    }
+
+
+    if (todense) {
+      m1 <- warningSparseTensor_torch(m1)
+      m2 <- warningSparseTensor_torch(m2)
     }
   }
-
-
-  if (todense) {
-    m1 <- warningSparseTensor_torch(m1)
-    m2 <- warningSparseTensor_torch(m2)
-  }
-
   return(list(m1,m2))
 }
 
@@ -136,8 +136,10 @@ MatprodGPUmat_torch <- function(x,y){
 
     y <- warningSparseTensor_torch(y)
 
+    if(requireNamespace('torch')){
+      x@gm <- torch::torch_matmul(self=x@gm,other=y@gm)
+    }
 
-    x@gm <- torch_matmul(self=x@gm,other=y@gm)
     x@sparse <- F
     colnames(x) <- colnames(y)
     return(x)
@@ -148,7 +150,9 @@ MatprodGPUmat_torch <- function(x,y){
 
 setMethod("-", signature(e1 = "gpu.matrix.torch", e2 = "missing"), function(e1, e2){
   if(e1@sparse){
-    e1@gm <- torch_sparse_coo_tensor(indices = e1@gm$indices(), values = -e1@gm$values(), size = dim(e1))
+    if(requireNamespace('torch')){
+      e1@gm <- torch::torch_sparse_coo_tensor(indices = e1@gm$indices(), values = -e1@gm$values(), size = dim(e1))
+    }
   }else{
     e1@gm <- -e1@gm
   }
@@ -169,7 +173,9 @@ setMethod("Arith",
           {
             op = .Generic[[1]]
             if (length(e2)==1 & !e1@sparse){
-              e2 <- torch_tensor(e2,dtype = e1@gm$dtype,device = device(e1))
+              if(requireNamespace('torch')){
+                e2 <- torch::torch_tensor(e2,dtype = e1@gm$dtype,device = device(e1))
+              }
               switch(op,
                      '+' = {
                        e1@gm <- e1@gm + e2
@@ -268,7 +274,7 @@ setMethod("Arith",
           {
             op = .Generic[[1]]
             if (length(e1)==1 & !e2@sparse){
-              e1 <- torch_tensor(e1,dtype = e2@gm$dtype,device = device(e2))
+              e1 <- torch::torch_tensor(e1,dtype = e2@gm$dtype,device = device(e2))
               switch(op,
                      '+' = {
                        e2@gm <- e2@gm + e1

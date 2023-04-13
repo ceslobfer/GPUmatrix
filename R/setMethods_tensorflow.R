@@ -2,7 +2,7 @@
 
 to_dense_tensorflow<-function(x){
   if(x@sparse){
-    x@gm <-tf$sparse$to_dense(x@gm)
+    x@gm <-tensorflow::tf$sparse$to_dense(x@gm)
     x@sparse <- F
   }
   return(x)
@@ -10,7 +10,7 @@ to_dense_tensorflow<-function(x){
 
 to_sparse_tensorflow<-function(x){
   if(!x@sparse){
-    x@gm <- tf$sparse$from_dense(x@gm)
+    x@gm <- tensorflow::tf$sparse$from_dense(x@gm)
     x@sparse <- T
   }
   return(x)
@@ -27,7 +27,7 @@ setGeneric("to_sparse", function(x) standardGeneric("to_sparse"))
 setMethod("to_sparse", signature(x = "gpu.matrix.tensorflow"), function(x) to_sparse_tensorflow(x) )
 
 logdetTensor <- function(x){
-  value <- tf$linalg$slogdet(x@gm)
+  value <- tensorflow::tf$linalg$slogdet(x@gm)
   logAbDet <- as.numeric(value$log_abs_determinant)
   attr(logAbDet, which = "logarithm") <- TRUE
   sign<-as.numeric(value$sign)
@@ -58,7 +58,7 @@ setMethod("determinant", signature(x = "gpu.matrix.tensorflow", logarithm = "log
   if (logarithm) {
     res <- logdetTensor(x)
   }else{
-    value <- tf$linalg$det(x@gm)
+    value <- tensorflow::tf$linalg$det(x@gm)
     logAbDet <- as.numeric(value)
     attr(logAbDet, which = "logarithm") <- FALSE
     sign<-sign(as.numeric(logAbDet))
@@ -76,7 +76,7 @@ setMethod("det", signature(x = "gpu.matrix.tensorflow"), function(x, ...){
 
 setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
   z <- warningSparseTensor(z)
-  res <- gpu.matrix.tensorflow(tf$signal$fft(tf$cast(z@gm,tf$complex128)),dtype=tf$complex128)
+  res <- gpu.matrix.tensorflow(tensorflow::tf$signal$fft(tensorflow::tf$cast(z@gm,tensorflow::tf$complex128)),dtype=tensorflow::tf$complex128)
   return(res)
 })
 
@@ -88,7 +88,7 @@ setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "missing"), 
   if (x@sparse) {
     res <- as.vector(sort(x@gm$values))
   }else{
-    res <- as.vector(tf$sort(tf$reshape(x@gm,length(x))))
+    res <- as.vector(tensorflow::tf$sort(tensorflow::tf$reshape(x@gm,length(x))))
   }
   return(res)
 })
@@ -100,9 +100,9 @@ setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "logical"), 
     decreasing="ASCENDING"
     }
   if (x@sparse) {
-    res <- as.vector(tf$sort(x@gm$values, direction = decreasing))
+    res <- as.vector(tensorflow::tf$sort(x@gm$values, direction = decreasing))
   }else{
-    res <- as.vector(tf$sort(tf$reshape(x@gm,length(x)),direction=decreasing))
+    res <- as.vector(tensorflow::tf$sort(tensorflow::tf$reshape(x@gm,length(x)),direction=decreasing))
   }
   return(res)
 })
@@ -110,24 +110,24 @@ setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "logical"), 
 setMethod("round", signature(x= "gpu.matrix.tensorflow",digits="missing"), function(x,digits){
   x<-warningInteger(x)
   if (x@sparse) {
-    x@gm <- tf$SparseTensor(indices = x@gm$indices,
-                            values = tf$round(x@gm$values),
+    x@gm <- tensorflow::tf$SparseTensor(indices = x@gm$indices,
+                            values = tensorflow::tf$round(x@gm$values),
                             dense_shape = x@gm$shape)
   }else{
-    x@gm <- tf$round(x@gm)
+    x@gm <- tensorflow::tf$round(x@gm)
   }
   return(x)
 })
 
 my_tf_round<- function(x, decimals = 0){
-  multiplier = tf$constant(10**decimals, dtype=x$dtype)
-  return(tf$round(x * multiplier) / multiplier)
+  multiplier = tensorflow::tf$constant(10**decimals, dtype=x$dtype)
+  return(tensorflow::tf$round(x * multiplier) / multiplier)
 }
 
 setMethod("round", signature(x= "gpu.matrix.tensorflow",digits="numeric"), function(x,digits){
   x<-warningInteger(x)
   if (x@sparse) {
-    x@gm <- tf$SparseTensor(indices = x@gm$indices,
+    x@gm <- tensorflow::tf$SparseTensor(indices = x@gm$indices,
                             values = my_tf_round(x@gm$values, digits),
                             dense_shape = x@gm$shape)
   }else{
@@ -154,9 +154,9 @@ setMethod("dim", signature(x = "gpu.matrix.tensorflow"), function(x){dim(x@gm)})
 setMethod("dim<-", signature(x = "gpu.matrix.tensorflow",value="vector"), function(x,value){
   x <- t(x)
   if (x@sparse) {
-    x@gm <- tf$sparse$reshape(x@gm,as.integer(rev(value)))
+    x@gm <- tensorflow::tf$sparse$reshape(x@gm,as.integer(rev(value)))
   }else{
-    x@gm <- tf$reshape(x@gm,as.integer(rev(value)))
+    x@gm <- tensorflow::tf$reshape(x@gm,as.integer(rev(value)))
   }
   return(t(x))
 })
@@ -219,11 +219,11 @@ setMethod("colnames<-", signature(x = "gpu.matrix.tensorflow", value="vector"), 
 
 setMethod("rowSums", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  return(as.vector(tf$math$reduce_sum(x@gm, 1L)))
+  return(as.vector(tensorflow::tf$math$reduce_sum(x@gm, 1L)))
 })
 setMethod("colSums", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  return(as.vector(tf$math$reduce_sum(x@gm, 0L)))
+  return(as.vector(tensorflow::tf$math$reduce_sum(x@gm, 0L)))
 })
 
 
@@ -235,7 +235,7 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
   y <- castMatrix[[2]]
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 1L))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 1L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -267,7 +267,7 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
 
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 1L))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 1L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -297,7 +297,7 @@ setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(
   y <- castMatrix[[2]]
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 0L))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 0L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -324,7 +324,7 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   y <- castMatrix[[2]]
 
   if (x@sparse & y@sparse) {
-    res <- gpu.matrix.tensorflow(tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 0L))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$sparse$concat(sp_inputs = list(x@gm,y@gm), axis = 0L))
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
@@ -367,9 +367,9 @@ setMethod("ncol", signature(x = "gpu.matrix.tensorflow"), function(x){
 
 setMethod("t", signature(x = "gpu.matrix.tensorflow"), function(x){
   if (x@sparse) {
-    res <- gpu.matrix.tensorflow(data = tf$sparse$transpose(x@gm),rownames = colnames(x),colnames = rownames(x), dtype=dtype(x))
+    res <- gpu.matrix.tensorflow(data = tensorflow::tf$sparse$transpose(x@gm),rownames = colnames(x),colnames = rownames(x), dtype=dtype(x))
   }else{
-    res <- gpu.matrix.tensorflow(tf$transpose(x@gm),rownames = colnames(x),colnames = rownames(x), dtype=dtype(x))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$transpose(x@gm),rownames = colnames(x),colnames = rownames(x), dtype=dtype(x))
   }
   return(res)
 })
@@ -419,7 +419,7 @@ setMethod("tcrossprod", signature(x = "gpu.matrix.tensorflow", y = "missing"), f
 #   X <- castMatrix[[1]]
 #   Y <- castMatrix[[2]]
 #
-#   return(as.array(tf$tensordot(X@gm, Y@gm, axes=0L)))
+#   return(as.array(tensorflow::tf$tensordot(X@gm, Y@gm, axes=0L)))
 #
 # } )
 # setMethod("outer", signature(X = "ANY", Y = "gpu.matrix.tensorflow"), function(X,Y, ...){
@@ -428,7 +428,7 @@ setMethod("tcrossprod", signature(x = "gpu.matrix.tensorflow", y = "missing"), f
 #   X <- castMatrix[[1]]
 #   Y <- castMatrix[[2]]
 #
-#   return(as.array(tf$tensordot(X@gm, Y@gm, axes=0L)))
+#   return(as.array(tensorflow::tf$tensordot(X@gm, Y@gm, axes=0L)))
 #
 # } )
 #
@@ -449,7 +449,7 @@ tf_kron <- function(X,Y){
 
   a_shape = c(as.integer(a$shape[1]),as.integer(a$shape[2]))
   b_shape = c(as.integer(b$shape[1]),as.integer(b$shape[2]))
-  res <- tf$reshape(tf$reshape(a,c(a_shape[1],1L,a_shape[2],1L))*tf$reshape(b,c(1L,b_shape[1],1L,b_shape[2])),c(a_shape[1]*b_shape[1],a_shape[2]*b_shape[2]))
+  res <- tensorflow::tf$reshape(tensorflow::tf$reshape(a,c(a_shape[1],1L,a_shape[2],1L))*tensorflow::tf$reshape(b,c(1L,b_shape[1],1L,b_shape[2])),c(a_shape[1]*b_shape[1],a_shape[2]*b_shape[2]))
   return(gpu.matrix.tensorflow(res))
 }
 setMethod("%x%", signature(X = "gpu.matrix.tensorflow", Y = "ANY"), function(X,Y){
@@ -473,14 +473,14 @@ setMethod("%^%", signature(x = "gpu.matrix.tensorflow", k = "numeric"), function
 setGeneric("expmGPU", function(x) standardGeneric("expmGPU"))
 setMethod("expmGPU", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  x@gm <- tf$linalg$expm(x@gm)
+  x@gm <- tensorflow::tf$linalg$expm(x@gm)
   message("The exponential is computed using a combination of the scaling and squaring method and the Pade approximation.SIAM J. Matrix Anal. Applic., 26:1179-1193, 2005")
   return(x)
 })
 
 setMethod("diag", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.vector(tf$linalg$diag_part(x@gm))
+  res <- as.vector(tensorflow::tf$linalg$diag_part(x@gm))
 
   return(res)
 })
@@ -488,12 +488,12 @@ setMethod("diag<-", signature(x = "gpu.matrix.tensorflow", value = "numeric"), f
   x<-warningInteger(x)
   if (x@sparse) {
     x <- warningSparseTensor(x)
-    x@gm <- tf$linalg$set_diag(x@gm, value)
-    x@gm <- tf$sparse$from_dense(x@gm)
+    x@gm <- tensorflow::tf$linalg$set_diag(x@gm, value)
+    x@gm <- tensorflow::tf$sparse$from_dense(x@gm)
     x@sparse <- T
   }else{
     x <- warningSparseTensor(x)
-    x@gm <- tf$linalg$set_diag(x@gm, value)
+    x@gm <- tensorflow::tf$linalg$set_diag(x@gm, value)
   }
 
   return(x)
@@ -502,7 +502,7 @@ setMethod("diag<-", signature(x = "gpu.matrix.tensorflow", value = "numeric"), f
 setMethod("solve", signature(a = "gpu.matrix.tensorflow", b = "missing"), function(a){
   a <- warningSparseTensor(a)
   a <- warningInteger(a)
-  res <- gpu.matrix.tensorflow(tf$linalg$inv(a@gm), dimnames = list(colnames(a),rownames(a)))
+  res <- gpu.matrix.tensorflow(tensorflow::tf$linalg$inv(a@gm), dimnames = list(colnames(a),rownames(a)))
 
   return(res)
 })
@@ -513,7 +513,7 @@ setMethod("solve", signature(a = "gpu.matrix.tensorflow", b = "ANY"), function(a
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
 
-  res <- gpu.matrix.tensorflow(tf$linalg$solve(a@gm, b@gm))
+  res <- gpu.matrix.tensorflow(tensorflow::tf$linalg$solve(a@gm, b@gm))
 
   return(res)
 })
@@ -524,7 +524,7 @@ setMethod("solve", signature(a = "ANY", b = "gpu.matrix.tensorflow"), function(a
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
 
-  res <- gpu.matrix.tensorflow(tf$linalg$solve(a@gm, b@gm))
+  res <- gpu.matrix.tensorflow(tensorflow::tf$linalg$solve(a@gm, b@gm))
 
   return(res)
 })
@@ -557,7 +557,7 @@ setMethod("eigen", signature(x="gpu.matrix.tensorflow"), function(x){
 setMethod("svd", signature(x="gpu.matrix.tensorflow"), function(x){
 
   x <- warningSparseTensor(x)
-  res <- tf$linalg$svd(x@gm)
+  res <- tensorflow::tf$linalg$svd(x@gm)
   res <- list("d"=gpu.matrix.tensorflow(res[[1]]), "u"=gpu.matrix.tensorflow(res[[2]]), "v"=gpu.matrix.tensorflow(res[[3]]))
 
   return(res)
@@ -566,7 +566,7 @@ setGeneric("ginv", function(X,tol) standardGeneric("ginv"))
 setMethod("ginv", signature(X="gpu.matrix.tensorflow", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
 {
   X <- warningSparseTensor(X)
-  X@gm <- tf$linalg$pinv(X@gm)
+  X@gm <- tensorflow::tf$linalg$pinv(X@gm)
   return(X)
 
 })
@@ -574,7 +574,7 @@ setMethod("ginv", signature(X="gpu.matrix.tensorflow", tol="ANY"), function (X, 
 setMethod("chol", signature(x="gpu.matrix.tensorflow"), function(x){
 
   x <- warningSparseTensor(x)
-  res <- gpu.matrix.tensorflow(tf$linalg$cholesky(x@gm))
+  res <- gpu.matrix.tensorflow(tensorflow::tf$linalg$cholesky(x@gm))
 
   return(res)
 })
@@ -586,7 +586,7 @@ setMethod("chol_solve", signature(x="gpu.matrix.tensorflow", y="ANY"), function(
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
-  res <- gpu.matrix.tensorflow(tf$linalg$cholesky_solve(x@gm,y@gm))
+  res <- gpu.matrix.tensorflow(tensorflow::tf$linalg$cholesky_solve(x@gm,y@gm))
   return(res)
 })
 
@@ -596,16 +596,16 @@ setMethod("chol_solve", signature(x="ANY", y="gpu.matrix.tensorflow"), function(
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
-  res <- gpu.matrix.tensorflow(tf$linalg$cholesky_solve(x@gm,y@gm))
+  res <- gpu.matrix.tensorflow(tensorflow::tf$linalg$cholesky_solve(x@gm,y@gm))
   return(res)
 })
 
 setMethod("mean", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningInteger(x)
   if (x@sparse) {
-    res <- as.numeric(tf$sparse$reduce_sum(x@gm)/length(x))
+    res <- as.numeric(tensorflow::tf$sparse$reduce_sum(x@gm)/length(x))
   }else{
-    res <- as.numeric(tf$reduce_mean(x@gm))
+    res <- as.numeric(tensorflow::tf$reduce_mean(x@gm))
   }
 
   return(res)
@@ -620,11 +620,11 @@ setMethod("hist", signature(x = "gpu.matrix.tensorflow"), function(x,...){
 setMethod("colMeans", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningInteger(x)
   if(x@sparse){
-    reduced_sum = tf$sparse$reduce_sum(x@gm, 0L)  # Sum of each row
-    reduced_mean = reduced_sum / tf$cast(x@gm$dense_shape[2], castDtype_tensorflow(dtype(x)))  # Mean of each row
+    reduced_sum = tensorflow::tf$sparse$reduce_sum(x@gm, 0L)  # Sum of each row
+    reduced_mean = reduced_sum / tensorflow::tf$cast(x@gm$dense_shape[2], castDtype_tensorflow(dtype(x)))  # Mean of each row
     res <- as.vector(reduced_mean)
   }else{
-    res <- as.vector(tf$reduce_mean(x@gm,axis=0L))
+    res <- as.vector(tensorflow::tf$reduce_mean(x@gm,axis=0L))
   }
   names(res) <- colnames(x)
 
@@ -633,11 +633,11 @@ setMethod("colMeans", signature(x = "gpu.matrix.tensorflow"), function(x){
 setMethod("rowMeans", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningInteger(x)
   if(x@sparse){
-    reduced_sum = tf$sparse$reduce_sum(x@gm, 1L)  # Sum of each row
-    reduced_mean = reduced_sum / tf$cast(x@gm$dense_shape[1], castDtype_tensorflow(dtype(x)))  # Mean of each row
+    reduced_sum = tensorflow::tf$sparse$reduce_sum(x@gm, 1L)  # Sum of each row
+    reduced_mean = reduced_sum / tensorflow::tf$cast(x@gm$dense_shape[1], castDtype_tensorflow(dtype(x)))  # Mean of each row
     res <- as.vector(reduced_mean)
   }else{
-    res <- as.vector(tf$reduce_mean(x@gm,axis=1L))
+    res <- as.vector(tensorflow::tf$reduce_mean(x@gm,axis=1L))
   }
   names(res) <- rownames(x)
 
@@ -645,9 +645,9 @@ setMethod("rowMeans", signature(x = "gpu.matrix.tensorflow"), function(x){
 })
 setMethod("sum", signature(x = "gpu.matrix.tensorflow"), function(x){
   if (x@sparse) {
-    res <- as.numeric(tf$sparse$reduce_sum(x@gm))
+    res <- as.numeric(tensorflow::tf$sparse$reduce_sum(x@gm))
   }else{
-    res <- as.numeric(tf$reduce_sum(x@gm))
+    res <- as.numeric(tensorflow::tf$reduce_sum(x@gm))
   }
   return(res)
 })
@@ -691,13 +691,13 @@ setMethod("dtype", signature(x = "gpu.matrix.tensorflow"), function(x){
 setGeneric("dtype<-", function(x,value) standardGeneric("dtype<-"))
 setMethod("dtype<-", signature(x = "gpu.matrix.tensorflow", value="ANY"), function(x,value){
   if (is.character(value)) value <- castDtype_tensorflow(value)
-  x@gm <- tf$cast(x@gm,value)
+  x@gm <- tensorflow::tf$cast(x@gm,value)
   return(x)
 })
 
 # setGeneric("checkGPU", function() standardGeneric("checkGPU"))
 # setMethod("checkGPU", function(){
-#   if (length(tf$config$list_physical_devices("GPU")) > 0){
+#   if (length(tensorflow::tf$config$list_physical_devices("GPU")) > 0){
 #     cat("Tensorflow dependence is installed using GPU")
 #   }else{
 #     cat("Tensorflow dependence is not installed using GPU")
@@ -707,9 +707,9 @@ setMethod("dtype<-", signature(x = "gpu.matrix.tensorflow", value="ANY"), functi
 # setMethod("colSums", signature(x = "gpu.matrix.tensorflow"), function(x){
 #   print("hola tensor")
 #   if (x@sparse) {
-#     res <- as.numeric(tf$sparse$reduce_sum(x@gm, 0L))
+#     res <- as.numeric(tensorflow::tf$sparse$reduce_sum(x@gm, 0L))
 #   }else{
-#     res <- as.vector(tf$reduce_sum(x@gm,axis=0L))
+#     res <- as.vector(tensorflow::tf$reduce_sum(x@gm,axis=0L))
 #   }
 #   names(res) <- colnames(x)
 #   return(res)
@@ -719,9 +719,9 @@ setMethod("dtype<-", signature(x = "gpu.matrix.tensorflow", value="ANY"), functi
 # setMethod("rowSums", signature(x = "gpu.matrix.tensorflow"), function(x){
 #   print("hola tensor")
 #   if (x@sparse) {
-#     res <- as.numeric(tf$sparse$reduce_sum(x@gm, 1L))
+#     res <- as.numeric(tensorflow::tf$sparse$reduce_sum(x@gm, 1L))
 #   }else{
-#     res <- as.vector(tf$reduce_sum(x@gm,axis=1L))
+#     res <- as.vector(tensorflow::tf$reduce_sum(x@gm,axis=1L))
 #   }
 #   names(res) <- rownames(x)
 #   return(res)
@@ -729,18 +729,18 @@ setMethod("dtype<-", signature(x = "gpu.matrix.tensorflow", value="ANY"), functi
 
 setMethod("min", signature(x = "gpu.matrix.tensorflow"), function(x){
   if(x@sparse){
-    res <- as.numeric(tf$reduce_min(x@gm$values))
+    res <- as.numeric(tensorflow::tf$reduce_min(x@gm$values))
   } else{
-    res <- as.numeric(tf$reduce_min(x@gm))
+    res <- as.numeric(tensorflow::tf$reduce_min(x@gm))
   }
   return(res)
 })
 
 setMethod("max", signature(x = "gpu.matrix.tensorflow"), function(x){
   if (x@sparse) {
-    res <- as.numeric(tf$sparse$reduce_max(x@gm))
+    res <- as.numeric(tensorflow::tf$sparse$reduce_max(x@gm))
   }else{
-    res <-as.numeric(tf$reduce_max(x@gm))
+    res <-as.numeric(tensorflow::tf$reduce_max(x@gm))
   }
   return(res)
 })
@@ -748,15 +748,15 @@ setMethod("max", signature(x = "gpu.matrix.tensorflow"), function(x){
 setMethod("which.max", signature(x = "gpu.matrix.tensorflow"), function(x){
 
   if (x@sparse) {
-    vecSearch <- as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
-    max_val <- tf$reduce_max(vecSearch, keepdims=F)
-    cond <- tf$equal(vecSearch, max_val)
-    res <- as.numeric(tf$where(cond)) + 1
+    vecSearch <- tensorflow::as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
+    max_val <- tensorflow::tf$reduce_max(vecSearch, keepdims=F)
+    cond <- tensorflow::tf$equal(vecSearch, max_val)
+    res <- as.numeric(tensorflow::tf$where(cond)) + 1
   }else{
-    vecSearch <- as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
-    max_val <- tf$reduce_max(vecSearch, keepdims=F)
-    cond <- tf$equal(vecSearch, max_val)
-    res <- as.numeric(tf$where(cond)) + 1
+    vecSearch <- tensorflow::as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
+    max_val <- tensorflow::tf$reduce_max(vecSearch, keepdims=F)
+    cond <- tensorflow::tf$equal(vecSearch, max_val)
+    res <- as.numeric(tensorflow::tf$where(cond)) + 1
   }
   return(res)
 })
@@ -764,15 +764,15 @@ setMethod("which.max", signature(x = "gpu.matrix.tensorflow"), function(x){
 setMethod("which.min", signature(x = "gpu.matrix.tensorflow"), function(x){
 
   if (x@sparse) {
-    vecSearch <- as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
-    min_val <- tf$reduce_min(vecSearch, keepdims=F)
-    cond <- tf$equal(vecSearch, min_val)
-    res <- as.numeric(tf$where(cond)) + 1
+    vecSearch <- tensorflow::as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
+    min_val <- tensorflow::tf$reduce_min(vecSearch, keepdims=F)
+    cond <- tensorflow::tf$equal(vecSearch, min_val)
+    res <- as.numeric(tensorflow::tf$where(cond)) + 1
   }else{
-    vecSearch <- as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
-    min_val <- tf$reduce_min(vecSearch, keepdims=F)
-    cond <- tf$equal(vecSearch, min_val)
-    res <- as.numeric(tf$where(cond)) + 1
+    vecSearch <- tensorflow::as_tensor(as.vector(x),dtype = castDtype_tensorflow(dtype(x)))
+    min_val <- tensorflow::tf$reduce_min(vecSearch, keepdims=F)
+    cond <- tensorflow::tf$equal(vecSearch, min_val)
+    res <- as.numeric(tensorflow::tf$where(cond)) + 1
   }
   return(res)
 })
@@ -999,7 +999,7 @@ setGeneric("rowVars", function(x) standardGeneric("rowVars"))
 setMethod("rowVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   x <- warningInteger(x)
-  res <- (as.numeric(tf$math$reduce_variance(x@gm,axis=1L))*nrow(x))/(nrow(x)-1)
+  res <- (as.numeric(tensorflow::tf$math$reduce_variance(x@gm,axis=1L))*nrow(x))/(nrow(x)-1)
   return(res)
 })
 # library(matrixStats)
@@ -1007,21 +1007,21 @@ setGeneric("colVars", function(x,y) standardGeneric("colVars"))
 setMethod("colVars", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
   x <- warningInteger(x)
-  res <- (as.numeric(tf$math$reduce_variance(x@gm,axis=0L))*ncol(x))/(ncol(x)-1)
+  res <- (as.numeric(tensorflow::tf$math$reduce_variance(x@gm,axis=0L))*ncol(x))/(ncol(x)-1)
   return(res)
 })
 
 setGeneric("colMaxs", function(x,y) standardGeneric("colMaxs"))
 setMethod("colMaxs", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.vector(tf$reduce_max(x@gm,axis=0L))
+  res <- as.vector(tensorflow::tf$reduce_max(x@gm,axis=0L))
   names(res) <- colnames(x)
   return(res)
 })
 setGeneric("rowMaxs", function(x,y) standardGeneric("rowMaxs"))
 setMethod("rowMaxs", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.vector(tf$reduce_max(x@gm,axis=1L))
+  res <- as.vector(tensorflow::tf$reduce_max(x@gm,axis=1L))
   names(res) <- rownames(x)
   return(res)
 })
@@ -1029,24 +1029,24 @@ setMethod("rowMaxs", signature(x = "gpu.matrix.tensorflow"), function(x){
 setGeneric("rowRanks", function(x) standardGeneric("rowRanks"))
 setMethod("rowRanks", signature(x="gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  return(gpu.matrix.tensorflow(tf$argsort(tf$argsort(x@gm,axis=1L), axis=1L) + 1))
+  return(gpu.matrix.tensorflow(tensorflow::tf$argsort(tensorflow::tf$argsort(x@gm,axis=1L), axis=1L) + 1))
 } )
 setGeneric("colRanks", function(x) standardGeneric("colRanks"))
 setMethod("colRanks", signature(x="gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  return(t(gpu.matrix.tensorflow(tf$argsort(tf$argsort(x@gm,axis=0L), axis=0L) + 1)))
+  return(t(gpu.matrix.tensorflow(tensorflow::tf$argsort(tensorflow::tf$argsort(x@gm,axis=0L), axis=0L) + 1)))
 } )
 setGeneric("colMins", function(x) standardGeneric("colMins"))
 setMethod("colMins", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.vector(tf$reduce_min(x@gm,axis=0L))
+  res <- as.vector(tensorflow::tf$reduce_min(x@gm,axis=0L))
   names(res) <- colnames(x)
   return(res)
 })
 setGeneric("rowMins", function(x) standardGeneric("rowMins"))
 setMethod("rowMins", signature(x = "gpu.matrix.tensorflow"), function(x){
   x <- warningSparseTensor(x)
-  res <- as.vector(tf$reduce_min(x@gm,axis=1L))
+  res <- as.vector(tensorflow::tf$reduce_min(x@gm,axis=1L))
   names(res) <- rownames(x)
   return(res)
 })

@@ -9,7 +9,7 @@ setAs("gpu.matrix.tensorflow", "matrix",
         typeData <- from@gm$dtype
         res <- as.matrix(from@gm)
         dimnames(res) <- dimnames(from)
-        if (typeData == tf$int32 | typeData == tf$int64) {
+        if (typeData == tensorflow::tf$int32 | typeData == tensorflow::tf$int64) {
           mode(res) <- "integer"
         }
         return(res)

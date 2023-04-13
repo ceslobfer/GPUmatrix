@@ -10,10 +10,10 @@ castTypeOperations <- function(m1, m2, operator=FALSE, todense=TRUE, sameType = 
   m1Class <- class(m1)[1]
   m2Class <- class(m2)[1]
   if (m1Class=="float32") {
-    m1 <- gpu.matrix.tensorflow(data = m1, dtype = tf$float32, dimnames = dimnames(m1))
+    m1 <- gpu.matrix.tensorflow(data = m1, dtype = tensorflow::tf$float32, dimnames = dimnames(m1))
     m1Class <- class(m1)[1]
   }else if (m2Class=="float32"){
-    m2 <- gpu.matrix.tensorflow(data = m2, dtype = tf$float32, dimnames = dimnames(m2))
+    m2 <- gpu.matrix.tensorflow(data = m2, dtype = tensorflow::tf$float32, dimnames = dimnames(m2))
     m2Class <- class(m2)[1]
   }
 
@@ -75,7 +75,7 @@ divisionGPUmat <- function(e1,e2){
     e2 <- to_dense_tensorflow(e2)
   }
 
-  resTensor <- tf$divide(e1@gm, e2@gm)
+  resTensor <- tensorflow::tf$divide(e1@gm, e2@gm)
   e1@gm <- resTensor
 
   return(e1)
@@ -100,39 +100,40 @@ sumGPUmat <- function(e1,e2, operator){
 
 
 MatProdGPUmat <- function(x,y){
+  if(requireNamespace('tensorflow')){
+    castMatrix <- castTypeOperations(x,y, todense = FALSE, sameType = T)
+    x <- castMatrix[[1]]
+    y <- castMatrix[[2]]
+    x <- warningInteger(x)
+    y <- warningInteger(y)
 
-  castMatrix <- castTypeOperations(x,y, todense = FALSE, sameType = T)
-  x <- castMatrix[[1]]
-  y <- castMatrix[[2]]
-  x <- warningInteger(x)
-  y <- warningInteger(y)
+    if (ncol(x)==nrow(y)){
 
-  if (ncol(x)==nrow(y)){
+      #Both sparse
+      if (x@sparse & y@sparse) {
 
-    #Both sparse
-    if (x@sparse & y@sparse) {
+        warning(message = "Not allowed with two sparse matrix, the smallest matrix will be cast to dense for the operation. May cause memory problems")
+        if (as.numeric(tensorflow::tf$size(x@gm)) < as.numeric(tensorflow::tf$size(y@gm))) {
+          x <- to_dense_tensorflow(x)
+        }else y <- to_dense_tensorflow(y)
+      }
 
-      warning(message = "Not allowed with two sparse matrix, the smallest matrix will be cast to dense for the operation. May cause memory problems")
-      if (as.numeric(tf$size(x@gm)) < as.numeric(tf$size(y@gm))) {
-        x <- to_dense_tensorflow(x)
-      }else y <- to_dense_tensorflow(y)
+      #One sparse
+      if ((x@sparse & !y@sparse) | (!x@sparse & y@sparse)) {
+
+        resTensor <- tensorflow::tf$sparse$sparse_dense_matmul(x@gm,y@gm)
+        x@gm <- resTensor
+
+      }else{
+        resTensor <- tensorflow::tf$matmul(x@gm,y@gm)
+        x@gm <- resTensor
+      }
+      x@sparse <- F
+      colnames(x) <- colnames(y)
+      return(x)
+    } else{
+      stop("The matrix cannot be multiplied (check for compatible dimensions).")
     }
-
-    #One sparse
-    if ((x@sparse & !y@sparse) | (!x@sparse & y@sparse)) {
-
-      resTensor <- tf$sparse$sparse_dense_matmul(x@gm,y@gm)
-      x@gm <- resTensor
-
-    }else{
-      resTensor <- tf$matmul(x@gm,y@gm)
-      x@gm <- resTensor
-    }
-    x@sparse <- F
-    colnames(x) <- colnames(y)
-    return(x)
-  } else{
-    stop("The matrix cannot be multiplied (check for compatible dimensions).")
   }
 }
 
@@ -239,7 +240,7 @@ setMethod("Arith",
                    },
                    '^'={
                      if (e2@sparse) {
-                       e2 <- gpu.matrix.tensorflow(data = tf$sparse$to_dense(e2@gm),dimnames = dimnames(e2))
+                       e2 <- gpu.matrix.tensorflow(data = tensorflow::tf$sparse$to_dense(e2@gm),dimnames = dimnames(e2))
                      }
                      res <- gpu.matrix.tensorflow(e1 ^ e2@gm, dimnames = dimnames(e2))
                      return(res)

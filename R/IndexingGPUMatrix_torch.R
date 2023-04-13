@@ -34,8 +34,8 @@ putValuesIndex_torch <- function(x, i, j, values){
   }else{
     index <- as.matrix(expand.grid(i,j))
   }
-  tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = device(x)))
-  x@gm <- x@gm$index_put(indices=tensor_list, values = torch_tensor(values,dtype = x@gm$dtype,device = device(x)))
+  tensor_list <- lapply(1:ncol(index), function(i) torch::torch_tensor(index[,i],dtype = torch::torch_long(),device = device(x)))
+  x@gm <- x@gm$index_put(indices=tensor_list, values = torch::torch_tensor(values,dtype = x@gm$dtype,device = device(x)))
   return(x@gm)
 }
 
@@ -56,7 +56,7 @@ indexSparse_torch <- function(x, i, j){
   matchIndex <- match(index,indices)
   resValues <- as.numeric(x@gm$values()$cpu())[matchIndex]
   resValues[is.na(resValues)] <- 0
-  resValues <- torch_tensor(resValues,dtype = x@gm$dtype,device = device(x))
+  resValues <- torch::torch_tensor(resValues,dtype = x@gm$dtype,device = device(x))
 
   ni <- c(1:length(i))
   nj <- c(1:length(j))
@@ -67,11 +67,11 @@ indexSparse_torch <- function(x, i, j){
     nindex <- as.matrix(expand.grid(ni,nj))
   }
   nindex <- t(gpu.matrix.torch(nindex, device = device(x)))
-  dtype(nindex) <- torch_long()
+  dtype(nindex) <- torch::torch_long()
 
-  resIndex <- torch_sparse_coo_tensor(indices = nindex@gm, values = resValues, size = c(length(ni),length(nj)))
-  # indices <- torch_tensor(as.matrix(rbind(i,j)))
-  # torch_sparse_coo_tensor(indices = indices, values = resValues, size = data@Dim)
+  resIndex <- torch::torch_sparse_coo_tensor(indices = nindex@gm, values = resValues, size = c(length(ni),length(nj)))
+  # indices <- torch::torch_tensor(as.matrix(rbind(i,j)))
+  # torch::torch_sparse_coo_tensor(indices = indices, values = resValues, size = data@Dim)
   res <- gpu.matrix.torch(resIndex,sparse = T,
                                colnames = x@colnames[j+1],
                                rownames = x@rownames[i+1],
@@ -94,7 +94,7 @@ assignValuesSparse_torch <- function(x, i, j, value){
   }
   keyValues <- rnorm(dim(index)[2])
   indexU <- index %*% keyValues
-  indices <- gpu.matrix(torch_transpose(self = x@gm$indices(),dim0 = 1,dim1 = 2))
+  indices <- gpu.matrix(torch::torch_transpose(self = x@gm$indices(),dim0 = 1,dim1 = 2))
   indicesU <- indices %*% keyValues
   matchIndex <- match(as.numeric(indexU),as.numeric(indicesU))
   newValuesIndex <- matchIndex[!is.na(matchIndex)]
@@ -103,17 +103,17 @@ assignValuesSparse_torch <- function(x, i, j, value){
   resValues <- as.numeric(x@gm$values()$cpu())
   resValues[newValuesIndex] <- replaceValues
   resValues <- c(resValues,value[!as.logical(matchIndex)] )
-  newValues <- torch_tensor(resValues,dtype = dtype(x), device = device(x))
+  newValues <- torch::torch_tensor(resValues,dtype = dtype(x), device = device(x))
 
   catIndex <- index[!as.logical(matchIndex),]
   if (length(catIndex) == 0 ){
     newIndices <- t(indices) + 1
   }else{
-    newIndices <- torch_cat(tensors=c(t(indices),torch_tensor(catIndex,dtype = dtype(indices))),dim=1) + 1
+    newIndices <- torch::torch_cat(tensors=c(t(indices),torch::torch_tensor(catIndex,dtype = dtype(indices))),dim=1) + 1
   }
-  dtype(newIndices) <- torch_long()
+  dtype(newIndices) <- torch::torch_long()
 
-  res <- torch_sparse_coo_tensor(indices = newIndices@gm, values = newValues, size = dim(x))
+  res <- torch::torch_sparse_coo_tensor(indices = newIndices@gm, values = newValues, size = dim(x))
   x@gm <- res$coalesce()
   res <- x
   return(res)
@@ -246,7 +246,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missin
                        index <- cbind(listIndex[[1]],listIndex[[2]]) - 1
                        keyValues <- rnorm(dim(index)[2])
                        indexU <- index %*% keyValues
-                       indices <- gpu.matrix(torch_transpose(self = x@gm$indices(),dim0 = 1,dim1 = 2))
+                       indices <- gpu.matrix(torch::torch_transpose(self = x@gm$indices(),dim0 = 1,dim1 = 2))
                        indicesU <- as.numeric(indices %*% matrix(keyValues))
                        matchIndex <- match(indexU,indicesU)
                        newValuesIndex <- matchIndex[!is.na(matchIndex)]
@@ -255,15 +255,15 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missin
                        resValues <- as.numeric(x@gm$values()$cpu())
                        resValues[newValuesIndex] <- replaceValues
                        resValues <- c(resValues,value[!as.logical(matchIndex)] )
-                       newValues <- torch_tensor(resValues,dtype = x@gm$values()$dtype, device = device(x))
+                       newValues <- torch::torch_tensor(resValues,dtype = x@gm$values()$dtype, device = device(x))
                        catIndex <- index[!as.logical(matchIndex),]
                        if (length(catIndex) == 0 ){
                          newIndices <- t(indices) + 1
                        }else{
-                         newIndices <- torch_cat(tensors=c(t(indices),torch_tensor(catIndex,dtype = dtype(indices))),dim=1) + 1
+                         newIndices <- torch::torch_cat(tensors=c(t(indices),torch::torch_tensor(catIndex,dtype = dtype(indices))),dim=1) + 1
                        }
-                       dtype(newIndices) <- torch_long()
-                       res <- torch_sparse_coo_tensor(indices = newIndices@gm, values = newValues, size = dim(x))
+                       dtype(newIndices) <- torch::torch_long()
+                       res <- torch::torch_sparse_coo_tensor(indices = newIndices@gm, values = newValues, size = dim(x))
                        x@gm <- res$coalesce()
                        res <- x
                      }else if(na == 4){
@@ -277,8 +277,8 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missin
 
                        listIndex <- select_rawIndex_torch(x,i)
                        index <- cbind(listIndex[[1]],listIndex[[2]])
-                       tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = device(x)))
-                       x@gm <- x@gm$index_put(indices=tensor_list, value = torch_tensor(value,dtype = dtype(x),device = device(x)))
+                       tensor_list <- lapply(1:ncol(index), function(i) torch::torch_tensor(index[,i],dtype = torch::torch_long(),device = device(x)))
+                       x@gm <- x@gm$index_put(indices=tensor_list, value = torch::torch_tensor(value,dtype = dtype(x),device = device(x)))
                        res <- x
 
                      }else if(na == 4){
@@ -346,8 +346,8 @@ setReplaceMethod("[[", signature(x = "gpu.matrix.torch", i = "index",
                  function (x, i, ..., value) {
                    listIndex <- select_rawIndex_torch(x,i)
                    index <- cbind(listIndex[[1]],listIndex[[2]])
-                   tensor_list <- lapply(1:ncol(index), function(i) torch_tensor(index[,i],dtype = torch_long(),device = device(x)))
-                   x@gm <- x@gm$index_put(indices=tensor_list, value = torch_tensor(value,dtype = dtype(x),device = device(x)))
+                   tensor_list <- lapply(1:ncol(index), function(i) torch::torch_tensor(index[,i],dtype = torch::torch_long(),device = device(x)))
+                   x@gm <- x@gm$index_put(indices=tensor_list, value = torch::torch_tensor(value,dtype = dtype(x),device = device(x)))
                    res <- x
 
                    return(res)

@@ -25,55 +25,57 @@ setClass("gpu.matrix.torch",
 # library(torch)
 
 castDtype_torch <- function(type) {
-  switch(type,
-         "float32" = {
-           res <- torch_float32()
-         },
-         "float64" = {
-           res <- torch_float64()
-         },
-         "int" = {
-           res <- torch_int()
-         },
-         "bool" = {
-           res <- torch_bool()
-         },
-         "complex64"={
-           res <- torch_cfloat64()
-         },
-         "complex32"={
-           res <- torch_cfloat32()
-         },
-         "logical" = {
-           res <- torch_bool()
-         },
-         stop("Invalid input type")
-  )
+  if(requireNamespace('torch')){
+    switch(type,
+           "float32" = {
+             res <- torch::torch_float32()
+           },
+           "float64" = {
+             res <- torch::torch_float64()
+           },
+           "int" = {
+             res <- torch::torch_int()
+           },
+           "bool" = {
+             res <- torch::torch_bool()
+           },
+           "complex64"={
+             res <- torch::torch_cfloat64()
+           },
+           "complex32"={
+             res <- torch::torch_cfloat32()
+           },
+           "logical" = {
+             res <- torch::torch_bool()
+           },
+           stop("Invalid input type")
+    )
+  }
   return(res)
 }
 
 castDtype_tensorflow <- function(type) {
   switch(type,
          "float32" = {
-           res <- tf$float32
+           res <- tensorflow::tf$float32
          },
          "float64" = {
-           res <- tf$float64
+           res <- tensorflow::tf$float64
          },
          "int" = {
-           res <- tf$int64
+           res <- tensorflow::tf$int64
          },
          "bool" = {
-           res <- tf$bool
+           res <- tensorflow::tf$bool
          },
          "complex64"={
-           res <- tf$complex64
+           res <- tensorflow::tf$complex64
          },
          "complex32"={
-           res <- tf$complex64
+           res <- tensorflow::tf$complex64
          },
          "logical" = {
-           res <- tf$bool
+           res <- tensorflow::tf$bool
          },
          stop("Invalid input type")
   )
@@ -100,7 +102,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
   }
 
   if (is.null(device) | device == "cuda"){
-    if (cuda_is_available()){
+    if (torch::cuda_is_available()){
       device <- "cuda"
     }else{
       warning(message = "Not cuda available")
@@ -110,42 +112,42 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
   }else{
     device <- "cpu"
   }
-  device_torch <- torch_device(type = device)
+  device_torch <- torch::torch_device(type = device)
   sparseCast <- F
 
   switch(classData,
          matrix={
-           gm <- torch_tensor(data,device = device_torch,dtype = dtype)
+           gm <- torch::torch_tensor(data,device = device_torch,dtype = dtype)
          },
          data.frame={
-           gm <- torch_tensor(as.matrix(data),device = device_torch,dtype = dtype)
+           gm <- torch::torch_tensor(as.matrix(data),device = device_torch,dtype = dtype)
          },
          dgeMatrix={
-           gm <- torch_tensor(as.matrix(data),device = device_torch,dtype = dtype)
+           gm <- torch::torch_tensor(as.matrix(data),device = device_torch,dtype = dtype)
 
          },
          ddiMatrix={
            data <- as(data,"dgCMatrix")
            i <- data@i + 1
            j <- findInterval(seq(data@x)-1,data@p[-1]) + 1
-           indices <- torch_tensor(as.matrix(rbind(i,j)), dtype = torch_long())
-           gm <- torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim, device = device_torch)
+           indices <- torch::torch_tensor(as.matrix(rbind(i,j)), dtype = torch::torch_long())
+           gm <- torch::torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim, device = device_torch)
            if (!gm$is_cuda & device=="cuda")  gm <- gm$cuda()
            if (gm$is_cuda & device!="cuda")  gm <- gm$cpu()
            gm <- gm$coalesce()
-           # gm <- tf$sparse$reorder(gm)
+           # gm <- tensorflow::tf$sparse$reorder(gm)
            sparseCast <- T
            if (is.null(sparse)) sparse <- T
          },
          dpoMatrix={
-           gm <- torch_tensor(as.matrix(data),device = device,dtype = dtype)
+           gm <- torch::torch_tensor(as.matrix(data),device = device,dtype = dtype)
 
          },
          dgCMatrix={
            i <- data@i + 1
            j <- findInterval(seq(data@x)-1,data@p[-1]) + 1
-           indices <- torch_tensor(as.matrix(rbind(i,j)),dtype=torch_long())
-           gm <- torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim, device = device_torch)
+           indices <- torch::torch_tensor(as.matrix(rbind(i,j)),dtype=torch::torch_long())
+           gm <- torch::torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim, device = device_torch)
            gm <- gm$coalesce()
            if (!gm$is_cuda & device=="cuda")  gm <- gm$cuda()
            if (gm$is_cuda & device!="cuda")  gm <- gm$cpu()
@@ -153,9 +155,11 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
            if (is.null(sparse)) sparse <- T
          },
          float32={
-           gm <- torch_tensor(dbl(data),device = device_torch)
+           if(requireNamespace("float")){
+            gm <- torch::torch_tensor(float::dbl(data),device = device_torch)
+           }
            if (is.null(dtype)) {
-             gm <- gm$to(torch_float32())
+             gm <- gm$to(torch::torch_float32())
 
            }
            if (!is.null(nrow) & !is.null(ncol)) gm$resize_(c(nrow,ncol))
@@ -182,7 +186,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
            if (is.null(nrow)) nrow=length(data)
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
-           gm <- torch_tensor(m,device = device_torch,dtype = torch_int32())
+           gm <- torch::torch_tensor(m,device = device_torch,dtype = torch::torch_int32())
          },
          numeric={
 
@@ -190,7 +194,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
 
-           gm <- torch_tensor(m,device = device_torch,dtype = dtype)
+           gm <- torch::torch_tensor(m,device = device_torch,dtype = dtype)
          }
   )
   if (is.null(sparse)) sparse <- FALSE
@@ -234,54 +238,56 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
   classData <- class(data)[1]
   switch(classData,
          matrix={
-           gm <- as_tensor(data,dtype = dtype)
+           gm <- tensorflow::as_tensor(data,dtype = dtype)
          },
          data.frame={
-           gm <- as_tensor(as.matrix(data),dtype = dtype)
+           gm <- tensorflow::as_tensor(as.matrix(data),dtype = dtype)
          },
          dgeMatrix={
-           gm <- as_tensor(as.matrix(data),dtype = dtype)
+           gm <- tensorflow::as_tensor(as.matrix(data),dtype = dtype)
 
          },
          ddiMatrix={
            data <- as(data,"dgCMatrix")
            i <- data@i
            j <- findInterval(seq(data@x)-1,data@p[-1])
-           indices <- as_tensor(lapply(c(1:length(i)),function(x){return(c(i[x],j[x]))}),dtype = tf$int64)
-           gm <- tf$SparseTensor(indices = indices, values = data@x, dense_shape = data@Dim)
-           gm <- tf$sparse$reorder(gm)
+           indices <- tensorflow::as_tensor(lapply(c(1:length(i)),function(x){return(c(i[x],j[x]))}),dtype = tensorflow::tf$int64)
+           gm <- tensorflow::tf$SparseTensor(indices = indices, values = data@x, dense_shape = data@Dim)
+           gm <- tensorflow::tf$sparse$reorder(gm)
            sparse <- TRUE
          },
          dpoMatrix={
-           gm <- as_tensor(as.matrix(data),dtype = dtype)
+           gm <- tensorflow::as_tensor(as.matrix(data),dtype = dtype)
 
          },
          dgCMatrix={
            i <- data@i
            j <- findInterval(seq(data@x)-1,data@p[-1])
-           indices <- as_tensor(lapply(c(1:length(i)),function(x){return(c(i[x],j[x]))}),dtype = tf$int64)
-           gm <- tf$SparseTensor(indices = indices, values = data@x, dense_shape = data@Dim)
-           gm <- tf$sparse$reorder(gm)
+           indices <- tensorflow::as_tensor(lapply(c(1:length(i)),function(x){return(c(i[x],j[x]))}),dtype = tensorflow::tf$int64)
+           gm <- tensorflow::tf$SparseTensor(indices = indices, values = data@x, dense_shape = data@Dim)
+           gm <- tensorflow::tf$sparse$reorder(gm)
            sparse <- TRUE
          },
          float32={
-           gm <- as_tensor(dbl(data))
-           if (is.null(dtype)) {
-             gm <- tf$cast(gm,tf$float32)
+           if(requireNamespace("float")){
+            gm <- tensorflow::as_tensor(float::dbl(data))
            }
-           if (!is.null(nrow) & !is.null(ncol)) gm <- tf$reshape(gm, as.integer(c(nrow,ncol)))
-           if (!is.null(nrow)) gm <- tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
-           if (!is.null(ncol)) gm <- tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
+           if (is.null(dtype)) {
+             gm <- tensorflow::tf$cast(gm,tensorflow::tf$float32)
+           }
+           if (!is.null(nrow) & !is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol)))
+           if (!is.null(nrow)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
+           if (!is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
 
          },
          tensorflow.tensor={
            if (!is.null(dtype) & data$dtype != dtype) {
-             data <- tf$cast(data, dtype)
+             data <- tensorflow::tf$cast(data, dtype)
            }
            gm <- data
-           if (!is.null(nrow) & !is.null(ncol)) gm <- tf$reshape(gm, as.integer(c(nrow,ncol)))
-           if (!is.null(nrow)) gm <- tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
-           if (!is.null(ncol)) gm <- tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
+           if (!is.null(nrow) & !is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol)))
+           if (!is.null(nrow)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
+           if (!is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
            if (class(gm)[2] == "tensorflow.python.framework.sparse_tensor.SparseTensor") {
              sparse <- TRUE
            }
@@ -290,7 +296,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
            if (is.null(nrow)) nrow=length(data)
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
-           gm <- as_tensor(m,dtype = tf$int32)
+           gm <- tensorflow::as_tensor(m,dtype = tensorflow::tf$int32)
          },
          numeric={
 
@@ -298,7 +304,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
 
-           gm <- as_tensor(m,dtype = dtype)
+           gm <- tensorflow::as_tensor(m,dtype = dtype)
          }
   )
   if (is.null(sparse)) sparse <- FALSE
@@ -309,10 +315,10 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
     res <- data
   }else{
     if (sparse & class(gm)[2] != "tensorflow.python.framework.sparse_tensor.SparseTensor") {
-      gm <- tf$sparse$from_dense(gm)
+      gm <- tensorflow::tf$sparse$from_dense(gm)
     }
     if (class(gm)[2] == "tensorflow.python.framework.sparse_tensor.SparseTensor" & !sparse) {
-      gm <- tf$sparse$to_dense(gm)
+      gm <- tensorflow::tf$sparse$to_dense(gm)
     }
 
     res <- new("gpu.matrix.tensorflow", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="tensorflow")

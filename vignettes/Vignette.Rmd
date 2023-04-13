@@ -3,9 +3,9 @@ title: "Get started with GPUmatrix package"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 date: "February 2023"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
   md_document:
     variant: markdown_github
   word_document:
