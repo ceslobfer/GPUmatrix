@@ -10,7 +10,7 @@
 \alias{\%x\%,gpu.matrix.torch,ANY-method}
 
 \description{
-Kroneker product of two gpu.matrix matrices. It mimics the base function \code{kronecker}.
+Kroneker product of two 'GPUmatrix' matrices. It mimics the base function \code{'kronecker'}.
 }
 
 
@@ -40,7 +40,7 @@ See Also \code{\link[base]{kronecker}}.
 \dontrun{
 
 a <- gpu.matrix(1:9,nrow=3,ncol=3)
-a %x% diag(1,3)
+a \%x\% diag(1,3)
 
 
 }

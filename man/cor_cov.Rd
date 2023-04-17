@@ -1,10 +1,10 @@
 \name{cor_cov}
-\title{Correlation, Variance and Covariance for gpu.matrix}
+\title{Correlation, Variance and Covariance for 'GPUmatrix' object}
 \docType{methods}
 \description{
-\code{cov} and \code{cor} compute the covariance and correlation of x and y if these are vectors. If x and y are matrices then the covariances (or correlations) between the columns of x and the columns of y are computed.
+\code{'cov'} and \code{'cor'} compute the covariance and correlation of x and y if these are vectors. If x and y are matrices then the covariances (or correlations) between the columns of x and the columns of y are computed.
 
-\code{cov2cor} scales a covariance matrix into the corresponding correlation matrix efficiently.
+\code{'cov2cor'} scales a covariance matrix into the corresponding correlation matrix efficiently.
 
 If x and y are object of GPUmatrix, then the corresponding operations are computed by the GPU instead of the CPU.
 

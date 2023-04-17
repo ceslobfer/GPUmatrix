@@ -20,7 +20,7 @@
 
 
 \description{
-Mimics the \code{cbind} and \code{rbind} functions.
+Mimics the \code{'cbind'} and \code{'rbind'} functions.
 These functions take a sequence of vectors, matrices, data-frames and/or gpu.matrix matrices and combine by columns or rows, respectively.
 }
 

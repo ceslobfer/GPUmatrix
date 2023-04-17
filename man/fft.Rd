@@ -28,18 +28,16 @@ For more information see:
 \code{\link[stats]{fft}}
 }
 
+\value{
+It returns the corresponding output of the function 'fft' of the library 'stats':  the unnormalized univariate discrete Fourier transform of the sequence of values in input \code{z}. For more details check the corresponding help of 'fft' of the library 'stats'.
+}
+
 
 \examples{
-\donttest{
-\dontrun{
 
 x <- gpu.matrix(1:4)
 fft(x)
 
-
-
-}
-}
 }
 
 

@@ -11,7 +11,7 @@ mean,variance,
 sum of values,
 ranking of values.
 
-These functions mimic the corresponding function of \code{base}, \code{matrixStats} and \code{Matrix} libraries. See also section for more details.
+These functions mimic the corresponding function of \code{'base'}, \code{'matrixStats'} and \code{'Matrix'} libraries. See also section for more details.
 }
 
 \alias{rowMaxs}

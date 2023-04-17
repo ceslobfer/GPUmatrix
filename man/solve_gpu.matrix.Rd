@@ -27,7 +27,7 @@
 \description{
 These functions are used to solve a system of equations or to compute the inverse of a matrix.
 
-They mimic of the base function \code{solve}: This generic function
+They mimic of the 'base' function \code{'solve'}: This generic function
 solves the equation ax=b for x, where b can be either a vector or a matrix (gpu.matrix).
 
 \code{ginv} mimics the function \code{ginv} of package MASS: it calculates the Moore-Penrose generalized inverse of a gpu.matrix.

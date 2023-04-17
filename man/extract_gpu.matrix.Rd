@@ -40,7 +40,7 @@
 
 
 \description{
-Mimics the \code{[,[<-, [[, and [[<-} base functions. These operators act on gpu.matrix matrices, vectors, matrices, arrays and lists.
+Mimics the \code{[,[<-, [[, and [[<-} base functions. These operators act on 'GPUmatrix' matrices, vectors, matrices, arrays and lists.
 }
 
 

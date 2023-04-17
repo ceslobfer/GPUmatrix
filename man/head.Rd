@@ -4,9 +4,9 @@
 
 \description{
 
-\code{head} and \code{tail} mimic the functions \code{head} and \code{tail} from \code{utils}. They return the first or last parts of a gpu.matrix object.
+\code{'head'} and \code{'tail'} mimic the functions \code{'head'} and \code{'tail'} from \code{'utils'}. They return the first or last parts of a gpu.matrix object.
 
-The function \code{show} mimics the function \code{show} of \code{methods}. It display the object, by printing, plotting or whatever suits its class.
+The function \code{'show'} mimics the function \code{'show'} of \code{'methods'}. It display the object, by printing, plotting or whatever suits its class.
 
 }
 

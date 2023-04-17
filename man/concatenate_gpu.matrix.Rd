@@ -13,7 +13,7 @@
 
 
 \description{
-Mimics \code{c} basic function: function which combines its arguments.
+Mimics \code{'c'} basic function: function which combines its arguments.
 }
 
 

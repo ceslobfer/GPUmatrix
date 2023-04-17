@@ -21,7 +21,7 @@
 
 
 \description{
-Equivalent outer product for a gpu.matrix. In mimics the base functions \code{outer} and \code{\%o\%}.
+Equivalent outer product for a GPUmatrix. In mimics the 'base' functions \code{'outer'} and \code{'\%o\%'}.
 }
 
 

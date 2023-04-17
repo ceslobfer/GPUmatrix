@@ -7,7 +7,7 @@
 create and store a matrix in the GPU
 }
 \description{
-Mimic the base \code{matrix} function.
+Mimic the base \code{'matrix'} function.
 
 gpu.matrix creates a gpu.matrix.torch or gpu.matrix.tensorflow from input data. The created matrix is stored in the GPU. This function also mimics the function 'Matrix' of the library 'Matrix'.
 }

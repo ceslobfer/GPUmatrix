@@ -14,8 +14,8 @@
 
 
 \description{
-Mimics the base function \code{sort}.
-Given a gpu.matrix object (partially), this function sort it into ascending or descending order.
+Mimics the 'base' function \code{'sort'}.
+Given a 'GPUmatrix' object (partially), this function sort it into ascending or descending order.
 }
 
 

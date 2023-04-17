@@ -4,10 +4,10 @@
 \alias{expmGPU,gpu.matrix.tensorflow-method}
 \alias{expmGPU,gpu.matrix.torch-method}
 \title{
-GPUMatrix Exponential.
+'GPUMatrix' Exponential.
 }
 \description{
-It is a mimic of the function \code{expm} of the library \code{Matrix}. It computes the exponential of a GPUmatrix.
+It is a mimic of the function \code{'expm'} of the library \code{'Matrix'}. It computes the exponential of a 'GPUmatrix'.
 }
 \usage{
 expmGPU(x)

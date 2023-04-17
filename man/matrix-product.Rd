@@ -32,7 +32,7 @@
 
 \description{
  Mimics the base function for matrix multiplication.
- Given the matrices \code{x} and \code{y} as inputs, return a matrix standard product. The input \code{x} and \code{y} can be of class gpu.matrix. Thus, the operation will be performed by the GPU.
+ Given the matrices \code{x} and \code{y} as inputs, return a matrix standard product. The input \code{x} and \code{y} can be of class 'GPUmatrix'. Thus, the operation will be performed by the GPU.
 }
 \usage{
 \S4method{\%*\%}{gpu.matrix.tensorflow,ANY}(x, y)

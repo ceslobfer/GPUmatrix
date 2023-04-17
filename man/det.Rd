@@ -1,10 +1,10 @@
 \name{det}
-\title{Calculate the Determinant of a Matrix}
+\title{Calculate the Determinant of a 'GPUMatrix'}
 
 
 \description{
 
-Mimic of the base functions \code{det} and \code{determinant}: \code{det} calculates the determinant of a gpu.matrix. \code{determinant} is a generic function that returns separately the modulus of the determinant, optionally on the logarithm scale, and the sign of the determinant.
+Mimic of the base functions \code{'det'} and \code{'determinant'}: \code{'det'} calculates the determinant of a gpu.matrix. \code{'determinant'} is a generic function that returns separately the modulus of the determinant, optionally on the logarithm scale, and the sign of the determinant.
 
 }
 
@@ -45,6 +45,15 @@ Mimic of the base functions \code{det} and \code{determinant}: \code{det} calcul
 \seealso{
 For more information see:
 \code{\link[base]{det}}
+}
+
+\value{
+\code{det} returns the same output corresponding to the base function 'det', which is the determinant of \code{x}.
+
+\code{determinant} returns the corresponding output of the base function 'determinant', which is a list with components:
+
+\item{modulus}{a numeric value. The modulus (absolute value) of the determinant if logarithm is FALSE; otherwise the logarithm of the modulus.}
+\item{sign}{integer; either +1 or −1 according to whether the determinant is positive or negative.}
 }
 
 

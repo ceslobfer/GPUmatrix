@@ -10,7 +10,7 @@
 
 
 \description{
-Mimics \code{xtfrm} basic function.
+Mimics \code{'xtfrm'} 'base' function.
 }
 
 

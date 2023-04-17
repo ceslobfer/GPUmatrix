@@ -3,7 +3,7 @@
 
 \description{
 
-It mimics the base function \code{which}. It gives the TRUE indices of alogical object.
+It mimics the 'base' function \code{'which'}. It gives the TRUE indices of alogical object.
 
 }
 

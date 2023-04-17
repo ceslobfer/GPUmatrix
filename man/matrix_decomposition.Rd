@@ -1,18 +1,18 @@
 \name{matrix_decomposition}
-\title{Decomposition of a Matrix with GPU}
+\title{Decomposition of a matrix with GPU}
 
 \description{
 
 These functions compute different decompositions of a matrix using the GPU.
 
-\code{eigen} mimics the base function \code{eigen} that computes the eigenvalues and eigenvectors of a numeric (double, integer, logical) or complex matrix.
+\code{'eigen'} mimics the base function \code{'eigen'} that computes the eigenvalues and eigenvectors of a numeric (double, integer, logical) or complex matrix.
 
-\code{svd} mimics the base function \code{svd} that computes the singular-value decomposition of a rectangular matrix.
+\code{'svd'} mimics the base function \code{'svd'} that computes the singular-value decomposition of a rectangular matrix.
 
-\code{qr} mimics the base function \code{qr} that computes the QR decomposition of a matrix.
+\code{'qr'} mimics the base function \code{'qr'} that computes the QR decomposition of a matrix.
 
 
-\code{chol} mimics the base function \code{chol} that computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix.
+\code{'chol'} mimics the base function \code{'chol'} that computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix.
 
 }
 
@@ -74,6 +74,27 @@ For more information see:
 
 }
 
+\value{
+The output of these functions correspond to their equivalent base functions:
+
+\code{eigen} mimics the base function \code{eigen} that computes the eigenvalues and eigenvectors of a numeric (double, integer, logical) or complex matrix. It returns a list with the following items:
+\item{values}{a vector with the \code{P} eigenvalues of \code{x}}
+\item{vectors}{the eigenvectors of \code{x}}
+
+\code{svd} mimics the base function \code{svd} that computes the singular-value decomposition of a rectangular matrix. It returns a list with the following items:
+\item{d}{a vector containing the singular values of \code{x}}
+\item{u}{a matrix whose columns contain the left singular vectors of \code{x}}
+\item{v}{a matrix whose columns contain the right singular vectors of \code{x}}
+
+\code{qr} mimics the base function \code{qr} that computes the QR decomposition of a matrix. It returns a list with the following items:
+\item{qr}{a matrix with the same dimensions as x. The upper triangle contains the \bold{R} of the decomposition and the lower triangle contains information on the \bold{Q} of the decomposition}
+\item{qraux}{a vector of length \code{ncol(x)} which contains additional information on \bold{Q}.}
+\item{rank}{the rank of \code{x} as computed by the decomposition(*): always full rank in the LAPACK case.}
+\item{pivot}{information on the pivoting strategy used during the decomposition.}
+
+
+\code{chol} mimics the base function \code{chol} that computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix. It returns a GPUmatrix object with The upper triangular factor of the Cholesky decomposition, i.e., the matrix R such that R'R = x.
+}
 
 \examples{
 \donttest{

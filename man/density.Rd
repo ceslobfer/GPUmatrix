@@ -4,9 +4,9 @@
 
 \description{
 
-The function \code{density} mimics the function \code{density} of the library \code{stats}. It computes kernel density estimates. Its default method does so with the given kernel and bandwidth for univariate observations.
+The function \code{'density'} mimics the function \code{'density'} of the library \code{'stats'}. It computes kernel density estimates. Its default method does so with the given kernel and bandwidth for univariate observations.
 
-The function \code{hist} mimics the function \code{hist} of the library \code{graphics}. It computes a histogram of the given data values.
+The function \code{'hist'} mimics the function \code{'hist'} of the library \code{'graphics'}. It computes a histogram of the given data values.
 
 }
 
@@ -42,9 +42,21 @@ For more information see:
 
 }
 
+\value{
+Same output as in the base function \code{density}. It returns "an object with class 'density' whose underlying structure is a list containing the following components.
+
+\item{x}{the n coordinates of the points where the density is estimated.}
+\item{y}{the estimated density values. These will be non-negative, but can be zero.}
+\item{bw}{the bandwidth used.}
+\item{n}{the sample size after elimination of missing values.}
+\item{call}{the call which produced the result.}
+\item{data.name}{	the deparsed name of the x argument.}
+\item{has.na}{logical, for compatibility (always FALSE).}
+
+The print method reports summary values on the x and y components."
+}
+
 \examples{
-\donttest{
-\dontrun{
 
 a <- gpu.matrix(rnorm(20*100),20,100)
 
@@ -53,8 +65,6 @@ plot(density(a[1,])) #plot the estimated density function
 
 hist(a[1,]) #plot the histogram
 
-}
-}
 }
 
 

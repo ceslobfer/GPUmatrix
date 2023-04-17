@@ -1,9 +1,9 @@
 \name{apply}
-\title{Apply Functions over gpu.matrix margins}
+\title{Apply Functions over 'GPUmatrix' margins}
 
 \description{
 
-This function mimics the base function \code{apply} that returns a vector or array or list of values obtained by applying a function to margins of an array or matrix.
+This function mimics the 'base' function \code{'apply'} that returns a vector or array or list of values obtained by applying a function to margins of an array or matrix.
 
 }
 \alias{apply}
@@ -24,6 +24,8 @@ This function mimics the base function \code{apply} that returns a vector or arr
 \item{simplify}{a logical indicating whether results should be simplified if possible.}
 }
 
+\value{It returns the output corresponding to the to \code{FUN} in each iteraction to the function. For more information see the help of the base function apply.}
+
 
 \seealso{
 For more information see:
@@ -31,8 +33,7 @@ For more information see:
 }
 
 \examples{
-\donttest{
-\dontrun{
+
 
 a <- gpu.matrix(rnorm(9),3,3)
 
@@ -40,8 +41,7 @@ apply(a, 1, mean) #computes the mean of each row
 apply(a, 2, mean) #computes the mean of each column
 
 
-}
-}
+
 }
 
 
