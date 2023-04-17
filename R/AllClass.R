@@ -101,7 +101,7 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
     }
   }
 
-  if (is.null(device) | device == "cuda"){
+  if (is.null(device)){
     if (torch::cuda_is_available()){
       device <- "cuda"
     }else{
@@ -110,8 +110,13 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
     }
 
   }else{
-    device <- "cpu"
+    if (device=="cuda" & !torch::cuda_is_available()){
+      warning(message = "Not cuda available")
+      device<-"cpu"
+    }
   }
+
+
   device_torch <- torch::torch_device(type = device)
   sparseCast <- F
 

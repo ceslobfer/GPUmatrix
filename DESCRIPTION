@@ -20,6 +20,7 @@ Suggests:
   MASS,
   knitr,
   rmarkdown
+VignetteBuilder: knitr
 License: Artistic-2.0
 LazyData: true
 RoxygenNote: 7.2.1

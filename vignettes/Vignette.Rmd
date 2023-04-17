@@ -2,14 +2,18 @@
 title: "Get started with GPUmatrix package"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 date: "February 2023"
-output:
-  pdf_document: default
-  html_document:
-    df_print: paged
-  md_document:
-    variant: markdown_github
-  word_document:
-    reference_docx: "D:/GPUmatrix/vignettes/svm-rmarkdown-word.docx"
+output: rmarkdown::html_vignette
+pdf_document: default
+html_document:
+  df_print: paged
+md_document:
+  variant: markdown_github
+word_document:
+  reference_docx: "./vignettes/svm-rmarkdown-word.docx"
+vignette: >
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteIndexEntry{Get started with GPUmatrix package}
+  %\usepackage[UTF-8]{inputenc}
 subtitle: Seamlessly harness the power of GPU computing in R
 email:
 - clobatofern@unav.es
@@ -85,89 +89,30 @@ devtools::install_github(" ceslobfer/GPUmatrix")
 
 The GPUmatrix package is based on S4 objects in R and we have created a constructor function that acts similarly to the default `matrix()` constructor in R for CPU matrices. The constructor function is `gpu.matrix()` and accepts the same parameters as `matrix()`:
 
-```{r, eval=FALSE}
->library(GPUmatrix)
+```{r, eval=T}
+library(GPUmatrix)
 #R matrix initialization
->m <- matrix(c(1:20)+40,10,2)
+m <- matrix(c(1:20)+40,10,2)
 #Show CPU matrix
->m
-
-      [,1] [,2]
- [1,]   41   51
- [2,]   42   52
- [3,]   43   53
- [4,]   44   54
- [5,]   45   55
- [6,]   46   56
- [7,]   47   57
- [8,]   48   58
- [9,]   49   59
-[10,]   50   60
-
+m
 #GPU matrix initialization
->Gm <- gpu.matrix(c(1:20)+40,10,2)
+Gm <- gpu.matrix(c(1:20)+40,10,2)
 #Show GPU matrix
->Gm
-
-GPUmatrix
-torch_tensor
- 41  51
- 42  52
- 43  53
- 44  54
- 45  55
- 46  56
- 47  57
- 48  58
- 49  59
- 50  60
-[ CUDADoubleType{10,2} ]
+Gm
 ```
 
 In the previous example, a normal R CPU matrix called `m` and its GPU counterpart `Gm` are created. Just like regular matrices, the created GPU matrices allow for indexing of its elements and assignment of values. The concatenation operators `rbind()` and `cbind()` work independently of the type of matrices that are to be concatenated, resulting in a ***gpu.matrix***:
 
-```{r,eval=F}
->Gm[c(2,3),1]
+```{r,eval=T}
+Gm[c(2,3),1]
 
-GPUmatrix
-torch_tensor
- 42
- 43
-[ CUDADoubleType{2,1} ]
-
->Gm[,2]
-
-GPUmatrix
-torch_tensor
- 51
- 52
- 53
- 54
- 55
- 56
- 57
- 58
- 59
- 60
-[ CUDADoubleType{10,1} ]
+Gm[,2]
  
->Gm2 <- cbind(Gm[c(1,2),], Gm[c(6,7),])
->Gm2
- 
- GPUmatrix
-torch_tensor
- 41  51  46  56
- 42  52  47  57
-[ CUDADoubleType{2,4} ]
+Gm2 <- cbind(Gm[c(1,2),], Gm[c(6,7),])
+Gm2
 
->Gm2[1,3] <- 0
->Gm2
-
-GPUmatrix
-torch_tensor
- 41  51   0  56
- 42  52  47  57
-[ CUDADoubleType{2,4} ]
+Gm2[1,3] <- 0
+Gm2
 ```
 
 # 2 Cast GPU matrices and data types
@@ -183,7 +128,7 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:------------:|:------------:|:------------:|:--------------:|:------------:|
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -198,200 +143,56 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 
 There are two functions for casting to create a ***gpu.matrix***: **`as.gpu.matrix()`** and the **`gpu.matrix()`** constructor itself. Both have the same input parameters for casting: the object to be cast and extra parameters for creating a GPU matrix.
 
-```{r, eval=FALSE}
+```{r, eval=T}
 #Create 'Gm' from 'm' matrix
->m <- matrix(c(1:20)+40,10,2)
->Gm <- gpu.matrix(m)
->Gm
-
-GPUmatrix
-torch_tensor
- 41  51
- 42  52
- 43  53
- 44  54
- 45  55
- 46  56
- 47  57
- 48  58
- 49  59
- 50  60
-[ CUDADoubleType{10,2} ] 
+m <- matrix(c(1:20)+40,10,2)
+Gm <- gpu.matrix(m)
+Gm
 
 #Create 'Gm' from 'M' with Matrix package
->library(Matrix)
->M <- Matrix(c(1:20)+40,10,2)
->Gm <- gpu.matrix(M)
->Gm
- 
-GPUmatrix
-torch_tensor
- 41  51
- 42  52
- 43  53
- 44  54
- 45  55
- 46  56
- 47  57
- 48  58
- 49  59
- 50  60
-[ CUDADoubleType{10,2} ]
+library(Matrix)
+M <- Matrix(c(1:20)+40,10,2)
+Gm <- gpu.matrix(M)
+Gm
 
 #Create 'Gm' from 'mfloat32' with float package
->library(float)
->mfloat32 <- fl(m)
->Gm <- gpu.matrix(mfloat32)
->Gm
- 
-GPUmatrix
-torch_tensor
- 41  51
- 42  52
- 43  53
- 44  54
- 45  55
- 46  56
- 47  57
- 48  58
- 49  59
- 50  60
-[ CUDAFloatType{10,2} ] #Float32 data type
+library(float)
+mfloat32 <- fl(m)
+Gm <- gpu.matrix(mfloat32)
+Gm
  
 #Create 'Gms' type sparse from 'Ms' type sparse dgCMatrix with Matrix package
->Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
->Ms
+Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
+Ms
  
-10 x 2 sparse Matrix of class "dgCMatrix"
-         
- [1,] 1 1
- [2,] . 1
- [3,] . 1
- [4,] 1 1
- [5,] . .
- [6,] . .
- [7,] . .
- [8,] 1 1
- [9,] . .
-[10,] . .
- 
->Gms <- gpu.matrix(Ms)
->Gms
- 
-GPUmatrix
-torch_tensor
-[ SparseCUDADoubleType{}
-indices:
- 0  0  1  2  3  3  7  7
- 0  1  1  1  0  1  0  1
-[ CUDALongType{2,8} ]
-values:
- 1
- 1
- 1
- 1
- 1
- 1
- 1
- 1
-[ CUDADoubleType{8} ]
-size:
-[10, 2]
-]
+Gms <- gpu.matrix(Ms)
+Gms
+
 ```
 
 ## 2.2 Data type and sparsity
 
 The data types allowed by GPUmatrix are: **float64**, **float32**, **int**, **bool** or **logical**, **complex64** and **complex32**. We can create a GPU matrix with a specific data type using the **`dtype`** parameter of the **`gpu.matrix()`** constructor function or change the data type of a previously created GPU matrix using the **`dtype()`** function. The same applies to GPU sparse matrices, we can create them from the constructor using the **`sparse`** parameter, which will obtain a Boolean value of `TRUE`/`FALSE` depending on whether we want the resulting matrix to be sparse or not. We can also modify the sparsity of an existing GPU matrix with the functions **`to_dense()`**, if we want it to go from sparse to dense, and **`to_sparse()`**, if we want it to go from dense to sparse.
 
-```{r, eval=FALSE}
+```{r, eval=T}
 #Creating a float32 matrix
->Gm32 <- gpu.matrix(c(1:20)+40,10,2, dtype = "float32")
->Gm32
-
-GPUmatrix
-torch_tensor
- 41  51
- 42  52
- 43  53
- 44  54
- 45  55
- 46  56
- 47  57
- 48  58
- 49  59
- 50  60
-[ CUDAFloatType{10,2} ] #Float32 data type
+Gm32 <- gpu.matrix(c(1:20)+40,10,2, dtype = "float32")
+Gm32
 
 #Creating a non sparse martix with data type float32 from a sparse matrix type float64
->Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
->Gm32 <- gpu.matrix(Ms, dtype = "float32", sparse = F)
->Gm32
-
-GPUmatrix
-torch_tensor
- 1  1
- 0  1
- 0  1
- 1  1
- 0  0
- 0  0
- 0  0
- 1  1
- 0  0
- 0  0
-[ CUDAFloatType{10,2} ]
+Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
+Gm32 <- gpu.matrix(Ms, dtype = "float32", sparse = F)
+Gm32
  
 #Convert Gm32 in sparse matrix Gms32
->Gms32 <- to_sparse(Gm32)
->Gms32
-
-GPUmatrix
-torch_tensor
-[ SparseCUDAFloatType{}
-indices:
- 0  0  1  2  3  3  7  7
- 0  1  1  1  0  1  0  1
-[ CUDALongType{2,8} ]
-values:
- 1
- 1
- 1
- 1
- 1
- 1
- 1
- 1
-[ CUDAFloatType{8} ]
-size:
-[10, 2]
-]
+Gms32 <- to_sparse(Gm32)
+Gms32
 
 ##Convert data type Gms32 in float64
->Gms64 <- Gms32
->dtype(Gms64) <- "float64"
->Gms64
+Gms64 <- Gms32
+dtype(Gms64) <- "float64"
+Gms64
 
-GPUmatrix
-torch_tensor
-[ SparseCUDADoubleType{}
-indices:
- 0  0  1  2  3  3  7  7
- 0  1  1  1  0  1  0  1
-[ CUDALongType{2,8} ]
-values:
- 1
- 1
- 1
- 1
- 1
- 1
- 1
- 1
-[ CUDADoubleType{8} ]
-size:
-[10, 2]
-]
 ```
 
 # 3 GPUmatrix functions
@@ -400,63 +201,15 @@ size:
 
 GPUmatrix supports all basic arithmetic operators in R: `+`, `-`, `*`, `^`, `/`, `%*%` and `%%`. Its usage is the same as for basic R matrices, and it allows compatibility with other matrix objects from the previously mentioned packages, always returning the result in GPUmatrix format.
 
-```{r, eval=FALSE}
+```{r, eval=T}
 
->(Gm + Gm) == (m + m)
+(Gm + Gm) == (m + m)
 
-      [,1] [,2]
- [1,] TRUE TRUE
- [2,] TRUE TRUE
- [3,] TRUE TRUE
- [4,] TRUE TRUE
- [5,] TRUE TRUE
- [6,] TRUE TRUE
- [7,] TRUE TRUE
- [8,] TRUE TRUE
- [9,] TRUE TRUE
-[10,] TRUE TRUE
+(Gm + M) == (mfloat32 + Gm)
 
->(Gm + M) == (mfloat32 + Gm)
+(M + M) == (mfloat32 + Gm)
 
-      [,1] [,2]
- [1,] TRUE TRUE
- [2,] TRUE TRUE
- [3,] TRUE TRUE
- [4,] TRUE TRUE
- [5,] TRUE TRUE
- [6,] TRUE TRUE
- [7,] TRUE TRUE
- [8,] TRUE TRUE
- [9,] TRUE TRUE
-[10,] TRUE TRUE
-
->(M + M) == (mfloat32 + Gm)
-
-      [,1] [,2]
- [1,] TRUE TRUE
- [2,] TRUE TRUE
- [3,] TRUE TRUE
- [4,] TRUE TRUE
- [5,] TRUE TRUE
- [6,] TRUE TRUE
- [7,] TRUE TRUE
- [8,] TRUE TRUE
- [9,] TRUE TRUE
-[10,] TRUE TRUE
-
->(Ms + Ms) > (Gms + Gms)*2
-
-      [,1]  [,2]
- [1,]  TRUE  TRUE
- [2,] FALSE  TRUE
- [3,] FALSE  TRUE
- [4,]  TRUE  TRUE
- [5,] FALSE FALSE
- [6,] FALSE FALSE
- [7,] FALSE FALSE
- [8,]  TRUE  TRUE
- [9,] FALSE FALSE
-[10,] FALSE FALSE
+(Ms + Ms) > (Gms + Gms)*2
 
 ```
 
@@ -501,38 +254,19 @@ knitr::kable(NULL,caption = "Table 2. Mathematical operators that accept a gpu.m
 
 In the manual, we can find a multitude of functions that can be applied to *gpu.matrix* type matrices. Most of the functions are functions from the base R package that can be used on *gpu.matrix* matrices in the same way they would be applied to regular matrices of R. There are other functions from other packages like **Matrix** or **matrixStats** that have been implemented due to their widespread use within the user community, such as `rankMatrix` or `colMaxs`. The output of these functions, which originally produced R default matrix type objects, will now return *gpu.matrix* type matrices if the input type of the function is *gpu.matrix*.
 
-```{r,eval=FALSE}
->m <- matrix(c(1:20)+40,10,2)
->Gm <- gpu.matrix(c(1:20)+40,10,2)
+```{r,eval=T}
+m <- matrix(c(1:20)+40,10,2)
+Gm <- gpu.matrix(c(1:20)+40,10,2)
 
->head(tcrossprod(m),2)
+head(tcrossprod(m),1)
 
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,] 4282 4374 4466 4558 4650 4742 4834 4926 5018  5110
-[2,] 4374 4468 4562 4656 4750 4844 4938 5032 5126  5220
+head(tcrossprod(Gm),1)
 
->head(tcrossprod(Gm),2)
+Gm <- tail(Gm,3)
+rownames(Gm) <- c("a","b","c")
+tail(Gm,2)
 
-GPUmatrix
-torch_tensor
- 4282  4374  4466  4558  4650  4742  4834  4926  5018  5110
- 4374  4468  4562  4656  4750  4844  4938  5032  5126  5220
-[ CUDADoubleType{2,10} ]
-
->Gm <- tail(Gm,3)
->rownames(Gm) <- c("a","b","c")
->tail(Gm,2)
- 
-GPUmatrix
-torch_tensor
- 49  59
- 50  60
-[ CUDADoubleType{2,2} ]
-rownames: b c
-
->colMaxs(Gm)
-
-[1] 50 60
+colMaxs(Gm)
 ```
 
 There is a wide variety of functions implemented in GPUmatrix, and they are adapted to be used just like regular R matrices.
@@ -542,7 +276,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:--------------:|:--------------------------------------:|:--------------:|
+|:---------------:|:------------------------------------:|:---------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -629,60 +363,47 @@ $$ to update the $\mathbf{W}$ and $\mathbf{H}$ respectively.
 
 It is straightforward to build two functions for these rules. The corresponding R code is:
 
-```{r,eval=FALSE}
->updateH <- function(V,W,H) {
->  H <- H * (t(W) %*% V)/((t(W) %*% W) %*% H)}
->updateW <- function(V,W,H) {
->  W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )}
+```{r,eval=T}
+updateH <- function(V,W,H) {
+  H <- H * (t(W) %*% V)/((t(W) %*% W) %*% H)}
+updateW <- function(V,W,H) {
+  W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )}
 ```
 
 We include a simple script that builds a matrix and run this update rules 100 times.
 
-```{r,eval=FALSE}
->A <- matrix(runif(200*10),200,10)
->B <- matrix(runif(10*100),10,100)
->V <- A %*% B
+```{r,eval=T}
+A <- matrix(runif(200*10),200,10)
+B <- matrix(runif(10*100),10,100)
+V <- A %*% B
 
->W <- W1 <- matrix(runif(200*10),200,10)
->H <- H1 <- matrix(runif(10*100),10,100)
+W <- W1 <- matrix(runif(200*10),200,10)
+H <- H1 <- matrix(runif(10*100),10,100)
 
->for (iter in 1:100) {
->  W <- updateW(V,W,H)
->  H <- updateH(V,W,H)
->}
-
->print(W[1,1])
->print(H[1,1])
-
-[1] 0.5452606
-[1] 0.5010532
+for (iter in 1:100) {
+  W <- updateW(V,W,H)
+  H <- updateH(V,W,H)
+}
+print(W[1,1])
+print(H[1,1])
 ```
 
 We include now a similar script where the operations are done on the GPU:
 
-```{r,eval=FALSE}
->library(GPUmatrix)
->Vg <- gpu.matrix(V)
+```{r,eval=T}
+library(GPUmatrix)
+Vg <- gpu.matrix(V)
 
->Wg <- gpu.matrix(W1)
->Hg <- gpu.matrix(H1)
+Wg <- gpu.matrix(W1)
+Hg <- gpu.matrix(H1)
 
->for (iter in 1:100) {
->  Wg <- updateW(Vg,Wg,Hg)
->  Hg <- updateH(Vg,Wg,Hg)
->}
+for (iter in 1:100) {
+  Wg <- updateW(Vg,Wg,Hg)
+  Hg <- updateH(Vg,Wg,Hg)
+}
 
->print(Wg[1,1])
->print(Hg[1,1])
-
-GPUmatrix
-torch_tensor
- 0.5453
-[ CUDADoubleType{1,1} ]
-GPUmatrix
-torch_tensor
- 0.5011
-[ CUDADoubleType{1,1} ]
+print(Wg[1,1])
+print(Hg[1,1])
 ```
 
 Results are identical since the initial values also coincide.
@@ -693,25 +414,12 @@ Results are identical since the initial values also coincide.
 
 In the GPUmatrix constructor, we can specify the location of the matrix, i.e., we can decide to host it on the GPU or in RAM memory to use it with the CPU. As a package, as its name suggests, oriented towards algebraic operations in R using the GPU, it will by default be hosted on the GPU, but it allows the same functionalities using the CPU. To do this, we use the `device` attribute of the constructor and assign it the value ***"cpu"***.
 
-```{r, eval=FALSE}
+```{r, eval=T}
 #GPUmatrix initialization with CPU option
->Gm <- gpu.matrix(c(1:20)+40,10,2,device="cpu")
+Gm <- gpu.matrix(c(1:20)+40,10,2,device="cpu")
 #Show CPU matrix from GPUmatrix
->Gm
+Gm
 
-GPUmatrix
-torch_tensor
- 41  51
- 42  52
- 43  53
- 44  54
- 45  55
- 46  56
- 47  57
- 48  58
- 49  59
- 50  60
-[ CPUDoubleType{10,2} ] #CPU tensor
 ```
 
 R provides a standard BLAS version that is not multithreaded and not fully optimized for present computers. In the previous paragraphs, we compared the CUDA-GPU with MKL-R, i.e. using CUDA for linear algebra through torch or tensorflow or boosting the standard R with the Intel MKL library. Switching from Standard R to MKL R implies changing the default behavior of R and ther can be side-effects. For examples some standard packages such as igraph do not work in this case.
@@ -728,25 +436,11 @@ In addition, if MKL-R is not implemented for float32 -since R does not include t
 
 As commented in the introduction and dependency section, GPUmatrix can be used with both TensorFlow and Torch. By default, the GPU matrix constructor is initialized with Torch tensors because, in our opinion, it provides an advantage in terms of installation and usage compared to TensorFlow. Additionally, it allows the use of GPUmatrix not only with GPU tensors but also with CPU tensors. To use GPUmatrix with TensorFlow, simply use the `type` attribute in the constructor function and assign it the value **"tensorflow"** as shown in the following example:
 
-```{r, eval=FALSE}
+```{r, eval=F}
 
 # library(GPUmatrix)
->tensorflowGPUmatrix <- gpu.matrix(c(1:20)+40,10,2, type = "tensorflow")
->tensorflowGPUmatrix
-
-GPUmatrix
-tf.Tensor(
-[[41. 51.]
- [42. 52.]
- [43. 53.]
- [44. 54.]
- [45. 55.]
- [46. 56.]
- [47. 57.]
- [48. 58.]
- [49. 59.]
- [50. 60.]], shape=(10, 2), dtype=float64)
-
+tensorflowGPUmatrix <- gpu.matrix(c(1:20)+40,10,2, type = "tensorflow")
+tensorflowGPUmatrix
 ```
 
 #### References
