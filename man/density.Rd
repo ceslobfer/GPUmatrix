@@ -58,12 +58,17 @@ The print method reports summary values on the x and y components."
 
 \examples{
 
-a <- gpu.matrix(rnorm(20*100),20,100)
+if(requireNamespace('torch') | requireNamespace('tensorflow')){
 
-density(a[1,]) #density information
-plot(density(a[1,])) #plot the estimated density function
+  a <- gpu.matrix(rnorm(20*100),20,100)
 
-hist(a[1,]) #plot the histogram
+  density(a[1,]) #density information
+  plot(density(a[1,])) #plot the estimated density function
+
+  hist(a[1,]) #plot the histogram
+
+}
+
 
 }
 

@@ -34,9 +34,13 @@ It returns the corresponding output of the function 'fft' of the library 'stats'
 
 
 \examples{
+if(requireNamespace('torch') | requireNamespace('tensorflow')){
 
-x <- gpu.matrix(1:4)
-fft(x)
+  x <- gpu.matrix(1:4)
+  fft(x)
+
+}
+
 
 }
 

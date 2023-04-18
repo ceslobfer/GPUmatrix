@@ -48,13 +48,18 @@ For more information see:
 
 \examples{
 
+if(requireNamespace('torch') | requireNamespace('tensorflow')){
 
-a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
+  a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
 
-diag(a) #shows the diagonal of matrix a
+  diag(a) #shows the diagonal of matrix a
 
-diag(a) <- c(10,0,100) #set the diagonal of matrix a
-a
+  diag(a) <- c(10,0,100) #set the diagonal of matrix a
+  a
+
+}
+
+
 
 
 

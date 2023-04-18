@@ -53,7 +53,7 @@ For more information see:
 \code{determinant} returns the corresponding output of the base function 'determinant', which is a list with components:
 
 \item{modulus}{a numeric value. The modulus (absolute value) of the determinant if logarithm is FALSE; otherwise the logarithm of the modulus.}
-\item{sign}{integer; either +1 or −1 according to whether the determinant is positive or negative.}
+\item{sign}{integer; either +1 or -1 according to whether the determinant is positive or negative.}
 }
 
 

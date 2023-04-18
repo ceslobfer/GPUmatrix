@@ -2,18 +2,12 @@
 title: "Get started with GPUmatrix package"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 date: "February 2023"
-output: rmarkdown::html_vignette
-pdf_document: default
-html_document:
-  df_print: paged
-md_document:
-  variant: markdown_github
-word_document:
-  reference_docx: "./vignettes/svm-rmarkdown-word.docx"
+output: 
+  rmarkdown: html_vignette
 vignette: >
-  %\VignetteEngine{knitr::knitr}
   %\VignetteIndexEntry{Get started with GPUmatrix package}
   %\usepackage[UTF-8]{inputenc}
+  %\VignetteEngine{knitr::knitr}
 subtitle: Seamlessly harness the power of GPU computing in R
 email:
 - clobatofern@unav.es
@@ -276,7 +270,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:---------------:|:------------------------------------:|:---------------:|
+|:----------------:|:-----------------------------------:|:----------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
