@@ -6,6 +6,7 @@ importFrom("methods", as, new, cbind2, rbind2)
 
 
 
+export(installTorch)
 exportMethods("as.matrix",
               "as.gpu.matrix",
               "as.vector",

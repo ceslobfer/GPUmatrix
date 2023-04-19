@@ -58,7 +58,7 @@ The print method reports summary values on the x and y components."
 
 \examples{
 
-if(requireNamespace('torch') | requireNamespace('tensorflow')){
+if(installTorch){
 
   a <- gpu.matrix(rnorm(20*100),20,100)
 

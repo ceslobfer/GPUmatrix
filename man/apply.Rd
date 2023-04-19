@@ -34,7 +34,7 @@ For more information see:
 
 \examples{
 
-if(requireNamespace('torch') | requireNamespace('tensorflow')){
+if(installTorch){
 
   a <- gpu.matrix(rnorm(9),3,3)
 
