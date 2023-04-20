@@ -33,7 +33,7 @@ Before starting, please be advised that this R package is designed to have the l
 
 GPUmatrix is an R package that utilizes tensors through the **torch** or **tensorflow** packages (see Advanced Users section for more information). One or the other must be installed for the use of GPUmatrix. Both packages are hosted in CRAN and have specific installation instructions. In both cases, it is necessary to have an NVIDIA® GPU card with the latest drivers installed in order to use the packages, as well as a version of Python 3. The NVIDIA card must be compatible; please see the list of capable cards [here](https://developer.nvidia.com/cuda-gpus#compute). If there is no compatible graphics card or not graphic card at all, you can still install tensorFlow and torch, but only with the CPU version, which means that GPUmatrix will only be able to run in CPU mode.
 
-### For torch: ([Link installation here](https://cran.r-project.org/web/packages/torch/vignettes/installation.html))
+### For torch: ([Link installation here](https://torch.mlverse.org/docs/articles/installation.html))
 
 ```{r,eval=F}
 install.packages("torch")
@@ -43,7 +43,7 @@ install_torch() # In some cases is required.
 
 -   **MUST INSTALL:**
 
-    -   CUDA Toolkit 11.3. Link [here](https://developer.nvidia.com/cuda-11.3.0-download-archive).
+    -   CUDA Toolkit 11.7. Link [here](https://docs.nvidia.com/cuda/archive/11.7.0/index.html).
 
     -   cuDNN 8.4 . Link [here](https://docs.nvidia.com/deeplearning/cudnn/archives/cudnn-840/install-guide/index.html).
 
@@ -126,7 +126,7 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:-----------------:|:----------:|:-----------------:|:----------------------:|:---------:|
+|:------------:|:------------:|:------------:|:--------------:|:------------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -279,7 +279,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:-------------:|:-------------------------------------------:|:-------------:|
+|:--------------:|:--------------------------------------:|:--------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |

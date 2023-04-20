@@ -12,8 +12,8 @@ Imports:
   stats,
   methods
 Suggests:
-  tensorflow,
   torch,
+  tensorflow,
   Matrix,
   matrixStats,
   float,
