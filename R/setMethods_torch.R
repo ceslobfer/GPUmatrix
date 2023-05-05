@@ -638,7 +638,7 @@ setMethod("chol_solve", signature(x="gpu.matrix.torch", y="ANY"), function(x, y)
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
-  res <- gpu.matrix.torch(torch::torch_cholesky_solve(x@gm,y@gm))
+  res <- gpu.matrix.torch(torch::torch_cholesky_solve(y@gm,x@gm))
   return(res)
 })
 
@@ -648,7 +648,7 @@ setMethod("chol_solve", signature(x="ANY", y="gpu.matrix.torch"), function(x, y)
   x <- castMatrix[[1]]
   y <- castMatrix[[2]]
 
-  res <- gpu.matrix.torch(torch::torch_cholesky_solve(x@gm,y@gm))
+  res <- gpu.matrix.torch(torch::torch_cholesky_solve(y@gm,x@gm))
   return(res)
 })
 
