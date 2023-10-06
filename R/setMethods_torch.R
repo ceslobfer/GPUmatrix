@@ -67,29 +67,60 @@ setMethod("det", signature(x = "gpu.matrix.torch"), function(x, ...){
   return(res)
 })
 
-setMethod("fft", signature(z="gpu.matrix.torch"), function(z){
+setMethod("fft", signature(z="gpu.matrix.torch", inverse="missing"), function(z,inverse=F){
   z <- warningSparseTensor_torch(z)
-  z@gm <- torch::torch_fft_fft(z@gm)
-  res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
-  return(res)
+  z@gm <- torch::torch_fft_fft(z@gm,dim = 1)
+  # res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+  return(z)
 })
 
-
-
-setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "missing"), function(x,decreasing){
-  if (x@sparse) {
-    res <- as.numeric(torch::torch_sort(x@gm$values())[[1]]$cpu())
+setMethod("fft", signature(z="gpu.matrix.torch", inverse="logical"), function(z,inverse=F){
+  z <- warningSparseTensor_torch(z)
+  if(inverse){
+    z@gm <- torch::torch_fft_ifft(z@gm, norm = "forward",dim = 1)
   }else{
-    res<- as.numeric(torch::torch_sort(x@gm$reshape(length(x)))[[1]]$cpu())
+    z@gm <- torch::torch_fft_fft(z@gm,dim = 1)
   }
-
-  return(res)
+  # res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+  return(z)
 })
+# setMethod("Re", signature(z="gpu.matrix.torch"), function(z){
+#   z <- warningSparseTensor_torch(z)
+#   z@gm <- z@gm$real
+#   # res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+#   return(z)
+# })
+#
+# setMethod("Im", signature(z="gpu.matrix.torch"), function(z){
+#   z <- warningSparseTensor_torch(z)
+#   z@gm <- z@gm$imag
+#   # res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+#   return(z)
+# })
+#
+# setMethod("Conj", signature(z="gpu.matrix.torch"), function(z){
+#   z <- warningSparseTensor_torch(z)
+#   z@gm <- z@gm$conj()
+#   # res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+#   return(z)
+# })
 
-setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "logical"), function(x,decreasing){
+# setMethod("mvfft", signature(z="gpu.matrix.torch", inverse="logical"), function(z,inverse=F){
+#   z <- warningSparseTensor_torch(z)
+#   z@gm <- torch::torch_fft_fft(z@gm)
+#   if(inverse) z@gm <- torch::torch_fft_ifft(z@gm)
+#   res <- list("real"=gpu.matrix.torch(z@gm$real),"imag"=gpu.matrix.torch(z@gm$imag))
+#   return(res)
+# })
+
+setMethod("sort", signature(x="gpu.matrix.torch"), function(x,decreasing=FALSE,...){
 
   if (!decreasing) {
-    res <- sort(x)
+    if (x@sparse) {
+      res <- as.numeric(torch::torch_sort(x@gm$values())[[1]]$cpu())
+    }else{
+      res<- as.numeric(torch::torch_sort(x@gm$reshape(length(x)))[[1]]$cpu())
+    }
     # res <- gpu.matrix.torch(tf$sort(x@gm,direction='ASCENDING'), dimnames = dimnames(x))
   }else{
     if (x@sparse) {
@@ -104,6 +135,7 @@ setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "logical"), funct
 
   return(res)
 })
+
 
 # setGeneric("order", function(x,decreasing) standardGeneric("order"))
 setMethod("xtfrm", signature(x="gpu.matrix.torch"), function(x){
@@ -701,15 +733,15 @@ setMethod("rowMeans", signature(x = "gpu.matrix.torch"), function(x){
   return(res)
 })
 
-
-setMethod("sum", signature(x = "gpu.matrix.torch"), function(x){
-  if (x@sparse) {
-    res <- as.numeric(torch::torch_sum(x@gm$values())$cpu())
-  }else{
-    res <- as.numeric(x@gm$sum()$cpu())
-  }
-  return(res)
-})
+#
+# setMethod("sum", signature(x = "gpu.matrix.torch"), function(x){
+#   if (x@sparse) {
+#     res <- as.numeric(torch::torch_sum(x@gm$values())$cpu())
+#   }else{
+#     res <- as.numeric(x@gm$sum()$cpu())
+#   }
+#   return(res)
+# })
 
 # setGeneric("dtype", function(x) standardGeneric("dtype"))
 
@@ -734,9 +766,6 @@ writeDType_torch <- function(dtype){
          "ComplexFloat"={
            res <- "complex32"
          },
-         "Bool" = {
-           res <- "bool"
-         },
          stop("Invalid input type")
   )
   return(res)
@@ -752,23 +781,23 @@ setMethod("dtype<-", signature(x = "gpu.matrix.torch", value="ANY"), function(x,
   return(x)
 })
 
-setMethod("min", signature(x = "gpu.matrix.torch"), function(x){
-  if(x@sparse){
-    res <- as.numeric(torch::torch_min(x@gm$values())$cpu())
-  } else{
-    res <- as.numeric(torch::torch_min(x@gm)$cpu())
-  }
-  return(res)
-})
+# setMethod("min", signature(x = "gpu.matrix.torch"), function(x){
+#   if(x@sparse){
+#     res <- as.numeric(torch::torch_min(x@gm$values())$cpu())
+#   } else{
+#     res <- as.numeric(torch::torch_min(x@gm)$cpu())
+#   }
+#   return(res)
+# })
 
-setMethod("max", signature(x = "gpu.matrix.torch"), function(x){
-  if(x@sparse){
-    res <- as.numeric(torch::torch_max(x@gm$values())$cpu())
-  } else{
-    res <- as.numeric(torch::torch_max(x@gm)$cpu())
-  }
-  return(res)
-})
+# setMethod("max", signature(x = "gpu.matrix.torch"), function(x){
+#   if(x@sparse){
+#     res <- as.numeric(torch::torch_max(x@gm$values())$cpu())
+#   } else{
+#     res <- as.numeric(torch::torch_max(x@gm)$cpu())
+#   }
+#   return(res)
+# })
 
 setMethod("which.max", signature(x = "gpu.matrix.torch"), function(x){
 

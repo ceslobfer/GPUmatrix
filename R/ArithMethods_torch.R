@@ -201,14 +201,15 @@ setMethod("Arith",
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1@gm%%e2
+
+                       e1@gm <- e1@gm%%e2@gm
                        return(e1)
                      },
                      '%/%'={
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1@gm%/%e2
+                       e1@gm <- e1@gm%/%e2@gm
                        return(e1)
                      }
               )
@@ -304,14 +305,14 @@ setMethod("Arith",
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1%%e2@gm
+                       e1@gm <- e1@gm%%e2@gm
                        return(e1)
                      },
                      '%/%'={
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1%/%e2@gm
+                       e1@gm <- e1@gm%/%e2@gm
                        return(e1)
                      }
               )

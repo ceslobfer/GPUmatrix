@@ -24,7 +24,7 @@ setClass("gpu.matrix.torch",
 )
 # library(torch)
 
-castDtype_torch <- function(type) {
+castDtype_torch <- function(type,data=NULL) {
   if(requireNamespace('torch')){
     switch(type,
            "float32" = {
@@ -33,13 +33,25 @@ castDtype_torch <- function(type) {
            "float64" = {
              res <- torch::torch_float64()
            },
+           "double" = {
+             res <- torch::torch_float64()
+           },
            "int" = {
+             res <- torch::torch_int()
+           },
+           "integer" = {
              res <- torch::torch_int()
            },
            "bool" = {
              res <- torch::torch_bool()
            },
+           "logical" = {
+             res <- torch::torch_bool()
+           },
            "complex64"={
+             res <- torch::torch_cfloat64()
+           },
+           "complex"={
              res <- torch::torch_cfloat64()
            },
            "complex32"={
@@ -47,6 +59,14 @@ castDtype_torch <- function(type) {
            },
            "logical" = {
              res <- torch::torch_bool()
+           },
+           "S4" = {
+             if(class(data)[1]=="gpu.matrix.torch"){
+               res <- data@gm$dtype
+             }else{
+               res <- castDtype_torch(typeof(data[1]))
+             }
+
            },
            stop("Invalid input type")
     )
@@ -82,24 +102,28 @@ castDtype_tensorflow <- function(type) {
   return(res)
 }
 
-gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
+gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALSE,
                                   dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device=NULL){
   if (byrow) ncol=length(data)/nrow
-  if (is.null(dtype)) dtype <- "float64"
-  charDtype <- dtype
-  if (class(dtype)[[1]] != "torch_dtype") dtype <- castDtype_torch(dtype)
-  #
+
 
   classData <- class(data)[1]
   # if (classData == "torch_tensor" & is.null(device)) device <- data$device
 
-  if (classData == "torch_tensor" & is.null(device)){
-    if (data$is_cuda){
-      device <- "cuda"
-    }else{
-      device <- "cpu"
+  if (classData == "torch_tensor"){
+    if(is.null(device)){
+      if (data$is_cuda){
+        device <- "cuda"
+      }else{
+        device <- "cpu"
+      }
     }
+    # if (is.null(dtype)) dtype <- data$dtype
   }
+
+  if (is.null(dtype)) dtype <- castDtype_torch(typeof(data),data)
+  charDtype <- dtype
+  if (class(dtype)[[1]] != "torch_dtype") dtype <- castDtype_torch(dtype)
 
   if (is.null(device)){
     if (torch::cuda_is_available()){
@@ -188,18 +212,38 @@ gpu.matrix.torch <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
 
          },
          integer={
-           if (is.null(nrow)) nrow=length(data)
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
            gm <- torch::torch_tensor(m,device = device_torch,dtype = torch::torch_int32())
          },
          numeric={
 
-           if (is.null(nrow)) nrow=length(data)
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
-
            gm <- torch::torch_tensor(m,device = device_torch,dtype = dtype)
+         },
+         logical={
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
+           if (is.null(ncol)) ncol=length(data)/nrow
+           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           gm <- torch::torch_tensor(m,device = device_torch)
+         },
+         NULL={
+           if (is.null(nrow)) nrow=1
+           if (is.null(ncol)) ncol=1
+           gm <- torch::torch_full(c(nrow,ncol),fill_value = NaN)
+         },
+         complex={
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
+           if (is.null(ncol)) ncol=length(data)/nrow
+           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           gm <- torch::torch_tensor(m,device = device_torch)
          }
   )
   if (is.null(sparse)) sparse <- FALSE
@@ -298,17 +342,18 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
            }
          },
          integer={
-           if (is.null(nrow)) nrow=length(data)
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
            gm <- tensorflow::as_tensor(m,dtype = tensorflow::tf$int32)
          },
          numeric={
 
-           if (is.null(nrow)) nrow=length(data)
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
            m <- matrix(data, nrow, ncol, byrow, dimnames)
-
            gm <- tensorflow::as_tensor(m,dtype = dtype)
          }
   )
@@ -338,8 +383,8 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
 
 
 #' @export
-gpu.matrix <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
-                       dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device="cuda", type="torch") {
+gpu.matrix <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALSE,
+                       dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device=NULL, type="torch") {
   if (type=="tensorflow") {
 
     res <- gpu.matrix.tensorflow(data , nrow , ncol , byrow ,

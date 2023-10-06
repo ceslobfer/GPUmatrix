@@ -1,14 +1,14 @@
-\name{sort_gpu.matrix}
-\title{sort_gpu.matrix}
+\name{sort}
+\title{sort}
 \docType{methods}
 
 
 \alias{sort}
 \alias{sort-methods}
+\alias{sort,gpu.matrix.tensorflow-method}
+\alias{sort,gpu.matrix.torch-method}
 \alias{sort,gpu.matrix.tensorflow,logical-method}
-\alias{sort,gpu.matrix.tensorflow,missing-method}
 \alias{sort,gpu.matrix.torch,logical-method}
-\alias{sort,gpu.matrix.torch,missing-method}
 
 
 
@@ -22,9 +22,7 @@ Given a 'GPUmatrix' object (partially), this function sort it into ascending or 
 \usage{
 
 \S4method{sort}{gpu.matrix.tensorflow,logical}(x,decreasing)
-\S4method{sort}{gpu.matrix.tensorflow,missing}(x,decreasing)
 \S4method{sort}{gpu.matrix.torch,logical}(x,decreasing)
-\S4method{sort}{gpu.matrix.torch,missing}(x,decreasing)
 
 }
 
