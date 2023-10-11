@@ -129,12 +129,14 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
 
 
   #dtype control
-  # if (class(dtype)[[1]] == "torch_dtype") charDtype <- writeDType_torch(charDtype)
-  if (is.null(dtype)){
-    dtype <- castDtype_torch(typeof(data),data)
-  }else{
-    dtype <- castDtype_torch(dtype)
+  if (class(dtype)[[1]] != "torch_dtype"){
+    if (is.null(dtype)){
+      dtype <- castDtype_torch(typeof(data),data)
+    }else{
+      dtype <- castDtype_torch(dtype)
+    }
   }
+
 
 
   #device control
