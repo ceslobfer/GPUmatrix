@@ -57,6 +57,15 @@ castDtype_torch <- function(type,data=NULL) {
            "complex32"={
              res <- torch::torch_cfloat32()
            },
+           "externalptr"={
+             if(class(data)[1]=="torch_tensor"){
+               res <- data$dtype
+             }
+             if(class(data)[1]=="torch_dtype"){
+               res <- data
+             }
+
+           },
            "logical" = {
              res <- torch::torch_bool()
            },
@@ -102,47 +111,41 @@ castDtype_tensorflow <- function(type) {
   return(res)
 }
 
+dMatrixCast <- function(data,device_torch){
+  i <- data@i + 1
+  j <- findInterval(seq(data@x)-1,data@p[-1]) + 1
+  indices <- torch::torch_tensor(as.matrix(rbind(i,j)),dtype=torch::torch_long())
+  gm <- torch::torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim)
+  gm <- gm$coalesce()
+  if (!gm$is_cuda & device=="cuda")  gm <- gm$cuda()
+  return(gm)
+}
+
 gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALSE,
                                   dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device=NULL){
   if (byrow) ncol=length(data)/nrow
 
-
   classData <- class(data)[1]
-  # if (classData == "torch_tensor" & is.null(device)) device <- data$device
 
-  if (classData == "torch_tensor"){
-    if(is.null(device)){
-      if (data$is_cuda){
-        device <- "cuda"
-      }else{
-        device <- "cpu"
-      }
-    }
-    # if (is.null(dtype)) dtype <- data$dtype
+
+  #dtype control
+  # if (class(dtype)[[1]] == "torch_dtype") charDtype <- writeDType_torch(charDtype)
+  if (is.null(dtype)){
+    dtype <- castDtype_torch(typeof(data),data)
+  }else{
+    dtype <- castDtype_torch(dtype)
   }
 
-  if (is.null(dtype)) dtype <- castDtype_torch(typeof(data),data)
-  charDtype <- dtype
-  if (class(dtype)[[1]] != "torch_dtype") dtype <- castDtype_torch(dtype)
 
+  #device control
   if (is.null(device)){
-    if (torch::cuda_is_available()){
+    if(torch::cuda_is_available()){
       device <- "cuda"
     }else{
-      warning(message = "Not cuda available")
-      device<-"cpu"
-    }
-
-  }else{
-    if (device=="cuda" & !torch::cuda_is_available()){
-      warning(message = "Not cuda available")
-      device<-"cpu"
+      device <- "cpu"
     }
   }
-
-
   device_torch <- torch::torch_device(type = device)
-  sparseCast <- F
 
   switch(classData,
          matrix={
@@ -157,31 +160,16 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
          },
          ddiMatrix={
            data <- as(data,"dgCMatrix")
-           i <- data@i + 1
-           j <- findInterval(seq(data@x)-1,data@p[-1]) + 1
-           indices <- torch::torch_tensor(as.matrix(rbind(i,j)), dtype = torch::torch_long())
-           gm <- torch::torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim, device = device_torch)
-           if (!gm$is_cuda & device=="cuda")  gm <- gm$cuda()
-           if (gm$is_cuda & device!="cuda")  gm <- gm$cpu()
-           gm <- gm$coalesce()
-           # gm <- tensorflow::tf$sparse$reorder(gm)
-           sparseCast <- T
-           if (is.null(sparse)) sparse <- T
+           gm <- dMatrixCast(data, device)
+
          },
          dpoMatrix={
            gm <- torch::torch_tensor(as.matrix(data),device = device,dtype = dtype)
 
          },
          dgCMatrix={
-           i <- data@i + 1
-           j <- findInterval(seq(data@x)-1,data@p[-1]) + 1
-           indices <- torch::torch_tensor(as.matrix(rbind(i,j)),dtype=torch::torch_long())
-           gm <- torch::torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim, device = device_torch)
-           gm <- gm$coalesce()
-           if (!gm$is_cuda & device=="cuda")  gm <- gm$cuda()
-           if (gm$is_cuda & device!="cuda")  gm <- gm$cpu()
-           sparseCast <- T
-           if (is.null(sparse)) sparse <- T
+           gm <- dMatrixCast(data, device)
+
          },
          float32={
            if(requireNamespace("float")){
@@ -197,19 +185,17 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
 
          },
          torch_tensor={
-           if (!is.null(dtype) & data$dtype != dtype) {
-             data <- data$to(dtype)
-           }
+
            if (!is.null(nrow) & !is.null(ncol)) data$resize_(c(nrow,ncol))
            if (!is.null(nrow)) data$resize_(c(nrow,ncol(data)))
            if (!is.null(ncol)) data$resize_(c(nrow(data),ncol))
-           if (!data$is_cuda & device=="cuda")  data <- data$cuda()
-           if (data$is_cuda & device!="cuda")  data <- data$cpu()
            if (data$dim() == 1) data <- data$reshape(c(length(data),1))
-           gm <- data
+           gm <- torch::torch_tensor(data,device=device_torch,dtype=dtype)
            device <- gm$device
 
-
+         },
+         gpu.matrix.torch={
+           gm <- torch::torch_tensor(data@gm,device=device_torch,dtype=dtype)
          },
          integer={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
@@ -219,7 +205,6 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
            gm <- torch::torch_tensor(m,device = device_torch,dtype = torch::torch_int32())
          },
          numeric={
-
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
@@ -246,30 +231,31 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
            gm <- torch::torch_tensor(m,device = device_torch)
          }
   )
-  if (is.null(sparse)) sparse <- FALSE
 
-
-  if(classData == "gpu.matrix.torch"){
-    if (!is.null(sparse) & sparse != data@sparse) if(sparse) data <- to_sparse_torch(data)
-    if (dtype(data) != writeDType_torch(dtype)) dtype(data) <- dtype
-    if (!data@gm$is_cuda & device=="cuda")  data@gm <- data@gm$cuda()
-    if (data@gm$is_cuda & device=="cpu")  data@gm <- data@gm$cpu()
-    res <- data
+  #sparse Control
+  if (!is.null(sparse)) {
+    if(gm$is_sparse()!=sparse & sparse==T) gm <- gm$to_sparse()
   }else{
-    if (gm$is_sparse()!=sparse & sparse) {
-      gm <- gm$to_sparse()
-    }
-    if (gm$is_sparse()!=sparse & !sparse) {
-      gm <- gm$to_dense()
-    }
-    res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="torch")
+    sparse <- gm$is_sparse()
   }
-  if(sparseCast) dtype(res) <- dtype
-  if (class(charDtype)[[1]] == "torch_dtype") charDtype <- writeDType_torch(charDtype)
-  if (dtype(res) != charDtype & !is.null(charDtype)) dtype(res) <- charDtype
-  if (is.null(dimnames)){
+
+
+  res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, type="torch")
+
+  #dimnames Control
+  if (!is.null(dimnames)){
+    dimnames(res) <- dimnames
+  }else{
     dimnames(res) <- dimnames(data)
-  }else dimnames(res) <- dimnames
+  }
+
+  if (!is.null(rownames)){
+    rownames(res) <- rownames
+  }
+
+  if (!is.null(colnames)){
+    colnames(res) <- colnames
+  }
 
   return(res)
 }

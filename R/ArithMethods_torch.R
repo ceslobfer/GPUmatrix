@@ -151,7 +151,7 @@ MatprodGPUmat_torch <- function(x,y){
 setMethod("-", signature(e1 = "gpu.matrix.torch", e2 = "missing"), function(e1, e2){
   if(e1@sparse){
     if(requireNamespace('torch')){
-      e1@gm <- torch::torch_sparse_coo_tensor(indices = e1@gm$indices(), values = -e1@gm$values(), size = dim(e1))
+      e1@gm <- torch::torch_sparse_coo_tensor(indices = e1@gm$indices()+1L, values = -e1@gm$values(), size = dim(e1))
     }
   }else{
     e1@gm <- -e1@gm
@@ -236,16 +236,10 @@ setMethod("Arith",
 
                      },
                      '^'={
-                       # if (e1@sparse) e1<-to_dense_torch(e1)
-                       #Mejorar
-                       if (inherits(e2,"gpu.matrix.torch")) {
-                         e2<-warningSparseTensor_torch(e2)
-                         e1<-warningSparseTensor_torch(e1)
-
-                         e1@gm <- e1@gm ^ e2@gm
-                       }else{
-                         e1@gm <- e1@gm ^ e2
-                       }
+                       castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
+                       e1 <- castMatrix[[1]]
+                       e2 <- castMatrix[[2]]
+                       e1@gm <- e1@gm ^ e2@gm
 
                        return(e1)
                      },
@@ -334,7 +328,6 @@ setMethod("Arith",
                      },
                      '^'={
                        e2 <- warningSparseTensor_torch(e2)
-
                        e2@gm <- e1 ^ e2@gm
                        return(e2)
                      },

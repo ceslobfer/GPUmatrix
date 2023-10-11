@@ -19,7 +19,11 @@ setMethod("as.gpu.matrix", signature(x = "ANY"), function(x, ...) gpu.matrix(x,.
 # setAs("gpu.matrix.torch","double", function(from){
 #   return(as.double(as.vector(from)))
 # })
-setMethod("as.matrix", signature(x = "gpu.matrix.torch"), function(x, ...) as(x,"matrix") )
+setMethod("as.matrix", signature(x = "gpu.matrix.torch"), function(x, ...){
+  res <- as(x,"matrix")
+  dimnames(res) <- dimnames(x)
+  return(res)
+})
 # setMethod("as.matrix.default", signature(x = "gpu.matrix.torch"), function(x, ...) as(x,"matrix") )
 
 
