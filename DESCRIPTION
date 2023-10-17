@@ -1,7 +1,7 @@
 Package: GPUmatrix
 Type: Package
 Title: Basic Linear Algebra with GPU
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person("Cesar", "Lobato-Fernandez", email = "clobatofern@unav.es",role = c("aut", "cre")),
               person("Juan", "A.Ferrer-Bonsoms", role = "aut"),
               person("Angel", "Rubio", email = "arubio@tecnun.es",role = c("aut","ctb")))

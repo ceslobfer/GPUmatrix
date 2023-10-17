@@ -126,7 +126,7 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
-|:------------:|:------------:|:------------:|:--------------:|:------------:|
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
 |      matrix       |    base    |      float64      |         FALSE          |    Yes    |
 |    data.frame     |    base    |      float64      |         FALSE          |    Yes    |
 |      integer      |    base    |      float64      |         FALSE          |    Yes    |
@@ -279,7 +279,7 @@ knitr::kable(NULL,caption = "Table 3. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:--------------:|:--------------------------------------:|:--------------:|
+|:---------------:|:------------------------------------:|:---------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -454,7 +454,7 @@ tensorflowGPUmatrix
 
 Bates D, Maechler M, Jagan M (2022). Matrix: Sparse and Dense Matrix Classes and Methods. R package version 1.5-3, <https://CRAN.R-project.org/package=Matrix>.
 
-Schmidt D (2022). "float: 32-Bit Floats." R package version 0.3-0, <https://cran.r-project.org/package=float>.
+Schmidt D (2022). "float: 32-Bit Floats." R package version 0.3-0, [https://CRAN.R-project.org/](https://CRAN.R-project.org/package=float){.uri}[package=float](https://CRAN.R-project.org/package=float){.uri}.
 
 Falbel D, Luraschi J (2022). torch: Tensors and Neural Networks with 'GPU' Acceleration. R package version 0.9.0, <https://CRAN.R-project.org/package=torch>.
 

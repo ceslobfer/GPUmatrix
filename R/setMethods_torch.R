@@ -76,20 +76,14 @@ setMethod("fft", signature(z="gpu.matrix.torch"), function(z){
 
 
 
-setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "missing"), function(x,decreasing){
-  if (x@sparse) {
-    res <- as.numeric(torch::torch_sort(x@gm$values())[[1]]$cpu())
-  }else{
-    res<- as.numeric(torch::torch_sort(x@gm$reshape(length(x)))[[1]]$cpu())
-  }
-
-  return(res)
-})
-
-setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "logical"), function(x,decreasing){
+setMethod("sort", signature(x="gpu.matrix.torch"), function(x,decreasing=F){
 
   if (!decreasing) {
-    res <- sort(x)
+    if (x@sparse) {
+      res <- as.numeric(torch::torch_sort(x@gm$values())[[1]]$cpu())
+    }else{
+      res<- as.numeric(torch::torch_sort(x@gm$reshape(length(x)))[[1]]$cpu())
+    }
     # res <- gpu.matrix.torch(tf$sort(x@gm,direction='ASCENDING'), dimnames = dimnames(x))
   }else{
     if (x@sparse) {
@@ -104,7 +98,6 @@ setMethod("sort", signature(x="gpu.matrix.torch", decreasing = "logical"), funct
 
   return(res)
 })
-
 # setGeneric("order", function(x,decreasing) standardGeneric("order"))
 setMethod("xtfrm", signature(x="gpu.matrix.torch"), function(x){
   # if (x@sparse) {

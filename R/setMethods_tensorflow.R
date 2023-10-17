@@ -84,21 +84,12 @@ setMethod("xtfrm", signature(x="gpu.matrix.tensorflow"), function(x){
   return(as.numeric(x))
 })
 
-setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "missing"), function(x,decreasing){
-  if (x@sparse) {
-    res <- as.vector(sort(x@gm$values))
-  }else{
-    res <- as.vector(tensorflow::tf$sort(tensorflow::tf$reshape(x@gm,length(x))))
-  }
-  return(res)
-})
-
-setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "logical"), function(x,decreasing){
+setMethod("sort", signature(x="gpu.matrix.tensorflow"), function(x,decreasing=F,...){
   if(decreasing){
     decreasing="DESCENDING"
   }else{
     decreasing="ASCENDING"
-    }
+  }
   if (x@sparse) {
     res <- as.vector(tensorflow::tf$sort(x@gm$values, direction = decreasing))
   }else{
