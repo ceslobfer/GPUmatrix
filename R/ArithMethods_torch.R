@@ -172,7 +172,7 @@ setMethod("Arith",
           function(e1, e2)
           {
             op = .Generic[[1]]
-            if (length(e2)==1 & !e1@sparse){
+            if (length(e2)==1 & !e1@sparse & class(e1)[1]!=class(e2)[1]){
               if(requireNamespace('torch')){
                 e2 <- torch::torch_tensor(e2,dtype = e1@gm$dtype,device = device(e1))
               }

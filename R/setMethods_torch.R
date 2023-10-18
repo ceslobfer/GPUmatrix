@@ -428,9 +428,9 @@ setMethod("ncol", signature(x = "gpu.matrix.torch"), function(x){
 
 setMethod("t", signature(x = "gpu.matrix.torch"), function(x){
   if (length(dim(x@gm))<2){
-    x <- gpu.matrix.torch(x@gm,nrow=nrow(x),ncol=ncol(x),sparse=x@sparse,rownames = rownames(x),colnames = colnames(x), dtype=x@gm$dtype)
+    x <- gpu.matrix.torch(x@gm,nrow=nrow(x),ncol=ncol(x),sparse=x@sparse,rownames = rownames(x),colnames = colnames(x), dtype=x@gm$dtype, device = device(x))
   }
-  res <- gpu.matrix.torch(torch::torch_transpose(self = x@gm,dim0 = 1,dim1 = 2),sparse=x@sparse,rownames = colnames(x),colnames = rownames(x), dtype=x@gm$dtype)
+  res <- gpu.matrix.torch(torch::torch_transpose(self = x@gm,dim0 = 1,dim1 = 2),sparse=x@sparse,rownames = colnames(x),colnames = rownames(x), dtype=x@gm$dtype, device = device(x))
 
   return(res)
 })
@@ -733,15 +733,16 @@ setMethod("rowMeans", signature(x = "gpu.matrix.torch"), function(x){
   return(res)
 })
 
-#
-# setMethod("sum", signature(x = "gpu.matrix.torch"), function(x){
-#   if (x@sparse) {
-#     res <- as.numeric(torch::torch_sum(x@gm$values())$cpu())
-#   }else{
-#     res <- as.numeric(x@gm$sum()$cpu())
-#   }
-#   return(res)
-# })
+
+setMethod("sum", signature(x = "gpu.matrix.torch"), function(x){
+  if (x@sparse) {
+    x@gm <- torch::torch_sum(x@gm$values())
+  }else{
+    x@gm <- x@gm$sum()
+  }
+  dimnames(x) <- c(NULL,NULL)
+  return(x)
+})
 
 # setGeneric("dtype", function(x) standardGeneric("dtype"))
 
@@ -825,7 +826,7 @@ setMethod("which.min", signature(x = "gpu.matrix.torch"), function(x){
 })
 
 setMethod("aperm", signature(a="gpu.matrix.torch"), function(a,perm,...){
-  res <- aperm(as.matrix(a),perm)
+  res <- t(a)
 
   return(res)
 })
@@ -874,7 +875,7 @@ applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
     return(if (is.null(ans)) ans else if (length(d.ans) <
                                           2L) ans[1L][-1L] else array(ans, d.ans, dn.ans))
   }
-  newX <- aperm(X, c(s.call, s.ans))
+  newX <- aperm(X)
   dim(newX) <- c(prod(d.call), d2)
   ans <- vector("list", d2)
   if (length(d.call) < 2L) {

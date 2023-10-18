@@ -238,6 +238,7 @@ setMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "index"),
 setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missing",
                                 value = "ANY"),
                  function (x, i, j, ..., value) {
+                   if(is.na(value)) value <- NaN
                    value <- as.vector(value)
                    if(x@sparse){
                      if((na <- nargs()) == 3){
@@ -295,6 +296,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missin
 setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "matrix", j = "missing",
                                 value = "ANY"),## double/logical/...
                  function (x, i, j, ..., value) {
+                   if(is.na(value)) value <- NaN
                    value <- as.vector(value)
                    res <- as.matrix(x)
                    if((na <- nargs()) == 3)
@@ -309,6 +311,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "matrix", j = "missi
 setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "missing", j = "index",
                                 value = "ANY"),## double/logical/...
                  function (x, i, j, ..., value) {
+                   if(is.na(value)) value <- NaN
                    value <- as.vector(value)
                    if (x@sparse){
                      res <- assignValuesSparse_torch(x, i=c(1:nrow(x)), j, value)
@@ -326,6 +329,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "missing", j = "inde
 setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "index",
                                 value = "ANY"),## double/logical/...
                  function (x, i, j, ..., value) {
+                   if(is.na(value)) value <- NaN
                    value <- as.vector(value)
                    if (x@sparse) {
 
@@ -344,6 +348,7 @@ setReplaceMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "index"
 setReplaceMethod("[[", signature(x = "gpu.matrix.torch", i = "index",
                                  value = "ANY"),## double/logical/...
                  function (x, i, ..., value) {
+                   if(is.na(value)) value <- NaN
                    listIndex <- select_rawIndex_torch(x,i)
                    index <- cbind(listIndex[[1]],listIndex[[2]])
                    tensor_list <- lapply(1:ncol(index), function(i) torch::torch_tensor(index[,i],dtype = torch::torch_long(),device = device(x)))
