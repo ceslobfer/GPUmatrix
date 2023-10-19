@@ -94,19 +94,36 @@ castDtype_tensorflow <- function(type,data=NULL) {
          "float64" = {
            res <- tensorflow::tf$float64
          },
+         "double" = {
+           res <- tensorflow::tf$float64
+         },
          "int" = {
+           res <- tensorflow::tf$int64
+         },
+         "integer" = {
            res <- tensorflow::tf$int64
          },
          "bool" = {
            res <- tensorflow::tf$bool
          },
+         "logical" = {
+           res <- tensorflow::tf$bool
+         },
+         "complex"={
+           res <- tensorflow::tf$complex64
+         },
          "complex64"={
            res <- tensorflow::tf$complex64
          },
-         "complex32"={
-           res <- tensorflow::tf$complex64
-         },
          "externalptr"={
+           if(class(data)[1]=="tensorflow.tensor"){
+             res <- data$dtype
+           }
+           if(class(data)[1]=="tensorflow.python.framework.dtypes.DType"){
+             res <- data
+           }
+         },
+         "environment"={
            if(class(data)[1]=="tensorflow.tensor"){
              res <- data$dtype
            }
@@ -152,6 +169,20 @@ dMatrixCast_tensorflow <- function(data){
   return(gm)
 }
 
+dimControl_torch <- function(gm,nrow,ncol){
+  if (!is.null(nrow) & !is.null(ncol)) gm$resize_(c(nrow, ncol))
+  if (!is.null(nrow)) gm$resize_(c(nrow,ncol(gm)))
+  if (!is.null(ncol)) gm$resize_(c(nrow(gm), ncol))
+
+  return(gm)
+}
+
+dimControl_tensorflow <- function(gm,nrow,ncol){
+  if (!is.null(nrow) & !is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol)))
+  if (!is.null(nrow)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
+  if (!is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
+  return(gm)
+}
 gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALSE,
                                   dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device=NULL){
   if (byrow) ncol=length(data)/nrow
@@ -180,6 +211,7 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
 
   switch(classData,
          matrix={
+           m <- matrix(data, nrow, ncol, byrow)
            gm <- torch::torch_tensor(data, device = device_torch,dtype = dtype)
          },
          data.frame={
@@ -197,63 +229,62 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
          },
          dgCMatrix={
            gm <- dMatrixCast_torch(data, device)
+           gm <- dimControl_torch(gm,nrow,ncol)
          },
          float32={
            if(requireNamespace("float")){
-            gm <- torch::torch_tensor(float::dbl(data), device = device_torch)
+            gm <- torch::torch_tensor(float::dbl(data), device = device_torch,dtype = dtype)
            }
-           if (is.null(dtype)) {
-             gm <- gm$to(torch::torch_float32())
-           }
-           if (!is.null(nrow) & !is.null(ncol)) gm$resize_(c(nrow, ncol))
-           if (!is.null(nrow)) gm$resize_(c(nrow,ncol(gm)))
-           if (!is.null(ncol)) gm$resize_(c(nrow(gm), ncol))
+           gm <- dimControl_torch(gm,nrow,ncol)
+
          },
          torch_tensor={
-           if (!is.null(nrow) & !is.null(ncol)) data$resize_(c(nrow,ncol))
-           if (!is.null(nrow)) data$resize_(c(nrow,ncol(data)))
-           if (!is.null(ncol)) data$resize_(c(nrow(data), ncol))
            if (data$dim() == 1) data <- data$reshape(c(length(data), 1))
            gm <- torch::torch_tensor(data,device=device_torch, dtype=dtype)
            device <- gm$device
+           gm <- dimControl_torch(gm,nrow,ncol)
          },
          gpu.matrix.torch={
            gm <- torch::torch_tensor(data@gm, device=device_torch, dtype=dtype)
+           gm <- dimControl_torch(gm,nrow,ncol)
          },
          integer={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           m <- matrix(data, nrow, ncol, byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          numeric={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           m <- matrix(data, nrow, ncol, byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          logical={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow, dimnames)
-           gm <- torch::torch_tensor(m, device = device_torch)
+           m <- matrix(data, nrow, ncol, byrow)
+           gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          NULL={
            if (is.null(nrow) | nrow ==0) nrow=1
            if (is.null(ncol) | ncol ==0) ncol=1
-           gm <- torch::torch_full(c(nrow,ncol), fill_value = NaN, device = device_torch)
+           m <- matrix(data, nrow, ncol, byrow)
+           gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          complex={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow, dimnames)
-           gm <- torch::torch_tensor(m,device = device_torch)
+           m <- matrix(data, nrow, ncol, byrow)
+           gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          }
   )
+
+
 
   #sparse Control
   if (!is.null(sparse)) {
@@ -283,7 +314,7 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
 }
 
 gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
-                                  dimnames = NULL, dtype=NULL, sparse=FALSE, colnames=c(), rownames=c()){
+                                  dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c()){
 
   if (byrow) ncol=length(data)/nrow
   classData <- class(data)[1]
@@ -298,59 +329,48 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
     }
   }
 
-
-  # if (is.null(dtype)){
-  #   dtype <- "float64"
-  # }
-  # charDtype <- dtype
-  #
-  # if (class(dtype)[[1]] != "tensorflow.python.framework.dtypes.DType") dtype <- castDtype_tensorflow(dtype)
-
-
   switch(classData,
          matrix={
+           data <- matrix(data,nrow,ncol,byrow)
            gm <- tensorflow::as_tensor(data,dtype = dtype)
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
          },
          data.frame={
            gm <- tensorflow::as_tensor(as.matrix(data), dtype = dtype)
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
          },
          dgeMatrix={
            gm <- tensorflow::as_tensor(as.matrix(data), dtype = dtype)
-
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
          },
          ddiMatrix={
            data <- as(data,"dgCMatrix")
            gm <- dMatrixCast_tensorflow(data)
            sparse <- TRUE
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
          },
          dpoMatrix={
            gm <- tensorflow::as_tensor(as.matrix(data),dtype = dtype)
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
 
          },
          dgCMatrix={
            gm <- dMatrixCast_tensorflow(data)
            sparse <- TRUE
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
+
          },
          float32={
            if(requireNamespace("float")){
-            gm <- tensorflow::as_tensor(float::dbl(data))
+             gm <- tensorflow::as_tensor(float::dbl(data),dtype)
            }
-           if (is.null(dtype)) {
-             gm <- tensorflow::tf$cast(gm,tensorflow::tf$float32)
-           }
-           if (!is.null(nrow) & !is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol)))
-           if (!is.null(nrow)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
-           if (!is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
-
+           gm <- dimControl_tensorflow(gm,nrow,ncol)
          },
          tensorflow.tensor={
            if (!is.null(dtype) & data$dtype != dtype) {
              data <- tensorflow::tf$cast(data, dtype)
            }
            gm <- data
-           if (!is.null(nrow) & !is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol)))
-           if (!is.null(nrow)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
-           if (!is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
            if (class(gm)[2] == "tensorflow.python.framework.sparse_tensor.SparseTensor") {
              sparse <- TRUE
            }
@@ -358,49 +378,81 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
          NULL={
            if (is.null(nrow) | nrow ==0) nrow=1
            if (is.null(ncol) | ncol ==0) ncol=1
-           m <- matrix(nrow = nrow, ncol = ncol)
+           m <- matrix(data, nrow, ncol, byrow, dimnames)
            gm <- tensorflow::as_tensor(m,dtype = dtype)
-
          },
          integer={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(ncol)) ncol=length(data)/nrow
            if (is.null(nrow)) nrow=length(data)/ncol
-
            m <- matrix(data, nrow, ncol, byrow, dimnames)
-           gm <- tensorflow::as_tensor(m,dtype = tensorflow::tf$int32)
+           gm <- tensorflow::as_tensor(m,dtype = dtype)
+         },
+         gpu.matrix.tensorflow={
+           gm <- data@gm
+           if (gm$dtype != dtype) {
+             gm <- tensorflow::tf$cast(gm, dtype)
+           }
+           if (!is.null(nrow) & !is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol)))
+           if (!is.null(nrow)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow,ncol(gm))))
+           if (!is.null(ncol)) gm <- tensorflow::tf$reshape(gm, as.integer(c(nrow(gm),ncol)))
+           if (class(gm)[2] == "tensorflow.python.framework.sparse_tensor.SparseTensor") {
+             sparse <- TRUE
+           }
          },
          numeric={
-
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(ncol)) ncol=length(data)/nrow
            if (is.null(nrow)) nrow=length(data)/ncol
-
            m <- matrix(data, nrow, ncol, byrow, dimnames)
            gm <- tensorflow::as_tensor(m,dtype = dtype)
+         },
+         complex={
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
+           if (is.null(ncol)) ncol=length(data)/nrow
+           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           gm <- tensorflow::as_tensor(m,dtype)
+         },
+         logical={
+           if (is.null(nrow) & is.null(ncol)) nrow=length(data)
+           if (is.null(nrow)) nrow=length(data)/ncol
+           if (is.null(ncol)) ncol=length(data)/nrow
+           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           gm <- tensorflow::as_tensor(m, dtype)
          }
   )
   if (is.null(sparse)) sparse <- FALSE
 
-  if(classData == "gpu.matrix.tensorflow"){
-    if(!is.null(sparse) & sparse != data@sparse) if(sparse) data <- to_sparse_tensorflow(data)
-    if (dtype(data) != writeDType_tensorflow(dtype)) dtype(data) <- dtype
-    res <- data
-  }else{
-    if (sparse & class(gm)[2] != "tensorflow.python.framework.sparse_tensor.SparseTensor") {
+
+  #Control SPARSE
+  if(!is.null(sparse)){
+    if(sparse & class(gm)[2] != "tensorflow.python.framework.sparse_tensor.SparseTensor"){
       gm <- tensorflow::tf$sparse$from_dense(gm)
     }
     if (class(gm)[2] == "tensorflow.python.framework.sparse_tensor.SparseTensor" & !sparse) {
       gm <- tensorflow::tf$sparse$to_dense(gm)
     }
-
-    res <- new("gpu.matrix.tensorflow", gm=gm, sparse=sparse, colnames=colnames, rownames=rownames, type="tensorflow")
   }
 
-  if (class(charDtype)[[1]] == "tensorflow.python.framework.dtypes.DType") charDtype <- writeDType_tensorflow(charDtype)
-  if (dtype(res) != charDtype & !is.null(charDtype)) dtype(res) <- charDtype
-  if (is.null(dimnames)) dimnames(res) <- dimnames(data)
-  else dimnames(res) <- dimnames
+  res <- new("gpu.matrix.tensorflow", gm=gm, sparse=sparse, type="tensorflow")
+
+
+  #dimnames Control
+  if (!is.null(dimnames)){
+    dimnames(res) <- dimnames
+  }else{
+    dimnames(res) <- dimnames(data)
+  }
+
+  if (!is.null(rownames)){
+    rownames(res) <- rownames
+  }
+
+  if (!is.null(colnames)){
+    colnames(res) <- colnames
+  }
+
   return(res)
 }
 
