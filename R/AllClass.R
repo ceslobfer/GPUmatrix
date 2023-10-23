@@ -156,7 +156,7 @@ dMatrixCast_torch <- function(data,device_torch){
   indices <- torch::torch_tensor(as.matrix(rbind(i,j)),dtype=torch::torch_long())
   gm <- torch::torch_sparse_coo_tensor(indices = indices, values = data@x, size = data@Dim)
   gm <- gm$coalesce()
-  if (!gm$is_cuda & device=="cuda")  gm <- gm$cuda()
+  if (!gm$is_cuda & device_torch=="cuda")  gm <- gm$cuda()
   return(gm)
 }
 
@@ -211,11 +211,12 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
 
   switch(classData,
          matrix={
-           m <- matrix(data, nrow, ncol, byrow)
            gm <- torch::torch_tensor(data, device = device_torch,dtype = dtype)
+           gm <- dimControl_torch(gm, nrow = nrow, ncol = ncol)
          },
          data.frame={
            gm <- torch::torch_tensor(as.matrix(data), device = device_torch,dtype = dtype)
+           gm <- dimControl_torch(gm, nrow = nrow, ncol = ncol)
          },
          dgeMatrix={
            gm <- torch::torch_tensor(as.matrix(data), device = device_torch,dtype = dtype)
@@ -223,9 +224,11 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
          ddiMatrix={
            data <- as(data,"dgCMatrix")
            gm <- dMatrixCast_torch(data, device)
+           gm <- dimControl_torch(gm, nrow = nrow, ncol = ncol)
          },
          dpoMatrix={
            gm <- torch::torch_tensor(as.matrix(data), device = device,dtype = dtype)
+           gm <- dimControl_torch(gm, nrow = nrow, ncol = ncol)
          },
          dgCMatrix={
            gm <- dMatrixCast_torch(data, device)
@@ -252,34 +255,34 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow)
+           m <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          numeric={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow)
+           m <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          logical={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow)
+           m <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          NULL={
            if (is.null(nrow) | nrow ==0) nrow=1
            if (is.null(ncol) | ncol ==0) ncol=1
-           m <- matrix(data, nrow, ncol, byrow)
+           m <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          complex={
            if (is.null(nrow) & is.null(ncol)) nrow=length(data)
            if (is.null(nrow)) nrow=length(data)/ncol
            if (is.null(ncol)) ncol=length(data)/nrow
-           m <- matrix(data, nrow, ncol, byrow)
+           m <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          }
   )
@@ -289,6 +292,7 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
   #sparse Control
   if (!is.null(sparse)) {
     if(gm$is_sparse()!=sparse & sparse==T) gm <- gm$to_sparse()
+    if(gm$is_sparse()!=sparse & sparse==F) gm <- gm$to_dense()
   }else{
     sparse <- gm$is_sparse()
   }
