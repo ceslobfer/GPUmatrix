@@ -7,6 +7,7 @@ importFrom("methods", as, new, cbind2, rbind2)
 
 
 export(installTorch)
+export(NMFgpumatrix)
 exportMethods("as.matrix",
               "as.gpu.matrix",
               "as.vector",

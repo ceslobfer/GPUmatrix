@@ -1114,17 +1114,46 @@ updateW <- function(V,W,H) {
   W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )
 }
 
-setGeneric("NMFgpumatrix", function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
-  W <- gpu.matrix(runif(200*10),nrow(V),k)
-  H <- gpu.matrix(runif(k*100),10,ncol(V))
+# setGeneric("NMFgpumatrix", function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100) standardGeneric("NMFgpumatrix"))
 
-  for (niter in 1:100) {
-    W <- updateW(V,W,H)
-    H <- updateH(V,W,H)
+
+NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
+  if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V))
+  if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V))
+  Vold <- V
+  condition <- F
+  for (iter in 1:niter) {
+    Winit <- updateW(V,Winit,Hinit)
+    Hinit <- updateH(V,Winit,Hinit)
+    Vnew <- Winit%*%Hinit
+    if(mean((Vnew-Vold)^2)<tol){
+      res <- list("W"=Winit,"H"=Hinit)
+      condition <- T
+      break()
+    }
+    Vold <- Vnew
   }
-} )
 
+  if(!condition){
+    warning(message="Early finish")
+  }
+  return(res)
+}
 
+# setMethod("NMFgpumatrix", signature(V = "gpu.matrix.torch"), function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
+#   W <- gpu.matrix(runif(nrow(V)*k),nrow(V),k)
+#   H <- gpu.matrix(runif(k*ncol(V)),k,ncol(V))
+#
+#   for (iter in 1:niter) {
+#     W <- updateW(V,W,H)
+#     H <- updateH(V,W,H)
+#     if(sum(((W%*%H)-V)^2)<tol){
+#       warning(message="Early finish")
+#       break()
+#     }
+#   }
+#   return(list("W"=W,"H"=H))
+# })
 
 
 
