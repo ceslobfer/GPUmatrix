@@ -117,16 +117,16 @@ setMethod("sort", signature(x="gpu.matrix.torch"), function(x,decreasing=FALSE,.
 
   if (!decreasing) {
     if (x@sparse) {
-      res <- as.numeric(torch::torch_sort(x@gm$values())[[1]]$cpu())
+      res <- torch::torch_sort(x@gm$values())[[1]]
     }else{
-      res<- as.numeric(torch::torch_sort(x@gm$reshape(length(x)))[[1]]$cpu())
+      res<- torch::torch_sort(x@gm$reshape(length(x)))[[1]]
     }
     # res <- gpu.matrix.torch(tf$sort(x@gm,direction='ASCENDING'), dimnames = dimnames(x))
   }else{
     if (x@sparse) {
-      res <- as.numeric(torch::torch_sort(x@gm$values(),descending =T)[[1]]$cpu())
+      res <- torch::torch_sort(x@gm$values(),descending =T)[[1]]
     }else{
-      res <- as.numeric(torch::torch_sort(x@gm$reshape(length(x)),descending =T)[[1]]$cpu())
+      res <- torch::torch_sort(x@gm$reshape(length(x)),descending =T)[[1]]
     }
 
     # res <- gpu.matrix.torch(tf$sort(tf$reshape(x@gm,length(x)),direction='DESCENDING'), dimnames = dimnames(x),nrow = nrow(x), ncol=ncol(x))
@@ -766,6 +766,9 @@ writeDType_torch <- function(dtype){
          },
          "ComplexFloat"={
            res <- "complex32"
+         },
+         "Long"={
+           res <- "long"
          },
          stop("Invalid input type")
   )
