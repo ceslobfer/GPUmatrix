@@ -685,7 +685,7 @@ setMethod("qr.solve", signature(a="gpu.matrix.torch", b="gpu.matrix.torch"), fun
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+  res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
   res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
   return(res)
 })
@@ -696,7 +696,7 @@ setMethod("qr.solve", signature(a="gpu.matrix.torch", b="ANY"), function(a,b){
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+  res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
   res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
   return(res)
 })
@@ -706,7 +706,7 @@ setMethod("qr.solve", signature(a="ANY", b="gpu.matrix.torch"), function(a,b){
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+  res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
   res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
   return(res)
 })
