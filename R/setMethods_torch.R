@@ -1232,7 +1232,7 @@ updateW <- function(V,W,H) {
 
 
 NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
-  # set.seed(123)
+  set.seed(123)
   if (class(V)[[1]] == "gpu.matrix.torch") {
     if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),device = GPUmatrix:::device(V))
     if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),device = GPUmatrix:::device(V))
@@ -1263,7 +1263,43 @@ NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
 
 
 
-
+# Define the logistic function
+sigmoid <- function(x) {
+  1/(1+exp(-x))
+}
+# Defin the function to train a logistic regression
+# using the conjugate gradient
+LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 1000, tol = 1e-6) {
+  tX <- t(X)
+  if (is.null(beta))
+    beta <- solve(crossprod(X),crossprod(X,2*y-1)) # Returns double even with float inputs. Fix!
+  p <- sigmoid(X %*% beta)
+  a <- p*(1-p)
+  g <- tX %*% (p - y)
+  u <- g
+  # u_old <- u
+  for (iter in 1:iterations) {
+    if (iter == 1) {
+      uhu <- (sum(u*(tX %*% (a * (X %*% u)))) + lambda * sum(u*u))
+      beta <- beta-sum(g*u)/uhu * u
+    } else{
+      p <- sigmoid(X %*% beta)
+      # beta_old <- beta
+      g_old <- g
+      a <- p*(1-p)
+      g <- tX %*% (p - y)
+      k <- g - g_old
+      beta_coef <- sum(g * k)/sum(u*k) # Hestenes-Stiefel update. Other options are possible
+      u <- g - u * beta_coef
+      # u_old <- u
+      uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u)
+      beta <- beta - sum(g*u)/uhu * u
+      if(sum(g*g)< tol)
+        break
+    }
+  }
+  return(beta)
+}
 
 
 
