@@ -896,23 +896,23 @@ setMethod("dtype<-", signature(x = "gpu.matrix.torch", value="ANY"), function(x,
   return(x)
 })
 
-# setMethod("min", signature(x = "gpu.matrix.torch"), function(x){
-#   if(x@sparse){
-#     res <- as.numeric(torch::torch_min(x@gm$values())$cpu())
-#   } else{
-#     res <- as.numeric(torch::torch_min(x@gm)$cpu())
-#   }
-#   return(res)
-# })
+setMethod("min", signature(x = "gpu.matrix.torch"), function(x){
+  if(x@sparse){
+    res <- as.numeric(torch::torch_min(x@gm$values())$cpu())
+  } else{
+    res <- as.numeric(torch::torch_min(x@gm)$cpu())
+  }
+  return(res)
+})
 
-# setMethod("max", signature(x = "gpu.matrix.torch"), function(x){
-#   if(x@sparse){
-#     res <- as.numeric(torch::torch_max(x@gm$values())$cpu())
-#   } else{
-#     res <- as.numeric(torch::torch_max(x@gm)$cpu())
-#   }
-#   return(res)
-# })
+setMethod("max", signature(x = "gpu.matrix.torch"), function(x){
+  if(x@sparse){
+    res <- as.numeric(torch::torch_max(x@gm$values())$cpu())
+  } else{
+    res <- as.numeric(torch::torch_max(x@gm)$cpu())
+  }
+  return(res)
+})
 
 setMethod("which.max", signature(x = "gpu.matrix.torch"), function(x){
 
@@ -945,8 +945,6 @@ setMethod("aperm", signature(a="gpu.matrix.torch"), function(a,perm,...){
   return(res)
 })
 
-
-
 # Se debe merjorar
 applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
 {
@@ -955,12 +953,6 @@ applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
   dl <- length(dim(X))
   if (!dl)
     stop("dim(X) must have a positive length")
-  # if (is.object(X))
-  #   X <- if (dl == 2L)
-  #     as.matrix(X)
-  # else{
-  #   as.array(X)
-  # }
 
   d <- dim(X)
   dn <- dimnames(X)
