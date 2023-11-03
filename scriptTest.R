@@ -1,3 +1,7 @@
+# TODO: implement pmax
+
+
+
 # Standard glm
 
 counts <- c(18,17,15,20,10,20,25,13,12)
@@ -17,14 +21,24 @@ summary(sglm.D93)
 library(GPUmatrix)
 source("~/GitHub/GPUmatrix/R/glm.fit.GPU.R")
 gpu.glm.D93 <- glm(counts ~ outcome + treatment, family = poisson(), method = "glm.fit.GPU")
+
+# Una vez terminado...
+# gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson(), method = "glm.fit.GPU")
+# GPUglm <- function(...) {
+#   output <- glm(..., method = "glm.fit.GPU")
+#   class(gpu.glm.D93) <- c("GPUglm","GPUglm") # --> Fix me!!!
+# }
+# Devuelve un objeto GPUglm
+# summary(gpu.glm.D93) --> IMplementar el metodo correspondiente al summary (copy paste de sppedglm)
+
 class(gpu.glm.D93) <- c("speedglm","speedlm") # --> Fix me!!!
 gpu.glm.D932 <- gpu.glm.D93
 summary(gpu.glm.D93)
 
 # Let's go with the big guys
 library(gtools) # for logit
-m <- 4000
-n <- 1000
+m <- 10000
+n <- 100
 x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
 y <- rbinom(m, 1, prob = inv.logit(x%*%sol))
