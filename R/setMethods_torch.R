@@ -204,6 +204,14 @@ setMethod(f = "show", signature = "gpu.matrix.torch", definition = function(obje
   if (!is.null(object@colnames)) cat(paste(c("colnames:",object@colnames,"\n")))
 })
 
+setMethod("print", signature = "gpu.matrix.torch", definition = function(x){
+  object <- x
+  cat("GPUmatrix\n")
+  print(object@gm)
+  if (!is.null(object@rownames)) cat(paste(c("rownames:",object@rownames,"\n")))
+  if (!is.null(object@colnames)) cat(paste(c("colnames:",object@colnames,"\n")))
+})
+
 setMethod("length", signature(x = "gpu.matrix.torch"), function(x){
   return(length(x@gm))
 } )
@@ -1196,7 +1204,7 @@ setMethod("rowRanks", signature(x="gpu.matrix.torch"), function(x){
 
 setMethod("colRanks", signature(x="gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(t(gpu.matrix.torch(torch::torch_argsort(torch::torch_argsort(x@gm,dim = 1),dim = 1),dtype=dtype(x)), device=device(x)))
+  return(t(gpu.matrix.torch(torch::torch_argsort(torch::torch_argsort(x@gm,dim = 1),dim = 1),dtype=dtype(x), device=device(x))))
 } )
 
 setMethod("colMins", signature(x = "gpu.matrix.torch"), function(x){
@@ -1212,98 +1220,5 @@ setMethod("rowMins", signature(x = "gpu.matrix.torch"), function(x){
   names(res) <- rownames(x)
   return(res)
 })
-updateH <- function(V,W,H) {
-  H <- H * (t(W) %*% V)/((t(W) %*% W) %*% H)
-}
-
-updateW <- function(V,W,H) {
-  W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )
-}
 
 # setGeneric("NMFgpumatrix", function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100) standardGeneric("NMFgpumatrix"))
-
-
-NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
-  set.seed(123)
-  if (class(V)[[1]] == "gpu.matrix.torch") {
-    if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),device = GPUmatrix:::device(V))
-    if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),device = GPUmatrix:::device(V))
-  }else{
-    if(is.null(Winit)) Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
-    if(is.null(Hinit)) Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
-  }
-
-  Vold <- V
-  condition <- F
-  for (iter in 1:niter) {
-    Winit <- updateW(V,Winit,Hinit)
-    Hinit <- updateH(V,Winit,Hinit)
-    Vnew <- Winit%*%Hinit
-    if(mean((Vnew-Vold)^2)<tol){
-      res <- list("W"=Winit,"H"=Hinit)
-      condition <- T
-      break()
-    }
-    Vold <- Vnew
-  }
-
-  if(!condition){
-    warning(message="Early finish")
-  }
-  return(res)
-}
-
-
-
-# Define the logistic function
-sigmoid <- function(x) {
-  1/(1+exp(-x))
-}
-# Defin the function to train a logistic regression
-# using the conjugate gradient
-LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 1000, tol = 1e-6) {
-  tX <- t(X)
-  if (is.null(beta))
-    beta <- solve(crossprod(X),crossprod(X,2*y-1)) # Returns double even with float inputs. Fix!
-  p <- sigmoid(X %*% beta)
-  a <- p*(1-p)
-  g <- tX %*% (p - y)
-  u <- g
-  # u_old <- u
-  for (iter in 1:iterations) {
-    if (iter == 1) {
-      uhu <- (sum(u*(tX %*% (a * (X %*% u)))) + lambda * sum(u*u))
-      beta <- beta-sum(g*u)/uhu * u
-    } else{
-      p <- sigmoid(X %*% beta)
-      # beta_old <- beta
-      g_old <- g
-      a <- p*(1-p)
-      g <- tX %*% (p - y)
-      k <- g - g_old
-      beta_coef <- sum(g * k)/sum(u*k) # Hestenes-Stiefel update. Other options are possible
-      u <- g - u * beta_coef
-      # u_old <- u
-      uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u)
-      beta <- beta - sum(g*u)/uhu * u
-      if(sum(g*g)< tol)
-        break
-    }
-  }
-  return(beta)
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

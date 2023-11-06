@@ -21,7 +21,10 @@ summary(sglm.D93)
 library(GPUmatrix)
 source("~/GitHub/GPUmatrix/R/glm.fit.GPU.R")
 gpu.glm.D93 <- glm(counts ~ outcome + treatment, family = poisson(), method = "glm.fit.GPU")
+fit.glm.D93 <- glm(counts ~ outcome + treatment, family = poisson(), method = "glm.fit")
+speed.glm.D93 <- speedglm(counts ~ outcome + treatment)
 
+gpu.glm.D93 <-GPUglmfit(counts ~ outcome + treatment, family = poisson())
 # Una vez terminado...
 # gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson(), method = "glm.fit.GPU")
 # GPUglm <- function(...) {
@@ -37,6 +40,7 @@ summary(gpu.glm.D93)
 
 # Let's go with the big guys
 library(gtools) # for logit
+library(speedglm)
 m <- 10000
 n <- 100
 x <- matrix(runif(m*n),m,n)
@@ -50,4 +54,7 @@ plot(s1,s2)
 plot(s1,s3)
 plot(s2-s3)
 
+s1
+s2
+s3
 

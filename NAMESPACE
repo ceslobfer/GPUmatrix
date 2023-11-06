@@ -5,7 +5,8 @@ importFrom("stats",rnorm)
 importFrom("methods", as, new, cbind2, rbind2)
 
 
-
+export(glm.fit.GPU)
+export(GPUglmfit)
 export(installTorch)
 export(NMFgpumatrix)
 export(LR_GradientConjugate_gpumatrix)
@@ -17,6 +18,8 @@ exportMethods("as.matrix",
               "is.numeric",
               "to_dense",
               "to_sparse",
+              "summary",
+              "print",
               "which.max",
               "which.min",
               "as.list",
@@ -35,6 +38,7 @@ exportMethods("as.matrix",
               "hist",
               "det",
               "fft",
+              "show",
               "ginv",
               "length",
               "dim",
@@ -84,5 +88,6 @@ exportMethods("as.matrix",
               "cov2cor",
               "cor",
               "apply")
+
 
 
