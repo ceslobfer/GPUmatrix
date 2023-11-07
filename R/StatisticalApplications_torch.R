@@ -92,7 +92,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
                          offset = NULL, acc = 1e-08, maxit = 25, k = 2, sparselim = 0.9,
                          camp = 0.01, eigendec = FALSE, tol.values = 1e-07, tol.vectors = 1e-07,
                          tol.solve = .Machine$double.eps, sparse = NULL,
-                         method = c("eigen","Cholesky", "qr"), trace = FALSE,
+                         method = c("normal"), trace = FALSE,
                          dtype=NULL,
                          device=NULL,
                          type=NULL,...)
@@ -121,7 +121,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
 
   #Sets conditions
   col.names <- dimnames(x)[[2]]
-  method <- match.arg(method)
+  # method <- match.arg(method)
   fam <- family$family
   link <- family$link
   variance <- family$variance
@@ -199,9 +199,11 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
     # else {
     start <- solve(XTX, XTz)
     # }
-    eta <- if (sparse)
-      drop(x %*% start)
-    else drop(tcrossprod(x, t(start)))
+    eta <- drop(x %*% start)
+    # eta <- if (sparse)
+    #   drop(x %*% start)
+    # else drop(tcrossprod(x, t(start)))
+
     mu <- linkinv(as.numeric(eta <- eta + offset))
     dev <- sum(dev.resids(as.numeric(y), c(mu), weights))
     tol <- max(abs(dev0 - dev)/(abs(dev) + 0.1))
@@ -274,7 +276,7 @@ ll.speedglmGPU <- function (family, aic.model, nvar) {
 summary.GPUglm <- function (object, correlation = FALSE, ...)
 {
   if (!inherits(object, "GPUglm"))
-    stop("object is not of class speedglm")
+    stop("object is not of class GPUglm")
   z <- object
   var_res <- as.numeric(z$RSS/z$df)
   dispersion <- if (z$family$family %in% c("poisson", "binomial")) 1 else var_res
