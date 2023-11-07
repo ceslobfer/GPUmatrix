@@ -81,8 +81,8 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
 
 GPUglmfit <- function(...) {
   res <- glm(..., method = "glm.fit.GPU")
-  # class(res) <- c("GPUglm")
-  res <- new("GPUglm", glm=res)
+  class(res) <- "GPUglm"
+  # res <- new("GPUglm", res)
   return(res)
 }
 
@@ -254,6 +254,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
                offset = offset, sparse = sparse, deviance = dev, nulldf = nulldf,
                nulldev = nulldev, ngoodobs = n.ok, n = nobs, intercept = intercept,
                convergence = (!(tol > acc)))
+  # new("GPUglm", glm=res)
   # class(rval) <- "GPUglm"
   return(rval)
 }
@@ -270,206 +271,8 @@ ll.speedglmGPU <- function (family, aic.model, nvar) {
          quasipoisson = NA)
 }
 
-# summary.GPUglm <- function (object, correlation = FALSE, ...)
-# {
-#   if (!inherits(object, "GPUglm"))
-#     stop("object is not of class speedglm")
-#   z <- object
-#   var_res <- as.numeric(z$RSS/z$df)
-#   dispersion <- if (z$family$family %in% c("poisson", "binomial")) 1 else var_res
-#   if (z$method == "qr") {
-#     z$XTX <- z$XTX[z$ok, z$ok]
-#   }
-#   inv <- solve(z$XTX, tol = z$tol.solve)
-#   covmat <- diag(inv)
-#   se_coef <- rep(NA, length(z$coefficients))
-#   se_coef[z$ok] <- sqrt(dispersion * covmat)
-#   if (z$family$family %in% c("binomial", "poisson")) {
-#     z1 <- z$coefficients/se_coef
-#     p <- 2 * pnorm(abs(z1), lower.tail = FALSE)
-#   } else {
-#     t1 <- z$coefficients/se_coef
-#     p <- 2 * pt(abs(t1), df = z$df, lower.tail = FALSE)
-#   }
-#   dn <- c("Estimate", "Std. Error")
-#   if (z$family$family %in% c("binomial", "poisson")) {
-#
-#     param <- data.frame(z$coefficients, se_coef, z1,p)
-#     dimnames(param) <- list(names(z$coefficients), c(dn,
-#                                                      "z value", "Pr(>|z|)"))
-#   } else {
-#     param <- data.frame(z$coefficients, se_coef, t1,p)
-#     dimnames(param) <- list(names(z$coefficients), c(dn,
-#                                                      "t value", "Pr(>|t|)"))
-#   }
-#   eps <- 10 * .Machine$double.eps
-#   if (z$family$family == "binomial") {
-#     if (any(z$mu > 1 - eps) || any(z$mu < eps))
-#       warning("fitted probabilities numerically 0 or 1 occurred")
-#   }
-#   if (z$family$family == "poisson") {
-#     if (any(z$mu < eps))
-#       warning("fitted rates numerically 0 occurred")
-#   }
-#   keep <- match(c("call", "terms", "family", "deviance", "aic",
-#                   "df", "nulldev", "nulldf", "iter", "tol", "n", "convergence",
-#                   "ngoodobs", "logLik", "RSS", "rank"), names(object),
-#                 0)
-#   ans <- c(object[keep], list(coefficients = param, dispersion = dispersion,
-#                               correlation = correlation, cov.unscaled = inv, cov.scaled = inv *
-#                                 var_res))
-#   if (correlation) {
-#     ans$correl <- (inv * var_res)/outer(na.omit(se_coef),
-#                                         na.omit(se_coef))
-#   }
-#   class(ans) <- "summary.GPUglm"
-#   return(ans)
-# }
-
-
-# print.summary.GPUglm <- function (x, digits = max(3, getOption("digits") - 3), ...)
-# {
-#   cat("Generalized Linear Model of class 'summary.GPUglm':\n")
-#   if (!is.null(x$call))
-#     cat("\nCall: ", deparse(x$call), "\n\n")
-#   if (length(x$coef)) {
-#     cat("Coefficients:\n")
-#     cat(" ------------------------------------------------------------------",
-#         "\n")
-#     sig <- function(z){
-#       if (!is.na(z)){
-#         if (z < 0.001)
-#           "***"
-#         else if (z < 0.01)
-#           "** "
-#         else if (z < 0.05)
-#           "*  "
-#         else if (z < 0.1)
-#           ".  "
-#         else "   "
-#       } else "   "
-#     }
-#     sig.1 <- sapply(as.numeric(as.character(x$coefficients[,4])),
-#                     sig)
-#     est.1 <- cbind(format(x$coefficients, digits = digits),
-#                    sig.1)
-#     colnames(est.1)[ncol(est.1)] <- ""
-#     print(est.1)
-#     cat("\n")
-#     cat("-------------------------------------------------------------------",
-#         "\n")
-#     cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1",
-#         "\n")
-#     cat("\n")
-#   }
-#   else cat("No coefficients\n")
-#   cat("---\n")
-#   cat("null df: ", x$nulldf, "; null deviance: ", round(x$nulldev,
-#                                                         digits = 2), ";\n", "residuals df: ", x$df, "; residuals deviance: ",
-#       round(x$deviance, digits = 2), ";\n", "# obs.: ", x$n,
-#       "; # non-zero weighted obs.: ", x$ngoodobs, ";\n", "AIC: ",
-#       x$aic, "; log Likelihood: ", x$logLik, ";\n", "RSS: ",
-#       round(x$RSS, digits = 1), "; dispersion: ", x$dispersion,
-#       "; iterations: ", x$iter, ";\n", "rank: ", round(x$rank,
-#                                                        digits = 1), "; max tolerance: ", format(x$tol, scientific = TRUE,
-#                                                                                                 digits = 3), "; convergence: ", x$convergence, ".\n",
-#       sep = "")
-#   invisible(x)
-#   if (x$correlation) {
-#     cat("---\n")
-#     cat("Correlation of Coefficients:\n")
-#     x$correl[upper.tri(x$correl, diag = TRUE)] <- NA
-#     print(x$correl[-1, -nrow(x$correl)], na.print = "", digits = 2)
-#   }
-# }
-
-
-# print.GPUglm <- function(x,digits = max(3, getOption("digits") - 3),...)
-# {
-#   cat("Generalized Linear Model of class 'gpu.matrix':\n")
-#   if (!is.null(x$call)) cat("\nCall: ", deparse(x$call), "\n\n")
-#   if (length(x$coef)) {
-#     cat("Coefficients:\n")
-#     print.default(format(x$coefficients, digits = digits), print.gap = 2,
-#                   quote = FALSE)
-#   } else cat("No coefficients\n")
-#   cat("\n")
-#   invisible(x)
-# }
-setMethod("print", signature = "summary.GPUglm", definition = function(x,digits = max(3, getOption("digits") - 3),...){
-  cat("Generalized Linear Model of class 'summary.GPUglm':\n")
-  if (!is.null(x$call))
-    cat("\nCall: ", deparse(x$call), "\n\n")
-  if (length(x$coef)) {
-    cat("Coefficients:\n")
-    cat(" ------------------------------------------------------------------",
-        "\n")
-    sig <- function(z){
-      if (!is.na(z)){
-        if (z < 0.001)
-          "***"
-        else if (z < 0.01)
-          "** "
-        else if (z < 0.05)
-          "*  "
-        else if (z < 0.1)
-          ".  "
-        else "   "
-      } else "   "
-    }
-    sig.1 <- sapply(as.numeric(as.character(x$coefficients[,4])),
-                    sig)
-    est.1 <- cbind(format(x$coefficients, digits = digits),
-                   sig.1)
-    colnames(est.1)[ncol(est.1)] <- ""
-    print(est.1)
-    cat("\n")
-    cat("-------------------------------------------------------------------",
-        "\n")
-    cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1",
-        "\n")
-    cat("\n")
-  }
-  else cat("No coefficients\n")
-  cat("---\n")
-  cat("null df: ", x$nulldf, "; null deviance: ", round(x$nulldev,
-                                                        digits = 2), ";\n", "residuals df: ", x$df, "; residuals deviance: ",
-      round(x$deviance, digits = 2), ";\n", "# obs.: ", x$n,
-      "; # non-zero weighted obs.: ", x$ngoodobs, ";\n", "AIC: ",
-      x$aic, "; log Likelihood: ", x$logLik, ";\n", "RSS: ",
-      round(x$RSS, digits = 1), "; dispersion: ", x$dispersion,
-      "; iterations: ", x$iter, ";\n", "rank: ", round(x$rank,
-                                                       digits = 1), "; max tolerance: ", format(x$tol, scientific = TRUE,
-                                                                                                digits = 3), "; convergence: ", x$convergence, ".\n",
-      sep = "")
-  invisible(x)
-  if (x$correlation) {
-    cat("---\n")
-    cat("Correlation of Coefficients:\n")
-    x$correl[upper.tri(x$correl, diag = TRUE)] <- NA
-    print(x$correl[-1, -nrow(x$correl)], na.print = "", digits = 2)
-  }
-})
-
-setMethod("print", signature = "GPUglm", definition = function(x,digits = max(3, getOption("digits") - 3),...){
-  cat("Generalized Linear Model of class 'gpu.matrix':\n")
-  if (!is.null(x$call)) cat("\nCall: ", deparse(x$call), "\n\n")
-  if (length(x$coef)) {
-    cat("Coefficients:\n")
-    print.default(format(x$coefficients, digits = digits), print.gap = 2,
-                  quote = FALSE)
-  } else cat("No coefficients\n")
-  cat("\n")
-  invisible(x)
-})
-setMethod(f ="show", signature = "GPUglm", definition = function(object){
-  print(object)
-})
-setMethod(f ="show", signature = "summary.GPUglm", definition = function(object){
-  print(object)
-})
-
-setMethod("summary", signature = "GPUglm", definition = function(object, correlation = FALSE, ...){
+summary.GPUglm <- function (object, correlation = FALSE, ...)
+{
   if (!inherits(object, "GPUglm"))
     stop("object is not of class speedglm")
   z <- object
@@ -522,5 +325,203 @@ setMethod("summary", signature = "GPUglm", definition = function(object, correla
   }
   class(ans) <- "summary.GPUglm"
   return(ans)
-})
+}
 
+
+print.summary.GPUglm <- function (x, digits = max(3, getOption("digits") - 3), ...)
+{
+  cat("Generalized Linear Model of class 'summary.GPUglm':\n")
+  if (!is.null(x$call))
+    cat("\nCall: ", deparse(x$call), "\n\n")
+  if (length(x$coef)) {
+    cat("Coefficients:\n")
+    cat(" ------------------------------------------------------------------",
+        "\n")
+    sig <- function(z){
+      if (!is.na(z)){
+        if (z < 0.001)
+          "***"
+        else if (z < 0.01)
+          "** "
+        else if (z < 0.05)
+          "*  "
+        else if (z < 0.1)
+          ".  "
+        else "   "
+      } else "   "
+    }
+    sig.1 <- sapply(as.numeric(as.character(x$coefficients[,4])),
+                    sig)
+    est.1 <- cbind(format(x$coefficients, digits = digits),
+                   sig.1)
+    colnames(est.1)[ncol(est.1)] <- ""
+    print(est.1)
+    cat("\n")
+    cat("-------------------------------------------------------------------",
+        "\n")
+    cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1",
+        "\n")
+    cat("\n")
+  }
+  else cat("No coefficients\n")
+  cat("---\n")
+  cat("null df: ", x$nulldf, "; null deviance: ", round(x$nulldev,
+                                                        digits = 2), ";\n", "residuals df: ", x$df, "; residuals deviance: ",
+      round(x$deviance, digits = 2), ";\n", "# obs.: ", x$n,
+      "; # non-zero weighted obs.: ", x$ngoodobs, ";\n", "AIC: ",
+      x$aic, "; log Likelihood: ", x$logLik, ";\n", "RSS: ",
+      round(x$RSS, digits = 1), "; dispersion: ", x$dispersion,
+      "; iterations: ", x$iter, ";\n", "rank: ", round(x$rank,
+                                                       digits = 1), "; max tolerance: ", format(x$tol, scientific = TRUE,
+                                                                                                digits = 3), "; convergence: ", x$convergence, ".\n",
+      sep = "")
+  invisible(x)
+  if (x$correlation) {
+    cat("---\n")
+    cat("Correlation of Coefficients:\n")
+    x$correl[upper.tri(x$correl, diag = TRUE)] <- NA
+    print(x$correl[-1, -nrow(x$correl)], na.print = "", digits = 2)
+  }
+}
+
+
+print.GPUglm <- function(x,digits = max(3, getOption("digits") - 3),...)
+{
+  cat("Generalized Linear Model of class 'gpu.matrix':\n")
+  if (!is.null(x$call)) cat("\nCall: ", deparse(x$call), "\n\n")
+  if (length(x$coef)) {
+    cat("Coefficients:\n")
+    print.default(format(x$coefficients, digits = digits), print.gap = 2,
+                  quote = FALSE)
+  } else cat("No coefficients\n")
+  cat("\n")
+  invisible(x)
+}
+# setMethod("print", signature = "summary.GPUglm", definition = function(x,digits = max(3, getOption("digits") - 3),...){
+#   cat("Generalized Linear Model of class 'summary.GPUglm':\n")
+#   if (!is.null(x$call))
+#     cat("\nCall: ", deparse(x$call), "\n\n")
+#   if (length(x$coef)) {
+#     cat("Coefficients:\n")
+#     cat(" ------------------------------------------------------------------",
+#         "\n")
+#     sig <- function(z){
+#       if (!is.na(z)){
+#         if (z < 0.001)
+#           "***"
+#         else if (z < 0.01)
+#           "** "
+#         else if (z < 0.05)
+#           "*  "
+#         else if (z < 0.1)
+#           ".  "
+#         else "   "
+#       } else "   "
+#     }
+#     sig.1 <- sapply(as.numeric(as.character(x$coefficients[,4])),
+#                     sig)
+#     est.1 <- cbind(format(x$coefficients, digits = digits),
+#                    sig.1)
+#     colnames(est.1)[ncol(est.1)] <- ""
+#     print(est.1)
+#     cat("\n")
+#     cat("-------------------------------------------------------------------",
+#         "\n")
+#     cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1",
+#         "\n")
+#     cat("\n")
+#   }
+#   else cat("No coefficients\n")
+#   cat("---\n")
+#   cat("null df: ", x$nulldf, "; null deviance: ", round(x$nulldev,
+#                                                         digits = 2), ";\n", "residuals df: ", x$df, "; residuals deviance: ",
+#       round(x$deviance, digits = 2), ";\n", "# obs.: ", x$n,
+#       "; # non-zero weighted obs.: ", x$ngoodobs, ";\n", "AIC: ",
+#       x$aic, "; log Likelihood: ", x$logLik, ";\n", "RSS: ",
+#       round(x$RSS, digits = 1), "; dispersion: ", x$dispersion,
+#       "; iterations: ", x$iter, ";\n", "rank: ", round(x$rank,
+#                                                        digits = 1), "; max tolerance: ", format(x$tol, scientific = TRUE,
+#                                                                                                 digits = 3), "; convergence: ", x$convergence, ".\n",
+#       sep = "")
+#   invisible(x)
+#   if (x$correlation) {
+#     cat("---\n")
+#     cat("Correlation of Coefficients:\n")
+#     x$correl[upper.tri(x$correl, diag = TRUE)] <- NA
+#     print(x$correl[-1, -nrow(x$correl)], na.print = "", digits = 2)
+#   }
+# })
+
+# setMethod("print", signature = "GPUglm", definition = function(x,digits = max(3, getOption("digits") - 3),...){
+#   cat("Generalized Linear Model of class 'gpu.matrix':\n")
+#   if (!is.null(x$call)) cat("\nCall: ", deparse(x$call), "\n\n")
+#   if (length(x$coef)) {
+#     cat("Coefficients:\n")
+#     print.default(format(x$coefficients, digits = digits), print.gap = 2,
+#                   quote = FALSE)
+#   } else cat("No coefficients\n")
+#   cat("\n")
+#   invisible(x)
+# })
+# setMethod(f ="show", signature = "GPUglm", definition = function(object){
+#   print(object)
+# })
+# setMethod(f ="show", signature = "summary.GPUglm", definition = function(object){
+#   print(object)
+# })
+#
+# setMethod("summary", signature = "GPUglm", definition = function(object, correlation = FALSE, ...){
+#   if (!inherits(object, "GPUglm"))
+#     stop("object is not of class speedglm")
+#   z <- object
+#   var_res <- as.numeric(z$RSS/z$df)
+#   dispersion <- if (z$family$family %in% c("poisson", "binomial")) 1 else var_res
+#   if (z$method == "qr") {
+#     z$XTX <- z$XTX[z$ok, z$ok]
+#   }
+#   inv <- solve(z$XTX, tol = z$tol.solve)
+#   covmat <- diag(inv)
+#   se_coef <- rep(NA, length(z$coefficients))
+#   se_coef[z$ok] <- sqrt(dispersion * covmat)
+#   if (z$family$family %in% c("binomial", "poisson")) {
+#     z1 <- z$coefficients/se_coef
+#     p <- 2 * pnorm(abs(z1), lower.tail = FALSE)
+#   } else {
+#     t1 <- z$coefficients/se_coef
+#     p <- 2 * pt(abs(t1), df = z$df, lower.tail = FALSE)
+#   }
+#   dn <- c("Estimate", "Std. Error")
+#   if (z$family$family %in% c("binomial", "poisson")) {
+#
+#     param <- data.frame(z$coefficients, se_coef, z1,p)
+#     dimnames(param) <- list(names(z$coefficients), c(dn,
+#                                                      "z value", "Pr(>|z|)"))
+#   } else {
+#     param <- data.frame(z$coefficients, se_coef, t1,p)
+#     dimnames(param) <- list(names(z$coefficients), c(dn,
+#                                                      "t value", "Pr(>|t|)"))
+#   }
+#   eps <- 10 * .Machine$double.eps
+#   if (z$family$family == "binomial") {
+#     if (any(z$mu > 1 - eps) || any(z$mu < eps))
+#       warning("fitted probabilities numerically 0 or 1 occurred")
+#   }
+#   if (z$family$family == "poisson") {
+#     if (any(z$mu < eps))
+#       warning("fitted rates numerically 0 occurred")
+#   }
+#   keep <- match(c("call", "terms", "family", "deviance", "aic",
+#                   "df", "nulldev", "nulldf", "iter", "tol", "n", "convergence",
+#                   "ngoodobs", "logLik", "RSS", "rank"), names(object),
+#                 0)
+#   ans <- c(object[keep], list(coefficients = param, dispersion = dispersion,
+#                               correlation = correlation, cov.unscaled = inv, cov.scaled = inv *
+#                                 var_res))
+#   if (correlation) {
+#     ans$correl <- (inv * var_res)/outer(na.omit(se_coef),
+#                                         na.omit(se_coef))
+#   }
+#   class(ans) <- "summary.GPUglm"
+#   return(ans)
+# })
+#

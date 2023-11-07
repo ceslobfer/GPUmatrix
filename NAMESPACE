@@ -10,6 +10,9 @@ export(GPUglmfit)
 export(installTorch)
 export(NMFgpumatrix)
 export(LR_GradientConjugate_gpumatrix)
+S3method(print,GPUglm)
+S3method(summary,GPUglm)
+S3method(print,summary.GPUglm)
 exportMethods("as.matrix",
               "as.gpu.matrix",
               "as.vector",
@@ -18,7 +21,6 @@ exportMethods("as.matrix",
               "is.numeric",
               "to_dense",
               "to_sparse",
-              "summary",
               "print",
               "which.max",
               "which.min",

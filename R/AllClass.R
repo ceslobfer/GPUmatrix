@@ -22,8 +22,15 @@ setClass("gpu.matrix.torch",
            sparse = "logical",
            type="character")
 )
-setClass("GPUglm",representation(glm="ANY"))
-setClass("summary.GPUglm")
+# setClass("GPUglm",representation(coefficients = "ANY", logLik = "ANY",
+#                                  iter = "ANY", tol = "ANY", family = "ANY", link = "ANY",
+#                                  df = "ANY", XTX = "ANY", dispersion = "ANY", ok = "ANY",
+#                                  rank = "ANY", RSS = "ANY", method = "ANY", aic = "ANY",
+#                                  offset = "ANY", sparse = "ANY", deviance = "ANY", nulldf = "ANY",
+#                                  nulldev = "ANY", ngoodobs = "ANY", n = "ANY", intercept = "ANY",
+#                                  convergence = "ANY"))
+# setClass("summary.GPUglm")
+# setClass("GPUglm", slots = list())
 # library(torch)
 
 castDtype_torch <- function(type,data=NULL) {
