@@ -15,6 +15,16 @@ to_sparse_torch<-function(x){
   return(x)
 }
 
+typeGPUmatrix <- function(x){
+  objectClass <- class(x)
+  if(objectClass == "gpu.matrix.torch"){
+    res <- "torch"
+  }else{
+    res <- "tensorflow"
+  }
+  return(res)
+}
+
 setClassUnion("numMatrixLike", members = c("logical", "integer", "numeric", "matrix"))
 c.GPUmatrix <- function(...) unlist(lapply(list(...), as.vector))
 

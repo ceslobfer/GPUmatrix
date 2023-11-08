@@ -7,12 +7,13 @@ updateW <- function(V,W,H) {
   W <- W * (V %*% t(H))/(W %*% (H %*% t(H)) )
 }
 
-
 NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
   set.seed(123)
-  if (class(V)[[1]] == "gpu.matrix.torch") {
-    if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),device = GPUmatrix:::device(V))
-    if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),device = GPUmatrix:::device(V))
+  objectPackage <- attr(class(A),"package")
+
+  if(objectPackage == "GPUmatrix"){
+    if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = GPUmatrix:::device(V))
+    if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = GPUmatrix:::device(V))
   }else{
     if(is.null(Winit)) Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
     if(is.null(Hinit)) Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
@@ -257,7 +258,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
                nulldev = nulldev, ngoodobs = n.ok, n = nobs, intercept = intercept,
                convergence = (!(tol > acc)))
   # new("GPUglm", glm=res)
-  # class(rval) <- "GPUglm"
+  class(rval) <- "GPUglm"
   return(rval)
 }
 

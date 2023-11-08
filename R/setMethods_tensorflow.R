@@ -708,6 +708,14 @@ setMethod("sum2", signature(x = "gpu.matrix.tensorflow"), function(x){
   }
   return(res)
 })
+setMethod("sum", signature(x = "gpu.matrix.tensorflow"), function(x){
+  if (x@sparse) {
+    res <- as.numeric(tensorflow::tf$sparse$reduce_sum(x@gm))
+  }else{
+    res <- as.numeric(tensorflow::tf$reduce_sum(x@gm))
+  }
+  return(res)
+})
 
 writeDType_tensorflow <- function(dtype){
   dtype <- as.character(dtype)

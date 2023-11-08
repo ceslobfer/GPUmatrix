@@ -192,6 +192,7 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
   #dtype control
   if (class(dtype)[[1]] != "torch_dtype"){
     # dtype <- castDtype_torch(typeof(data), data)
+    if (is.null(dtype) & classData == "float32") dtype <- "float32"
     if (is.null(dtype)){
       dtype <- castDtype_torch(typeof(data),data)
     }else{
@@ -326,6 +327,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
   #dtype control
   if (class(dtype)[[1]] != "tensorflow.python.framework.dtypes.DType"){
     # dtype <- castDtype_torch(typeof(data), data)
+    if (is.null(dtype) & classData == "float32") dtype <- "float32"
     if (is.null(dtype)){
       dtype <- castDtype_tensorflow(typeof(data),data)
     }else{

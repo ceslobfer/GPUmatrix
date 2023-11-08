@@ -1,10 +1,15 @@
 
 
 device <- function(x){
-  res <- "cuda"
-  if (!x@gm$is_cuda) {
-    res <- "cpu"
+  if(class(x)[[1]] == "gpu.matrix.torch"){
+    res <- "cuda"
+    if (!x@gm$is_cuda) {
+      res <- "cpu"
+    }
+  }else if (class(x)[[1]] == "gpu.matrix.torch"){
+    res <- Atf@gm$device
   }
+
   return(res)
 }
 select_rawIndex_torch <- function(A, rawIndex){
