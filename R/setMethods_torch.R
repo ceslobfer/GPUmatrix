@@ -637,7 +637,8 @@ setMethod("qr.Q", signature(qr="list"), function(qr, complete=F,Dvec){
   return(res)
 })
 setMethod("qr.X", signature(qr="list"), function(qr, complete=F,ncol){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
     res <- qr$x
   }else{
     res <- base::qr.X(qr)
@@ -645,7 +646,8 @@ setMethod("qr.X", signature(qr="list"), function(qr, complete=F,ncol){
   return(res)
 })
 setMethod("qr.R", signature(qr="list"), function(qr, complete=F){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
     res <- qr$r
   }else{
     res <- base::qr.R(qr)
@@ -653,7 +655,8 @@ setMethod("qr.R", signature(qr="list"), function(qr, complete=F){
   return(res)
 })
 setMethod("qr.coef", signature(qr="list", y="ANY"), function(qr, y){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
     res <- qr$r %*% (t(qr$q) %*% y)
   }else{
     res <- base::qr.coef(qr,y)
@@ -661,7 +664,8 @@ setMethod("qr.coef", signature(qr="list", y="ANY"), function(qr, y){
   return(res)
 })
 setMethod("qr.qy", signature(qr="list", y="ANY"), function(qr, y){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
     res <- qr$q %*% y
   }else{
     res <- base::qr.qy(qr,y)
@@ -670,7 +674,8 @@ setMethod("qr.qy", signature(qr="list", y="ANY"), function(qr, y){
 })
 
 setMethod("qr.qty", signature(qr="list", y="ANY"), function(qr, y){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
     res <- t(qr$q) %*% y
   }else{
     res <- base::qr.qty(qr,y)
@@ -679,7 +684,8 @@ setMethod("qr.qty", signature(qr="list", y="ANY"), function(qr, y){
 })
 
 setMethod("qr.resid", signature(qr="list", y="ANY"), function(qr, y){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
     res <- y - (qr$x %*% qr.coef(qr,y))
   }else{
     res <- base::qr.resid(qr,y)
@@ -721,13 +727,25 @@ setMethod("qr.solve", signature(a="ANY", b="gpu.matrix.torch"), function(a,b){
 
 
 setMethod("qr.solve", signature(a="list", b="ANY"), function(a,b){
+  objectClass <- class(a[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch")){
+    castMatrix <- castTypeOperations_torch(a[[1]], b, sameType = T)
+    b <- castMatrix[[2]]
 
-  castMatrix <- castTypeOperations_torch(a[[1]], b, sameType = T)
-  b <- castMatrix[[2]]
+    qr_gpu <- a
+    res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+    res <- gpu.matrix.torch(res_solve, dtype = dtype(a[[1]]))
+  }else if((objectClass == "gpu.matrix.tensorflow")){
+    castMatrix <- castTypeOperations(a[[1]], b, sameType = T)
+    b <- castMatrix[[2]]
 
-  qr_gpu <- a
-  res_solve <- torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
-  res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a[[1]]))
+    qr_gpu <- a
+    res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+    res <- gpu.matrix.tensorflow(res_solve)
+  }else{
+    res <- base::qr.solve(a,b)
+  }
+
   return(res)
 })
 

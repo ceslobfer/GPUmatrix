@@ -335,7 +335,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
 
   switch(classData,
          matrix={
-           data <- matrix(data,nrow,ncol,byrow)
+           # data <- matrix(data,nrow,ncol,byrow)
            gm <- tensorflow::as_tensor(data,dtype = dtype)
            gm <- dimControl_tensorflow(gm,nrow,ncol)
          },

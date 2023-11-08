@@ -542,14 +542,57 @@ setMethod("solve", signature(a = "ANY", b = "gpu.matrix.tensorflow"), function(a
   return(res)
 })
 
-setMethod("qr", signature(x="gpu.matrix.tensorflow"), function(x){
-
+setMethod("qr", signature(x="gpu.matrix.tensorflow"), function(x,...){
   x <- warningSparseTensor(x)
-  res <- qr(x@gm)
-  res$qr <- gpu.matrix.tensorflow(res$qr)
-
+  qrTF <- tensorflow::tf$linalg$qr(x@gm)
+  res <- list(q=gpu.matrix.tensorflow(qrTF[0]), r=gpu.matrix.tensorflow(qrTF[1]), x=x)
   return(res)
 })
+
+setMethod("qr.solve", signature(a="gpu.matrix.tensorflow", b="gpu.matrix.tensorflow"), function(a,b){
+  b <- warningInteger(b)
+  castMatrix <- castTypeOperations(a,b,sameType = T)
+  a <- castMatrix[[1]]
+  b <- castMatrix[[2]]
+  qr_gpu <- qr(a)
+  res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  res <- gpu.matrix.tensorflow(res_solve)
+  return(res)
+})
+
+setMethod("qr.solve", signature(a="gpu.matrix.tensorflow", b="ANY"), function(a,b){
+  b <- warningInteger(b)
+  castMatrix <- castTypeOperations(a,b,sameType = T)
+  a <- castMatrix[[1]]
+  b <- castMatrix[[2]]
+  qr_gpu <- qr(a)
+  res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  res <- gpu.matrix.tensorflow(res_solve)
+  return(res)
+})
+setMethod("qr.solve", signature(a="ANY", b="gpu.matrix.tensorflow"), function(a,b){
+  b <- warningInteger(b)
+  castMatrix <- castTypeOperations(a,b,sameType = T)
+  a <- castMatrix[[1]]
+  b <- castMatrix[[2]]
+  qr_gpu <- qr(a)
+  res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  res <- gpu.matrix.tensorflow(res_solve)
+  return(res)
+})
+
+
+# setMethod("qr.solve", signature(a="list", b="ANY"), function(a,b){
+#
+  # castMatrix <- castTypeOperations(a[[1]], b, sameType = T)
+  # b <- castMatrix[[2]]
+  #
+  # qr_gpu <- a
+  # res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  # res <- gpu.matrix.tensorflow(res_solve)
+#   return(res)
+# })
+
 
 # setGeneric("rankMatrix", function(x) standardGeneric("rankMatrix"))
 # setMethod("rankMatrix", signature(x="gpu.matrix.tensorflow"), function(x){
