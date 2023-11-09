@@ -276,7 +276,7 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
          NULL={
            if (is.null(nrow) | nrow ==0) nrow=1
            if (is.null(ncol) | ncol ==0) ncol=1
-           m <- matrix(nrow=nrow, ncol=ncol, byrow=byrow)
+           m <- matrix(NaN,nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          complex={
@@ -384,7 +384,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
          NULL={
            if (is.null(nrow) | nrow ==0) nrow=1
            if (is.null(ncol) | ncol ==0) ncol=1
-           m <- matrix(data, nrow, ncol, byrow, dimnames)
+           m <- matrix(NaN,nrow, ncol, byrow, dimnames)
            gm <- tensorflow::as_tensor(m,dtype = dtype)
          },
          integer={
