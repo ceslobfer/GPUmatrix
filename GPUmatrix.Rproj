@@ -20,6 +20,6 @@ BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
 
-PythonType: system
-PythonVersion: 3.10.0
-PythonPath: C:/Users/clobatofern/AppData/Local/Programs/Python/Python310/python.exe
+PythonType: conda
+PythonVersion: 3.9.18
+PythonPath: C:/Users/clobatofern/Anaconda3/envs/r-tensorflow/python.exe

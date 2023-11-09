@@ -34,22 +34,21 @@ creationGPUmatrix_all <- function(refMatrix){
   return(res)
 }
 
-SingleFunctionTimeCalculation <- function(listMatrixComparison,f, nrows,ncols,Time){
+SingleFunctionTimeCalculation <- function(listMatrixComparison,f,fgpu, nrows,ncols,Time){
   resTimes <- c()
   for (A in listMatrixComparison) {
     A <- abs(A)
     if(class(A)[1] == "gpu.matrix.torch"){
-      CPU <- system.time({f(A); torch::cuda_synchronize()})
+      CPU <- system.time({fgpu(A); torch::cuda_synchronize()})
       if (CPU[3]< Time) {
         nTimes <- round(1/(1e-2+CPU[3]))
         CPU <- system.time({for (i in 1:nTimes) {
-          f(A); torch::cuda_synchronize()
+          fgpu(A); torch::cuda_synchronize()
         }})
         CPU <- CPU / nTimes
       }
       resTimes <- c(resTimes, CPU[[3]])
     }else{
-      A <- abs(A)
       CPU <- system.time({f(A); A[nrows, ncols]})
       if (CPU[3]< Time) {
         nTimes <- round(1/(1e-2+CPU[3]))
@@ -67,7 +66,7 @@ SingleFunctionTimeCalculation <- function(listMatrixComparison,f, nrows,ncols,Ti
 
 }
 
-TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixComparison2, f, nrows,ncols, Time){
+TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixComparison2, f,fgpu, nrows,ncols, Time){
   resTimes <- c()
   for (i in c(1:length(listMatrixComparison1))) {
     A1 <- listMatrixComparison1[[i]]
@@ -75,11 +74,11 @@ TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixCompariso
     A2 <- listMatrixComparison2[[i]]
     A2 <- abs(A2)
     if(class(A1)[1] == "gpu.matrix.torch"){
-      CPU <- system.time({B <- f(A1,A2); torch::cuda_synchronize()})
+      CPU <- system.time({B <- fgpu(A1,A2); torch::cuda_synchronize()})
       if (CPU[3]< Time) {
         nTimes <- round(1/(1e-2+CPU[3]))
         CPU <- system.time({for (i in 1:nTimes) {
-          B <- f(A1,A2); torch::cuda_synchronize()
+          B <- fgpu(A1,A2); torch::cuda_synchronize()
         }})
         CPU <- CPU / nTimes
       }
@@ -115,7 +114,7 @@ plotTimeComparison_SingleMatrix<- function(nrowInterval=c(500,700,1000,1400,2000
                                                               "GPUm f64 cpu",
                                                               "GPUm f32 cuda",
                                                               "GPUm f64 cuda"),
-                                           f, g = rnorm, Time = .5, namePlot){
+                                           f,fgpu, g = rnorm, Time = .5, namePlot){
   DataFrameTimes <- c()
   sizeMatrixList <- c()
   for (i in c(1:length(nrowInterval))) {
@@ -129,7 +128,7 @@ plotTimeComparison_SingleMatrix<- function(nrowInterval=c(500,700,1000,1400,2000
     data <- g(nrows*ncols)
     A <- matrix(data, nrow = nrows, ncol = ncols)
     listMatrixComparison <- creationGPUmatrix_all(A)
-    timeRes <- SingleFunctionTimeCalculation(listMatrixComparison[typeMatrixPlot], f ,nrows, ncols,Time)
+    timeRes <- SingleFunctionTimeCalculation(listMatrixComparison[typeMatrixPlot], f, fgpu,nrows, ncols,Time)
     resTable <- cbind(timeRes,
           rep(nrows,length(typeMatrixPlot)),
           typeMatrixPlot)
@@ -146,7 +145,7 @@ plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,28
                                                               "GPUm f64 cpu",
                                                               "GPUm f32 cuda",
                                                               "GPUm f64 cuda"),
-                                           f, g = rnorm, Time = .5, namePlot){
+                                           f,fgpu, g = rnorm, Time = .5, namePlot){
   DataFrameTimes <- c()
   sizeMatrixList <- c()
   for (i in c(1:length(nrowInterval))) {
@@ -168,7 +167,7 @@ plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,28
     listMatrixComparison2 <- creationGPUmatrix_all(A2)[typeMatrixPlot]
     timeRes <- TwoFunctionTimeCalculation(listMatrixComparison1,
                                           listMatrixComparison2,
-                                          f ,nrows, ncols,Time)
+                                          f,fgpu ,nrows, ncols,Time)
     resTable <- cbind(timeRes,
                       rep(nrows,length(typeMatrixPlot)),
                       typeMatrixPlot)
@@ -273,33 +272,32 @@ getlineType <- function(types){
 #   grid.arrange(setPlots[c(1,2,4)],ncol=dimPlot[1], nrow=dimPlot[2])
 # }
 
-
-plotRowMeans <- plotTimeComparison_SingleMatrix(f=match.fun("rowMeans"), namePlot="Means of the rows")
-plotSolve <- plotTimeComparison_SingleMatrix(f=match.fun("solve"), namePlot="Inverse of a Matrix")
-plotFft <- plotTimeComparison_SingleMatrix(f=match.fun("fft"), namePlot="fft")
+#
+# plotRowMeans <- plotTimeComparison_SingleMatrix(f=rowMeans,fgpu = GPUmatrix::rowMeans, namePlot="Means of the rows")
+# plotSolve <- plotTimeComparison_SingleMatrix(f=match.fun("solve"), namePlot="Inverse of a Matrix")
+# # plotFft <- plotTimeComparison_SingleMatrix(f=match.fun("fft"), namePlot="fft")
 # plotSvd <- plotTimeComparison_SingleMatrix(f=match.fun("svd"), namePlot="Singular Value Decomposition")
-plotExp <- plotTimeComparison_SingleMatrix(f=match.fun("exp"), namePlot="Exponential of each element")
-plotProduct <- plotTimeComparison_TwoMatrix(f=match.fun("*"), namePlot="Element-wise product")
-# pLengend <- plotTimeComparison_TwoMatrix(f=match.fun("*"), namePlot="Element-wise product")
-plotMatProduct <- plotTimeComparison_TwoMatrix(f=match.fun("%*%"), namePlot="Matrix product")
-legendPlot <- get_legend(plotProduct)
-plotProduct <- plotProduct+ theme(legend.position = "none")+scale_y_log10()+labs(y = "Time in seconds (log10-scale)",x=NULL, title="Element-wise product")
-plotExp <- plotExp+ theme(legend.position = "none")+scale_y_log10()+labs(y = NULL,x=NULL, title="Exponential of each element")
-plotRowMeans <- plotRowMeans+ theme(legend.position = "none")+scale_y_log10()+labs(y = "Time in seconds (log10-scale)",x=NULL, title="Means of the rows")
-plotMatProduct <- plotMatProduct+ theme(legend.position = "none")+scale_y_log10()+labs(y = NULL,x=NULL, title="Matrix product")
-plotSolve <- plotSolve+ theme(legend.position = "none")+scale_y_log10()+labs(y = "Time in seconds (log10-scale)",x="Size matrix n×n", title="Inverse of a matrix")
-plotFft <- plotFft+ theme(legend.position = "none")+scale_y_log10()+labs(y = NULL,x="Size matrix n×n", title="FFT")
-
-
-ComputationTimeGraph <- grid.arrange(plotProduct,
-                                     plotExp,
-                                     plotRowMeans,
-                                     plotMatProduct,
-                                     plotSolve,
-                                     plotFft,
-                                     ncol = 2, nrow=3,
-                                     bottom=legendPlot)
-
+# plotExp <- plotTimeComparison_SingleMatrix(f=match.fun("exp"), namePlot="Exponential of each element")
+# plotProduct <- plotTimeComparison_TwoMatrix(f=match.fun("*"), namePlot="Element-wise product")
+# # pLengend <- plotTimeComparison_TwoMatrix(f=match.fun("*"), namePlot="Element-wise product")
+# plotMatProduct <- plotTimeComparison_TwoMatrix(f=match.fun("%*%"), namePlot="Matrix product")
+# legendPlot <- get_legend(plotProduct)
+# plotProduct <- plotProduct+ theme(legend.position = "none")+scale_y_log10()+labs(y = "Time in seconds (log10-scale)",x=NULL, title="Element-wise product")
+# plotExp <- plotExp+ theme(legend.position = "none")+scale_y_log10()+labs(y = NULL,x=NULL, title="Exponential of each element")
+# plotRowMeans <- plotRowMeans+ theme(legend.position = "none")+scale_y_log10()+labs(y = "Time in seconds (log10-scale)",x=NULL, title="Means of the rows")
+# plotMatProduct <- plotMatProduct+ theme(legend.position = "none")+scale_y_log10()+labs(y = NULL,x=NULL, title="Matrix product")
+# plotSolve <- plotSolve+ theme(legend.position = "none")+scale_y_log10()+labs(y = "Time in seconds (log10-scale)",x="Size matrix n×n", title="Inverse of a matrix")
+# plotSvd <- plotSvd+ theme(legend.position = "none")+scale_y_log10()+labs(y = NULL,x="Size matrix n×n", title="FFT")
+#
+#
+# ComputationTimeGraph <- grid.arrange(plotProduct,
+#                                      plotExp,
+#                                      plotRowMeans,
+#                                      plotMatProduct,
+#                                      plotSolve,
+#                                      plotSvd,
+#                                      ncol = 2, nrow=3,
+#                                      bottom=legendPlot)
 # ComputationTimeGraph
 # # torch::cuda_synchronize(torch_device("cuda"))
 # # ?cuda_current_device()
@@ -315,11 +313,11 @@ ComputationTimeGraph <- grid.arrange(plotProduct,
 #                                                                                                          "GPUm f64 cuda sparse",
 #                                                                                                          "GPUm f32 cuda sparse","GPUm f64 cpu sparse",
 #                                                                                                         "GPUm f32 cpu sparse"), nrowInterval = c(100,400,700,1200,1500,1800,2000))
-plotfft <- plotTimeComparison_SingleMatrix(f=match.fun("fft"), namePlot="fft",typeMatrixPlot =c("Base R matrix",
-                                                                                                        "GPUm f32 cpu","GPUm f64 cpu",
-                                                                                                        "GPUm f32 cuda",
-                                                                                                        "GPUm f64 cuda",
-                                                                                                        "GPUm f64 cuda sparse",
-                                                                                                        "GPUm f32 cuda sparse",
-                                                                                                        "GPUm f64 cpu sparse",
-                                                                                                        "GPUm f32 cpu sparse"))
+# plotfft <- plotTimeComparison_SingleMatrix(f=match.fun("fft"), namePlot="fft",typeMatrixPlot =c("Base R matrix",
+#                                                                                                         "GPUm f32 cpu","GPUm f64 cpu",
+#                                                                                                         "GPUm f32 cuda",
+#                                                                                                         "GPUm f64 cuda",
+#                                                                                                         "GPUm f64 cuda sparse",
+#                                                                                                         "GPUm f32 cuda sparse",
+#                                                                                                         "GPUm f64 cpu sparse",
+#                                                                                                         "GPUm f32 cpu sparse"))

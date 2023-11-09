@@ -6,7 +6,7 @@ importFrom("methods", as, new, cbind2, rbind2)
 
 
 export(glm.fit.GPU)
-export(GPUglmfit)
+export(GPUglm)
 export(installTorch)
 export(NMFgpumatrix)
 export(LR_GradientConjugate_gpumatrix)

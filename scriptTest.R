@@ -42,14 +42,15 @@ summary(gpu.glm.D93)
 library(gtools) # for logit
 library(speedglm)
 m <- 10000
-n <- 100
+n <- 1000
 x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
 y <- rbinom(m, 1, prob = inv.logit(x%*%sol))
 
 system.time(s1 <- glm.fit(x,y,family = binomial())$coefficients)
 system.time(s2 <- speedglm.wfit(y,x,family = binomial())$coefficients)
-system.time(s3 <- glm.fit.GPU(x,y,family = binomial())$coefficients)
+system.time(s3 <- glm.fit.GPU(x,y,family = binomial(),dtype="float32")$coefficients)
+system.time(s3 <- glm.fit.GPU(x,y,family = binomial(),dtype="float64")$coefficients)
 plot(s1,s2)
 plot(s1,s3)
 plot(s2-s3)

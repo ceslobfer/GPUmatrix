@@ -9,11 +9,16 @@ updateW <- function(V,W,H) {
 
 NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
   set.seed(123)
-  objectPackage <- attr(class(A),"package")
+  objectPackage <- attr(class(V),"package")
 
-  if(objectPackage == "GPUmatrix"){
-    if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = GPUmatrix:::device(V))
-    if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = GPUmatrix:::device(V))
+  if(!is.null(objectPackage)){
+    if(objectPackage == "GPUmatrix"){
+      if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = GPUmatrix:::device(V))
+      if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = GPUmatrix:::device(V))
+    }else{
+      if(is.null(Winit)) Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
+      if(is.null(Hinit)) Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
+    }
   }else{
     if(is.null(Winit)) Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
     if(is.null(Hinit)) Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
@@ -80,7 +85,7 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
 }
 
 
-GPUglmfit <- function(...) {
+GPUglm <- function(...) {
   res <- glm(..., method = "glm.fit.GPU")
   class(res) <- "GPUglm"
   # res <- new("GPUglm", res)

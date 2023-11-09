@@ -276,7 +276,7 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
          NULL={
            if (is.null(nrow) | nrow ==0) nrow=1
            if (is.null(ncol) | ncol ==0) ncol=1
-           m <- matrix(data, nrow=nrow, ncol=ncol, byrow=byrow)
+           m <- matrix(nrow=nrow, ncol=ncol, byrow=byrow)
            gm <- torch::torch_tensor(m, device = device_torch, dtype = dtype)
          },
          complex={
