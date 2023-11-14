@@ -41,8 +41,8 @@ summary(gpu.glm.D93)
 # Let's go with the big guys
 library(gtools) # for logit
 library(speedglm)
-m <- 10000
-n <- 1000
+m <- 1000
+n <- 100
 x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
 y <- rbinom(m, 1, prob = inv.logit(x%*%sol))
@@ -55,7 +55,58 @@ plot(s1,s2)
 plot(s1,s3)
 plot(s2-s3)
 
-s1
-s2
-s3
 
+
+plotGLM<- function(nrowInterval=c(1000,3000,5000,7000,9000,10000,11000),
+                   ncolInterval=nrowInterval,
+                   typeMatrixPlotX = c("GPUm f32 cpu",
+                                       "GPUm f64 cpu",
+                                       "GPUm f32 cuda",
+                                       "GPUm f64 cuda",
+                                       "glm.fit",
+                                       "speedglm"),
+                   typeMatrixPloty = typeMatrixPlotX,
+                   f,fgpu, g = runif, Time = .5, namePlot="Conjugate Gradient for Logical Regresion",
+                   ylabel="Time in log10(seconds)",
+                   xlabel=bquote(bold("Size ") ~ bold(X %in% R^{n * (n/20)})~""),
+                   family=poisson()){
+  DataFrameTimes <- c()
+  sizeMatrixList <- c()
+  for (i in c(1:length(nrowInterval))) {
+    sizeMatrixList <- c(sizeMatrixList,paste(nrowInterval[i],ncolInterval[i],sep = "x"))
+  }
+
+  for(interval in c(1:length(nrowInterval))){
+    set.seed(1)
+
+    m <- nrowInterval[interval]
+    print(m)
+    n <- m/10
+    X <- matrix(g(m*n),m,n)
+    sol <- rnorm(n)
+    y <- rbinom(m, 1, prob = inv.logit(X%*%sol))
+    # set.seed(123)
+    nrows <- nrowInterval[interval]
+    ncols <- ncolInterval[interval]
+
+    listMatrixComparison1 <- creationGPUmatrix_all(X)[typeMatrixPlotX]
+    listMatrixComparison2 <- creationGPUmatrix_all(y)[typeMatrixPloty]
+
+    timeRes <- TwoFunctionTimeCalculation(listMatrixComparison1,
+                                          listMatrixComparison2,
+                                          f,fgpu ,nrows, ncols,Time,
+                                          typeMatrixPlotX, family=family)
+    resTable <- cbind(timeRes,
+                      rep(nrows,length(typeMatrixPlotX)),
+                      typeMatrixPlotX)
+    DataFrameTimes <- rbind(DataFrameTimes,resTable)
+  }
+
+
+  return(drawPlotFunction(DataFrameTimes,namePlot,xlabel = xlabel))
+}
+
+
+plotGLMRes <- plotGLM(f=match.fun("glm.fit.GPU"),
+                         fgpu=match.fun("glm.fit.GPU"))
+glm.fit.GPU(A1,A2,family = poisson())

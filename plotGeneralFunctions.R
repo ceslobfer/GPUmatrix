@@ -30,11 +30,12 @@ creationGPUmatrix_all <- function(refMatrix){
               "GPUm f64 cpu"=GPUm_f64_cpu, "GPUm f32 cpu"=GPUm_f32_cpu,
               "GPUm f64 cuda sparse"=GPUm_f64_cuda_sparse, "GPUm f32 cuda sparse"=GPUm_f32_cuda_sparse,
               "GPUm f64 cpu sparse"=GPUm_f64_cpu_sparse, "GPUm f32 cpu sparse"=GPUm_f32_cpu_sparse,
-              "float32 lib"=float32_lib,"Matrix lib"=Matrix_lib, "Base R matrix"=refMatrix)
+              "float32 lib"=float32_lib,"Matrix lib"=Matrix_lib, "Base R matrix"=refMatrix, "glm.fit"=refMatrix,
+              "speedglm"=refMatrix)
   return(res)
 }
 
-SingleFunctionTimeCalculation <- function(listMatrixComparison,f,fgpu, nrows,ncols,Time){
+SingleFunctionTimeCalculation <- function(listMatrixComparison,f,fgpu, nrows,ncols,Time,typeMatrixPlot){
   resTimes <- c()
   for (A in listMatrixComparison) {
     A <- abs(A)
@@ -66,7 +67,8 @@ SingleFunctionTimeCalculation <- function(listMatrixComparison,f,fgpu, nrows,nco
 
 }
 
-TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixComparison2, f,fgpu, nrows,ncols, Time){
+TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixComparison2,
+                                       f,fgpu, nrows,ncols, Time, typeMatrixPlot, family=binomial()){
   resTimes <- c()
   for (i in c(1:length(listMatrixComparison1))) {
     A1 <- listMatrixComparison1[[i]]
@@ -84,14 +86,53 @@ TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixCompariso
       }
       resTimes <- c(resTimes, CPU[[3]])
     }else{
-      CPU <- system.time({B <- f(A1,A2); A1[nrows,ncols]})
-      if (CPU[3]< Time) {
-        nTimes <- round(1/(1e-2+CPU[3]))
-        CPU <- system.time({for (i in 1:nTimes) {
-          B <- f(A1,A2); A1[nrows,ncols]
-        }})
-        CPU <- CPU / nTimes
+      # if(!is.null(OtherFunctionComparison)){
+      #     CPU <- system.time({B <- OtherFunctionComparison(A1,A2); A1[nrows,ncols]})
+      #     if (CPU[3]< Time) {
+      #       nTimes <- round(1/(1e-2+CPU[3]))
+      #       CPU <- system.time({for (i in 1:nTimes) {
+      #         B <- OtherFunctionComparison(A1,A2); A1[nrows,ncols]
+      #       }})
+      #       CPU <- CPU / nTimesS
+      #     }
+      # }S
+      if(typeMatrixPlot[i]=="glm.fit"){
+        CPU <- system.time({B <- glm.fit(A1,A2, family = family); B})
+        if (CPU[3]< Time) {
+          nTimes <- round(1/(1e-2+CPU[3]))
+          CPU <- system.time({for (i in 1:nTimes) {
+            B <- glm.fit(A1,A2, family = family); B
+          }})
+          CPU <- CPU / nTimes
+        }
+      }else if(typeMatrixPlot[i]=="speedglm"){
+        CPU <- system.time({B <- speedglm(A1,A2, family = family); B})
+        if (CPU[3]< Time) {
+          nTimes <- round(1/(1e-2+CPU[3]))
+          CPU <- system.time({for (i in 1:nTimes) {
+            B <- glm.fit(A1,A2, family = family); B
+          }})
+          CPU <- CPU / nTimes
+        }
+      }else{
+        CPU <- system.time({B <- f(A1,A2); B})
+        if (CPU[3]< Time) {
+          nTimes <- round(1/(1e-2+CPU[3]))
+          CPU <- system.time({for (i in 1:nTimes) {
+            B <- f(A1,A2); B
+          }})
+          CPU <- CPU / nTimes
+        }
       }
+        # CPU <- system.time({B <- f(A1,A2); B})
+        # if (CPU[3]< Time) {
+        #   nTimes <- round(1/(1e-2+CPU[3]))
+        #   CPU <- system.time({for (i in 1:nTimes) {
+        #     B <- f(A1,A2); B
+        #   }})
+        #   CPU <- CPU / nTimes
+        # }
+
       resTimes <- c(resTimes, CPU[[3]])
     }
 
@@ -137,6 +178,95 @@ plotTimeComparison_SingleMatrix<- function(nrowInterval=c(500,700,1000,1400,2000
 
   return(drawPlotFunction(DataFrameTimes,namePlot))
 }
+libraries <- c("RcppNumerical", "GPUmatrix", "torch",
+               "tensorflow", "Matrix")
+trash <- lapply(libraries, require, character.only = TRUE, quietly=T)
+
+plotLRG<- function(nrowInterval=c(10000,15000,20000,25000,30000,40000,50000),
+                   ncolInterval=nrowInterval,
+                   typeMatrixPlotX = c("Base R matrix",
+                                      "GPUm f32 cpu",
+                                      "GPUm f64 cpu",
+                                      "GPUm f32 cuda",
+                                      "GPUm f64 cuda",
+                                      "glm.fit"),
+                   typeMatrixPloty = typeMatrixPlotX,
+                   f,fgpu, g = rnorm, Time = .5, namePlot="Conjugate Gradient for Logical Regresion",
+                   ylabel="Time in log10(seconds)",
+                   xlabel=bquote(bold("Size ") ~ bold(X %in% R^{n * (n/100)})~""),
+                   sparsity =NULL){
+
+  if(is.null(sparsity)){
+    DataFrameTimes <- c()
+    sizeMatrixList <- c()
+    for (i in c(1:length(nrowInterval))) {
+      sizeMatrixList <- c(sizeMatrixList,paste(nrowInterval[i],ncolInterval[i],sep = "x"))
+    }
+
+    for(interval in c(1:length(nrowInterval))){
+      set.seed(1234)
+      n <- nrowInterval[interval]
+      p <- nrowInterval[interval]/100
+      X <- cbind(1, matrix(g(n * p), n, p))*.1
+      beta_true <- g(p+1)
+      linear_preds_true <- X %*% beta_true
+      y <- rbinom(n, 1, GPUmatrix:::sigmoid(linear_preds_true))
+
+      # set.seed(123)
+      nrows <- nrowInterval[interval]
+      ncols <- ncolInterval[interval]
+
+      listMatrixComparison1 <- creationGPUmatrix_all(X)[typeMatrixPlotX]
+      listMatrixComparison2 <- creationGPUmatrix_all(y)[typeMatrixPloty]
+
+      timeRes <- TwoFunctionTimeCalculation(listMatrixComparison1,
+                                            listMatrixComparison2,
+                                            f,fgpu ,nrows, ncols,Time,typeMatrixPlotX)
+      resTable <- cbind(timeRes,
+                        rep(nrows,length(typeMatrixPlotX)),
+                        typeMatrixPlotX)
+      DataFrameTimes <- rbind(DataFrameTimes,resTable)
+    }
+  }else{
+    DataFrameTimes <- c()
+    sizeMatrixList <- c()
+    for (i in c(1:length(nrowInterval))) {
+      sizeMatrixList <- c(sizeMatrixList,paste(nrowInterval[i],ncolInterval[i],sep = "x"))
+    }
+
+    for(interval in c(1:length(nrowInterval))){
+      set.seed(1234)
+      sparsity <- 0.9 # Percentage of zero elements
+      n <- nrowInterval[interval]
+      p <- nrowInterval[interval]/100
+      X <- cbind(1, matrix(rnorm(n * p), n, p)*.1)
+      X[sample(1:(n * (p+1)), sparsity *  (n * (p+1)))]<- 0
+      beta_true <- rnorm(p+1)
+      linear_preds_true <- X %*% beta_true
+      y <- rbinom(n, 1, GPUmatrix:::sigmoid(linear_preds_true))
+
+      # set.seed(123)
+      nrows <- nrowInterval[interval]
+      ncols <- ncolInterval[interval]
+
+      listMatrixComparison1 <- creationGPUmatrix_all(X)[typeMatrixPlotX]
+      listMatrixComparison2 <- creationGPUmatrix_all(y)[typeMatrixPloty]
+
+      timeRes <- TwoFunctionTimeCalculation(listMatrixComparison1,
+                                            listMatrixComparison2,
+                                            f,fgpu ,nrows, ncols,Time,typeMatrixPlotX)
+      resTable <- cbind(timeRes,
+                        rep(nrows,length(typeMatrixPloty)),
+                        typeMatrixPlotX)
+      DataFrameTimes <- rbind(DataFrameTimes,resTable)
+    }
+  }
+
+
+  return(drawPlotFunction(DataFrameTimes,namePlot,xlabel = xlabel))
+}
+
+
 
 plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,2800,4000),
                                            ncolInterval=nrowInterval,
@@ -145,7 +275,9 @@ plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,28
                                                               "GPUm f64 cpu",
                                                               "GPUm f32 cuda",
                                                               "GPUm f64 cuda"),
-                                           f,fgpu, g = rnorm, Time = .5, namePlot){
+                                           f,fgpu, g = rnorm, Time = .5, namePlot,
+                                          ylabel="Time in log10(seconds)",
+                                          xlabel="Size matrix n×n"){
   DataFrameTimes <- c()
   sizeMatrixList <- c()
   for (i in c(1:length(nrowInterval))) {
@@ -174,10 +306,10 @@ plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,28
     DataFrameTimes <- rbind(DataFrameTimes,resTable)
   }
 
-  return(drawPlotFunction(DataFrameTimes,namePlot))
+  return(drawPlotFunction(DataFrameTimes,namePlot,ylabel,xlabel))
 }
 
-drawPlotFunction <- function(DataFrameTimes,namePlot){
+drawPlotFunction <- function(DataFrameTimes,namePlot,ylabel="Time in log10(seconds)",xlabel="Size matrix n×n"){
   colnames(DataFrameTimes) <- c("Time", "Size", "Type")
   # colorValues <- c("#14690A","#1B06B4", "#1B06B4","#DE044A","#DE044A", "#EABA0A","#EABA0A")
 
@@ -191,7 +323,7 @@ drawPlotFunction <- function(DataFrameTimes,namePlot){
     geom_line(aes(color=Type,linetype = Type), linewidth = 1.5, alpha=0.5)+
     geom_point(aes(color=Type,shape=Type), size = 3, alpha=0.5)+
     scale_y_log10(limits=c(min(DataFrameTimes$Time),max(DataFrameTimes$Time)))+
-    labs(y = "Time in log10(seconds)",x="Size matrix n×n", title=namePlot)+
+    labs(y = ylabel,x=xlabel, title=namePlot)+
     theme_classic()+
     scale_color_manual(values = colorValues)+
     scale_linetype_manual(values = linetypeValues) +
@@ -208,6 +340,8 @@ getColorsType <- function(types){
   res <- sapply(sort(unique(types)), FUN = function(type){
     res <- switch (type,
       "Base R matrix" = {"#14690A"} ,
+      "glm.fit" = {"#9907C7"} ,
+      "speedglm" = {"#EA770A"} ,
       "GPUm f32 cpu" = {"#1B06B4"},
       "GPUm f32 cuda" = {"#1B06B4"},
       "GPUm f32 cpu sparse" = {"#EABA0A"},
@@ -226,6 +360,8 @@ getShapeManual <- function(types){
   res <- sapply(sort(unique(types)), FUN = function(type){
     res <- switch (type,
                    "Base R matrix" = {16} ,
+                   "glm.fit" = {16},
+                   "sppedglm" = {16},
                    "GPUm f32 cpu" = {16},
                    "GPUm f32 cuda" = {17},
                    "GPUm f32 cpu sparse" = {16},
@@ -244,6 +380,8 @@ getlineType <- function(types){
   res <- sapply(sort(unique(types)) , FUN = function(type){
     res <- switch (type,
             "Base R matrix" ={return("solid")} ,
+            "glm.fit" ={return("solid")} ,
+            "speedglm" ={return("solid")} ,
             "GPUm f32 cpu" ={return("solid")},
             "GPUm f32 cuda" ={return("dashed")},
             "GPUm f32 cpu sparse" ={return("solid")},

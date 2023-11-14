@@ -52,21 +52,54 @@ sigmoid <- function(x) {
 }
 # Defin the function to train a logistic regression
 # using the conjugate gradient
-LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 1000, tol = 1e-6) {
+# LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 1000, tol = 1e-6) {
+#   tX <- t(X)
+#   if (is.null(beta))
+#     beta <- solve(crossprod(X),crossprod(X,2*y-1)) # Returns double even with float inputs. Fix!
+#   p <- sigmoid(X %*% beta)
+#   a <- p*(1-p)
+#   g <- tX %*% (p - y)
+#   u <- g
+#   # u_old <- u
+#   for (iter in 1:iterations) {
+#     if (iter == 1) {
+#       uhu <- (sum(u*(tX %*% (a * (X %*% u)))) + lambda * sum(u*u))
+#       beta <- beta-sum(g*u)/uhu * u
+#     } else{
+#       p <- sigmoid(X %*% beta)
+#       # beta_old <- beta
+#       g_old <- g
+#       a <- p*(1-p)
+#       g <- tX %*% (p - y)
+#       k <- g - g_old
+#       beta_coef <- sum(g * k)/sum(u*k) # Hestenes-Stiefel update. Other options are possible
+#       u <- g - u * beta_coef
+#       # u_old <- u
+#       uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u)
+#       beta <- beta - sum(g*u)/uhu * u
+#       if(sum(g*g)< tol)
+#         break
+#     }
+#   }
+#   return(beta)
+# }
+
+LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 100, tol = 1e-8) {
   tX <- t(X)
   if (is.null(beta))
     beta <- solve(crossprod(X),crossprod(X,2*y-1)) # Returns double even with float inputs. Fix!
-  p <- sigmoid(X %*% beta)
+  p <- GPUmatrix:::sigmoid(X %*% beta)
   a <- p*(1-p)
   g <- tX %*% (p - y)
   u <- g
   # u_old <- u
+  devold <- 0
   for (iter in 1:iterations) {
     if (iter == 1) {
       uhu <- (sum(u*(tX %*% (a * (X %*% u)))) + lambda * sum(u*u))
       beta <- beta-sum(g*u)/uhu * u
     } else{
-      p <- sigmoid(X %*% beta)
+      p <- GPUmatrix:::sigmoid(X %*% beta)
       # beta_old <- beta
       g_old <- g
       a <- p*(1-p)
@@ -77,11 +110,17 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
       # u_old <- u
       uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u)
       beta <- beta - sum(g*u)/uhu * u
-      if(sum(g*g)< tol)
+      dev <- dev.resids(y, p)
+      if (abs(dev - devold)/(0.1 + abs(dev)) < tol)
         break
+      devold <- dev
     }
   }
   return(beta)
+}
+
+dev.resids <- function(y, p) {
+  2*(-sum(y*log(p)+(1-y)*log(1-p)))
 }
 
 
@@ -110,7 +149,18 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
   ## Add argument to select cpu or gpu
   ## Add argument to select float32 or float64
   ## Implement pmax so that no need to cast in the linkinv function... dgamma is a tough one.
+  objectClassx <- attr(class(x),"package")
+  objectClassy <- attr(class(x),"package")
+  if(!is.null(objectClassx) & !is.null(device)){
+    device <- device(x)
+  }
+  if(!is.null(objectClassy) & !is.null(device)){
+    device <- device(y)
+  }
 
+
+  if(attr(class(x),"package") == "GPUmatrix") device <- device(x)
+  if(is.null(device) & attr(class(y),"package") == "GPUmatrix") device <- device(y)
 
   nobs <- NROW(y)
   nvar <- ncol(x)

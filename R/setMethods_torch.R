@@ -832,10 +832,10 @@ setMethod("chol_solve", signature(x="ANY", y="gpu.matrix.torch"), function(x, y)
   return(res)
 })
 
-setMethod("chol2inv", signature(x="gpu.matrix.torch"), function(x, y){
-  res <- gpu.matrix.torch(torch::torch_cholesky_inverse(self = x@gm,upper = T), device=device(x))
-  return(res)
-})
+# setMethod("chol2inv", signature(x="gpu.matrix.torch"), function(x, y){
+#   res <- gpu.matrix.torch(torch::torch_cholesky_inverse(self = x@gm,upper = T), device=device(x))
+#   return(res)
+# })
 
 
 setMethod("mean", signature(x = "gpu.matrix.torch"), function(x){
