@@ -267,6 +267,126 @@ plotLRG<- function(nrowInterval=c(10000,15000,20000,25000,30000,40000,50000),
 }
 
 
+plotGLM<- function(nrowInterval=c(1000,3000,5000,7000,9000,10000,11000),
+                   ncolInterval=nrowInterval,
+                   typeMatrixPlotX = c("GPUm f32 cpu",
+                                       "GPUm f64 cpu",
+                                       "GPUm f32 cuda",
+                                       "GPUm f64 cuda",
+                                       "glm.fit",
+                                       "speedglm"),
+                   typeMatrixPloty = typeMatrixPlotX,
+                   f,fgpu, g = runif, Time = .5, namePlot="General Lineal Model",
+                   ylabel="Time in log10(seconds)",
+                   xlabel=bquote(bold("Size ") ~ bold(X %in% R^{n * (n/10)})~""),
+                   family=poisson()){
+  DataFrameTimes <- c()
+  sizeMatrixList <- c()
+  for (i in c(1:length(nrowInterval))) {
+    sizeMatrixList <- c(sizeMatrixList,paste(nrowInterval[i],ncolInterval[i],sep = "x"))
+  }
+
+  for(interval in c(1:length(nrowInterval))){
+    set.seed(1)
+
+    m <- nrowInterval[interval]
+    print(m)
+
+    n <- m/10
+    X <- matrix(g(m*n),m,n)
+    sol <- rnorm(n)
+    y <- rbinom(m, 1, prob = inv.logit(X%*%sol))
+    # set.seed(123)
+    nrows <- nrowInterval[interval]
+    ncols <- ncolInterval[interval]
+
+    A1 <- X
+    A2 <- y
+    resTimes <- c()
+
+    for (i in c(1:length(typeMatrixPlotX))) {
+      print(typeMatrixPlotX[i])
+      CPU <- switch (typeMatrixPlotX[i],
+                     "glm.fit" = {
+                       CPU <- system.time({B <- glm.fit(A1,A2, family = family); B})
+                       if (CPU[3]< Time) {
+                         nTimes <- round(1/(1e-2+CPU[3]))
+                         CPU <- system.time({for (i in 1:nTimes) {
+                           B <- glm.fit(A1,A2, family = family); B
+                         }})
+                         CPU <- CPU / nTimes
+                       }
+                       CPU
+                     } ,
+                     "speedglm" = {
+                       CPU <- system.time({B <- speedglm.wfit(A2,A1, family = family); B})
+                       if (CPU[3]< Time) {
+                         nTimes <- round(1/(1e-2+CPU[3]))
+                         CPU <- system.time({for (i in 1:nTimes) {
+                           B <- speedglm.wfit(A2,A1, family = family); B
+                         }})
+                         CPU <- CPU / nTimes
+                       }
+                       CPU
+                     } ,
+                     "GPUm f32 cpu" = {
+                       CPU <- system.time({B <- glm.fit.GPU(A1,A2, family = family, device = "cpu", dtype = "float32"); torch::cuda_synchronize()})
+                       if (CPU[3]< Time) {
+                         nTimes <- round(1/(1e-2+CPU[3]))
+                         CPU <- system.time({for (i in 1:nTimes) {
+                           B <- glm.fit.GPU(A1,A2, family = family, device = "cpu", dtype = "float32"); torch::cuda_synchronize()
+                         }})
+                         CPU <- CPU / nTimes
+                       }
+                       CPU
+                     },
+                     "GPUm f32 cuda" = {
+                       CPU <- system.time({B <- glm.fit.GPU(A1,A2, family = family, device = "cuda", dtype = "float32"); torch::cuda_synchronize()})
+                       if (CPU[3]< Time) {
+                         nTimes <- round(1/(1e-2+CPU[3]))
+                         CPU <- system.time({for (i in 1:nTimes) {
+                           B <- glm.fit.GPU(A1,A2, family = family, device = "cuda", dtype = "float32"); torch::cuda_synchronize()
+                         }})
+                         CPU <- CPU / nTimes
+                       }
+                       CPU
+                     },
+                     "GPUm f64 cpu" = {
+                       CPU <- system.time({B <- glm.fit.GPU(A1,A2, family = family, device = "cpu", dtype = "float64"); torch::cuda_synchronize()})
+                       if (CPU[3]< Time) {
+                         nTimes <- round(1/(1e-2+CPU[3]))
+                         CPU <- system.time({for (i in 1:nTimes) {
+                           B <- glm.fit.GPU(A1,A2, family = family, device = "cpu", dtype = "float64"); torch::cuda_synchronize()
+                         }})
+                         CPU <- CPU / nTimes
+                       }
+                       CPU
+                     },
+                     "GPUm f64 cuda" = {
+                       CPU <- system.time({B <- glm.fit.GPU(A1,A2, family = family, device = "cuda", dtype = "float64"); torch::cuda_synchronize()})
+                       if (CPU[3]< Time) {
+                         nTimes <- round(1/(1e-2+CPU[3]))
+                         CPU <- system.time({for (i in 1:nTimes) {
+                           B <- glm.fit.GPU(A1,A2, family = family, device = "cuda", dtype = "float64"); torch::cuda_synchronize()
+                         }})
+                         CPU <- CPU / nTimes
+                       }
+                       CPU
+                     })
+      resTimes <- c(resTimes, CPU[[3]])
+    }
+
+
+
+    resTable <- cbind(resTimes,
+                      rep(nrows,length(typeMatrixPlotX)),
+                      typeMatrixPlotX)
+    DataFrameTimes <- rbind(DataFrameTimes,resTable)
+  }
+
+
+  return(drawPlotFunction(DataFrameTimes,namePlot,xlabel = xlabel))
+}
 
 plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,2800,4000),
                                            ncolInterval=nrowInterval,
@@ -361,7 +481,7 @@ getShapeManual <- function(types){
     res <- switch (type,
                    "Base R matrix" = {16} ,
                    "glm.fit" = {16},
-                   "sppedglm" = {16},
+                   "speedglm" = {16},
                    "GPUm f32 cpu" = {16},
                    "GPUm f32 cuda" = {17},
                    "GPUm f32 cpu sparse" = {16},

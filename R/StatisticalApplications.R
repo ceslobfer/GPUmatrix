@@ -149,18 +149,14 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
   ## Add argument to select cpu or gpu
   ## Add argument to select float32 or float64
   ## Implement pmax so that no need to cast in the linkinv function... dgamma is a tough one.
-  objectClassx <- attr(class(x),"package")
-  objectClassy <- attr(class(x),"package")
-  if(!is.null(objectClassx) & !is.null(device)){
-    device <- device(x)
-  }
-  if(!is.null(objectClassy) & !is.null(device)){
-    device <- device(y)
-  }
-
-
-  if(attr(class(x),"package") == "GPUmatrix") device <- device(x)
-  if(is.null(device) & attr(class(y),"package") == "GPUmatrix") device <- device(y)
+  # objectClassx <- attr(class(x),"package")
+  # objectClassy <- attr(class(y),"package")
+  # if(!is.null(objectClassx) & is.null(device)){
+  #   device <- device(x)
+  # }
+  # if(!is.null(objectClassy) & is.null(device)){
+  #   device <- device(y)
+  # }
 
   nobs <- NROW(y)
   nvar <- ncol(x)
