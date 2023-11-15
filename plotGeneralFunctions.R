@@ -30,7 +30,7 @@ creationGPUmatrix_all <- function(refMatrix){
               "GPUm f64 cpu"=GPUm_f64_cpu, "GPUm f32 cpu"=GPUm_f32_cpu,
               "GPUm f64 cuda sparse"=GPUm_f64_cuda_sparse, "GPUm f32 cuda sparse"=GPUm_f32_cuda_sparse,
               "GPUm f64 cpu sparse"=GPUm_f64_cpu_sparse, "GPUm f32 cpu sparse"=GPUm_f32_cpu_sparse,
-              "float32 lib"=float32_lib,"Matrix lib"=Matrix_lib, "Base R matrix"=refMatrix, "glm.fit"=refMatrix,
+              "float32 lib"=float32_lib,"Matrix lib"=Matrix_lib, "MKL-R matrix"=refMatrix, "glm.fit"=refMatrix,
               "speedglm"=refMatrix)
   return(res)
 }
@@ -146,11 +146,11 @@ TwoFunctionTimeCalculation <- function(listMatrixComparison1,listMatrixCompariso
                    # "GPUm f64 cpu", "GPUm f32 cpu",
                    # "GPUm f64 cuda sparse", "GPUm f32 cuda sparse",
                    # "GPUm f64 cpu sparse", "GPUm f32 cpu sparse",
-                   # "Base R matrix")
+                   # "MKL-R matrix")
 
 plotTimeComparison_SingleMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,2800,4000),
                                            ncolInterval=nrowInterval,
-                                           typeMatrixPlot = c("Base R matrix",
+                                           typeMatrixPlot = c("MKL-R matrix",
                                                               "GPUm f32 cpu",
                                                               "GPUm f64 cpu",
                                                               "GPUm f32 cuda",
@@ -184,7 +184,7 @@ trash <- lapply(libraries, require, character.only = TRUE, quietly=T)
 
 plotLRG<- function(nrowInterval=c(10000,15000,20000,25000,30000,40000,50000),
                    ncolInterval=nrowInterval,
-                   typeMatrixPlotX = c("Base R matrix",
+                   typeMatrixPlotX = c("MKL-R matrix",
                                       "GPUm f32 cpu",
                                       "GPUm f64 cpu",
                                       "GPUm f32 cuda",
@@ -390,7 +390,7 @@ plotGLM<- function(nrowInterval=c(1000,3000,5000,7000,9000,10000,11000),
 
 plotTimeComparison_TwoMatrix<- function(nrowInterval=c(500,700,1000,1400,2000,2800,4000),
                                            ncolInterval=nrowInterval,
-                                           typeMatrixPlot = c("Base R matrix",
+                                           typeMatrixPlot = c("MKL-R matrix",
                                                               "GPUm f32 cpu",
                                                               "GPUm f64 cpu",
                                                               "GPUm f32 cuda",
@@ -459,7 +459,7 @@ drawPlotFunction <- function(DataFrameTimes,namePlot,ylabel="Time in log10(secon
 getColorsType <- function(types){
   res <- sapply(sort(unique(types)), FUN = function(type){
     res <- switch (type,
-      "Base R matrix" = {"#14690A"} ,
+      "MKL-R matrix" = {"#14690A"} ,
       "glm.fit" = {"#9907C7"} ,
       "speedglm" = {"#EA770A"} ,
       "GPUm f32 cpu" = {"#1B06B4"},
@@ -479,7 +479,7 @@ getColorsType <- function(types){
 getShapeManual <- function(types){
   res <- sapply(sort(unique(types)), FUN = function(type){
     res <- switch (type,
-                   "Base R matrix" = {16} ,
+                   "MKL-R matrix" = {16} ,
                    "glm.fit" = {16},
                    "speedglm" = {16},
                    "GPUm f32 cpu" = {16},
@@ -499,7 +499,7 @@ getShapeManual <- function(types){
 getlineType <- function(types){
   res <- sapply(sort(unique(types)) , FUN = function(type){
     res <- switch (type,
-            "Base R matrix" ={return("solid")} ,
+            "MKL-R matrix" ={return("solid")} ,
             "glm.fit" ={return("solid")} ,
             "speedglm" ={return("solid")} ,
             "GPUm f32 cpu" ={return("solid")},
@@ -563,7 +563,7 @@ getlineType <- function(types){
 # plotQR <- plotTimeComparison_SingleMatrix(f=match.fun("qr"), namePlot="qr", nrowInterval = c(100,400,700,1200,1500,1800,2000))
 #
 # plotNMFgpumatrix <- plotTimeComparison_SingleMatrix(f=match.fun("NMFgpumatrix"), namePlot="Non negative factorization")
-# plotLRGC <- plotTimeComparison_TwoMatrix(f=match.fun("qr.solve"), namePlot="qr_solve",typeMatrixPlot =c("Base R matrix",
+# plotLRGC <- plotTimeComparison_TwoMatrix(f=match.fun("qr.solve"), namePlot="qr_solve",typeMatrixPlot =c("MKL-R matrix",
 #                                                                                                         "GPUm f32 cpu","GPUm f64 cpu",
 #                                                                                                         "GPUm f32 cuda",
 #                                                                                                          "GPUm f64 cuda",
@@ -571,7 +571,7 @@ getlineType <- function(types){
 #                                                                                                          "GPUm f64 cuda sparse",
 #                                                                                                          "GPUm f32 cuda sparse","GPUm f64 cpu sparse",
 #                                                                                                         "GPUm f32 cpu sparse"), nrowInterval = c(100,400,700,1200,1500,1800,2000))
-# plotfft <- plotTimeComparison_SingleMatrix(f=match.fun("fft"), namePlot="fft",typeMatrixPlot =c("Base R matrix",
+# plotfft <- plotTimeComparison_SingleMatrix(f=match.fun("fft"), namePlot="fft",typeMatrixPlot =c("MKL-R matrix",
 #                                                                                                         "GPUm f32 cpu","GPUm f64 cpu",
 #                                                                                                         "GPUm f32 cuda",
 #                                                                                                         "GPUm f64 cuda",

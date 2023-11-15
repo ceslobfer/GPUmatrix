@@ -181,4 +181,20 @@ plotGLM<- function(nrowInterval=c(1000,3000,5000,7000,9000,10000,11000),
 
 
 plotGLMRes <- plotGLM()
-glm.fit.GPU(A1,A2,family = poisson())
+counts <- c(18,17,15,20,10,20,25,13,12)
+outcome <- gl(3,1,9)
+treatment <- gl(3,3)
+glm.D93 <- glm(counts ~ outcome + treatment, family = poisson())
+summary(glm.D93)
+
+
+# Using speedglm
+library(speedglm)
+sglm.D93 <- speedglm(counts ~ outcome + treatment, family = poisson())
+summary(sglm.D93)
+
+# GPU glm
+library(GPUmatrix)
+gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson())
+summary(gpu.glm.D93)
+

@@ -209,18 +209,32 @@ setMethod("round", signature(x= "gpu.matrix.torch",digits="numeric"), function(x
 })
 
 setMethod(f = "show", signature = "gpu.matrix.torch", definition = function(object){
-  cat("GPUmatrix\n")
-  print(object@gm)
-  if (!is.null(object@rownames)) cat(paste(c("rownames:",object@rownames,"\n")))
-  if (!is.null(object@colnames)) cat(paste(c("colnames:",object@colnames,"\n")))
+  if (dtype(object) == "complex64" | dtype(object) == "complex32"){
+    cat("GPUmatrix\n")
+    cat("Real (Re function):\n")
+    print(Re(object))
+    cat("Imag (Im function):\n")
+    print(Im(object))
+  }else{
+    print(object@gm)
+    if (!is.null(object@rownames)) cat(paste(c("rownames:",object@rownames,"\n")))
+    if (!is.null(object@colnames)) cat(paste(c("colnames:",object@colnames,"\n")))
+  }
 })
 
 setMethod("print", signature = "gpu.matrix.torch", definition = function(x){
   object <- x
-  cat("GPUmatrix\n")
-  print(object@gm)
-  if (!is.null(object@rownames)) cat(paste(c("rownames:",object@rownames,"\n")))
-  if (!is.null(object@colnames)) cat(paste(c("colnames:",object@colnames,"\n")))
+  if (dtype(object) == "complex64" | dtype(object) == "complex32"){
+    cat("GPUmatrix\n")
+    cat("Real (Re function):\n")
+    print(Re(object))
+    cat("Imag (Im function):\n")
+    print(Im(object))
+  }else{
+    print(object@gm)
+    if (!is.null(object@rownames)) cat(paste(c("rownames:",object@rownames,"\n")))
+    if (!is.null(object@colnames)) cat(paste(c("colnames:",object@colnames,"\n")))
+  }
 })
 
 setMethod("length", signature(x = "gpu.matrix.torch"), function(x){
@@ -868,7 +882,7 @@ setMethod("colMeans", signature(x = "gpu.matrix.torch"), function(x){
   }else{
     res <- as.numeric(torch::torch_mean(x@gm,1)$cpu())
   }
-  names(res) <- rownames(x)
+  names(res) <- colnames(x)
 
   return(res)
 })

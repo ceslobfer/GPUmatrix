@@ -41,9 +41,9 @@ setMethod("as.array",  signature(x = "gpu.matrix.torch"), function(x, ...){
 
 setMethod("as.vector", "gpu.matrix.torch", function(x, mode){
   x <- warningSparseTensor_torch(x)
-
-    res <- as.numeric(x@gm$cpu())
-    return(res)
+  x <- as.matrix(x)
+  res <- as.vector(x,mode)
+  return(res)
 })
 
 setMethod("as.list", signature(x = "gpu.matrix.torch"), function(x, ...){

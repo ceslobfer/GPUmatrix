@@ -249,7 +249,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
     #   else ris$coefficients
     # }
     # else {
-    start <- solve(XTX, XTz)
+    start <- chol_solve(t(chol(XTX)), XTz)
     # }
     eta <- drop(x %*% start)
     # eta <- if (sparse)
