@@ -171,7 +171,7 @@ setMethod("[", signature(x = "gpu.matrix.torch", i = "index", j = "missing"),
                 if (length(i)>1) {
                   res <- gpu.matrix.torch(x@gm[i,],colnames=colnames(x), rownames = rownames(x)[i])
                 }else{
-                  res <- as.numeric(x@gm[i,]$cpu())
+                  res <- gpu.matrix.torch(x@gm[i,],nrow=1,ncol=ncol(x))
                 }
 
               }else {
