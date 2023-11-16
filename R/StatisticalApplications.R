@@ -50,44 +50,23 @@ NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
 sigmoid <- function(x) {
   1/(1+exp(-x))
 }
-# Defin the function to train a logistic regression
-# using the conjugate gradient
-# LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 1000, tol = 1e-6) {
-#   tX <- t(X)
-#   if (is.null(beta))
-#     beta <- solve(crossprod(X),crossprod(X,2*y-1)) # Returns double even with float inputs. Fix!
-#   p <- sigmoid(X %*% beta)
-#   a <- p*(1-p)
-#   g <- tX %*% (p - y)
-#   u <- g
-#   # u_old <- u
-#   for (iter in 1:iterations) {
-#     if (iter == 1) {
-#       uhu <- (sum(u*(tX %*% (a * (X %*% u)))) + lambda * sum(u*u))
-#       beta <- beta-sum(g*u)/uhu * u
-#     } else{
-#       p <- sigmoid(X %*% beta)
-#       # beta_old <- beta
-#       g_old <- g
-#       a <- p*(1-p)
-#       g <- tX %*% (p - y)
-#       k <- g - g_old
-#       beta_coef <- sum(g * k)/sum(u*k) # Hestenes-Stiefel update. Other options are possible
-#       u <- g - u * beta_coef
-#       # u_old <- u
-#       uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u)
-#       beta <- beta - sum(g*u)/uhu * u
-#       if(sum(g*g)< tol)
-#         break
-#     }
-#   }
-#   return(beta)
-# }
 
 LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iterations = 100, tol = 1e-8) {
   tX <- t(X)
-  if (is.null(beta))
-    beta <- solve(crossprod(X),crossprod(X,2*y-1)) # Returns double even with float inputs. Fix!
+  if (is.null(beta)){
+    objectPackage <- attr(class(X),"package")
+    if(!is.null(objectPackage)){
+      if (objectPackage == "GPUmatrix"){
+        beta <- gpu.matrix(0,nrow = ncol(X),ncol=1, device = device(X), dtype=dtype(X))
+      }else{
+        beta <- rep(0,ncol(X))
+      }
+
+    }else{
+      beta <- rep(0,ncol(X))
+    }
+  }
+
   p <- GPUmatrix:::sigmoid(X %*% beta)
   a <- p*(1-p)
   g <- tX %*% (p - y)
@@ -108,7 +87,7 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
       beta_coef <- sum(g * k)/sum(u*k) # Hestenes-Stiefel update. Other options are possible
       u <- g - u * beta_coef
       # u_old <- u
-      uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u)
+      uhu <- sum((X %*% u)^2*a) + lambda * sum(u*u) +1e-10
       beta <- beta - sum(g*u)/uhu * u
       dev <- dev.resids(y, p)
       if (abs(dev - devold)/(0.1 + abs(dev)) < tol)
@@ -119,8 +98,11 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
   return(beta)
 }
 
-dev.resids <- function(y, p) {
-  2*(-sum(y*log(p)+(1-y)*log(1-p), na.rm =T))
+dev.resids <- function(y, p, epsilon = 1e-9) {
+  # dev.resids is used only to break the loop. No problem on doing this approach
+  p_adj <- (p + epsilon)/ (1+2*epsilon)
+  s <- 2*(-sum(y*log(p_adj)+(1-y)*log(1-p_adj)))
+  return(s)
 }
 
 
