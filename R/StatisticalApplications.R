@@ -120,7 +120,7 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
 }
 
 dev.resids <- function(y, p) {
-  2*(-sum(y*log(p)+(1-y)*log(1-p)))
+  2*(-sum(y*log(p)+(1-y)*log(1-p), na.rm =T))
 }
 
 
