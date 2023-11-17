@@ -4,10 +4,10 @@
 \alias{expmGPU,gpu.matrix.tensorflow-method}
 \alias{expmGPU,gpu.matrix.torch-method}
 \title{
-'GPUMatrix' Exponential.
+'GPUmatrix' Exponential.
 }
 \description{
-It is a mimic of the function \code{'expm'} of the library \code{'Matrix'}. It computes the exponential of a 'GPUmatrix'.
+It mimics the function \code{expm} of the library \code{Matrix} to operate on gpu.matrix-class objects: It "computes the exponential of a matrix."
 }
 \usage{
 expmGPU(x)
@@ -15,17 +15,23 @@ expmGPU(x)
 \S4method{expmGPU}{gpu.matrix.torch}(x)
 }
 \arguments{
-  \item{x}{a gpu.matrix build with float numbers}
+  \item{x}{a \code{\linkS4class{gpu.matrix}}.}
 }
 \value{
-the matrix exponential of x as GPUmatrix tensorflow class.
+The matrix exponential of \code{x} as \code{\linkS4class{gpu.matrix}} class.
 }
 \details{
-This function works with float numbers (either float32 or float64). If the data type of gpu.matrix is integer, this function will not work. An example is shown below.
+
+The exponential of a matrix is computed as:
+\eqn{\sum_{k=0}^\infin 1/k!X^k}
+
+The function \code{expmGPU} mimics the function \code{expm} of the library \code{Matrix} by applying the Ward's diagonal Pade' approximation. For more details see \code{\link[Matrix]{expm}}.
+
+Please note that this function works with float numbers (either float32 or float64). If the data type of \code{x} is integer, this function will not work. An example is shown below.
 }
 
 \seealso{
-See Also as \code{\link[Matrix]{expm}}.
+For more information see  \code{\link[Matrix]{expm}}.
 }
 \examples{
   \donttest{

@@ -33,16 +33,15 @@
 
 
 
-\description{
-Function 'as.matrix' attempts to turn its argument into a matrix.
+\description{These functions mimic the base functions of R that have the same name to operate on gpu.matrix-class objects:
 
-Function 'as.list' attempts to turn its argument into a list.
+Function \code{as.matrix} attempts to turn its argument into a matrix.
+Function \code{as.list} attempts to turn its argument into a list.
+Function \code{as.numeric} attempts to turn its argument into a numeric.
+Function \code{as.array} attempts to turn its argument into an array.
+Function \code{as.vector} attempts to turn its argument into a vector.
+Function \code{is.numeric} is a general test of an object being interpretable as numbers.
 
-Function 'as.numeric' attempts to turn its argument into a numeric.
-
-Function 'as.vector' attempts to turn its argument into a vector.
-
-Function 'is.numeric' is a general test of an object being interpretable as numbers
 }
 
 
@@ -66,9 +65,9 @@ Function 'is.numeric' is a general test of an object being interpretable as numb
 
 \arguments{
 
-\item{x}{A gpu.matrix.tensorflow o gpu.matrix.torch object}
+\item{x}{A \code{\linkS4class{gpu.matrix}} object}
 \item{\dots}{(generalized) vectors or matrices. These can be given as named arguments.}
-\item{mode}{character string naming an atomic mode or "list" or "expression" or (except for vector) "any".}
+\item{mode}{Argument for \code{as.vector}. It mimics the argument of the same name of the base function \code{as.vector}: character string naming an atomic mode or "list" or "expression" or (except for vector) "any".}
 
 }
 
@@ -80,3 +79,22 @@ Function 'is.numeric' is a general test of an object being interpretable as numb
 \code{\link[base]{matrix}},
 
 }
+
+\examples{
+\donttest{
+\dontrun{
+a <- gpu.matrix(1:9,nrow=3,ncol=3)
+as.array(a)
+as.list(a)
+as.matrix(a)
+as.numeric(a)
+is.numeric(a)
+as.vector(a,mode = "list")
+as.vector(a,mode = "character")
+as.vector(a,mode = "logical")
+
+}
+}
+}
+
+

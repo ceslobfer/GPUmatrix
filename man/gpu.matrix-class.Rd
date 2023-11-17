@@ -4,14 +4,14 @@
 \alias{gpu.matrix-class}
 \description{
 
-GPU computational power is a great resource for computational biology specifically in statistics and linear algebra. the gpu.matrix class is an object of the GPUmatrix package, that store a matrix in the GPU.
+GPU computational power is a great resource for computational biology specifically in statistics and linear algebra. the gpu.matrix-class is a class of the GPUmatrix package, that store a matrix in the GPU.
 
-The GPUmatrix package is based on S4 objects in R and we have created a constructor function that acts similarly to the default \code{matrix} constructor in R for CPU matrices. The constructor function is \code{gpu.matrix} and accepts the same parameters as \code{matrix}.
+The GPUmatrix package is based on S4 objects in R and we have created a constructor function that acts similarly to the default \code{matrix} constructor in R for CPU matrices. The constructor function is \code{\link{gpu.matrix}} and accepts the same parameters as \code{matrix}.
 
 
 
 }
-\section{Slots}{
+\section{Slots}{ Use the \code{@} operator to access the different slots:
   \describe{
     \item{rownames}{the row names of the gpu.matrix}
     \item{colnames}{the colunm names of the gpu.matrix}
@@ -22,5 +22,5 @@ The GPUmatrix package is based on S4 objects in R and we have created a construc
 }
 
 \seealso{
-See Also \code{\link[GPUmatrix]{gpu.matrix}}.
+See Also \code{\link{gpu.matrix}}, \code{\linkS4class{Matrix}}, and \code{\linkS4class{matrix}}..
 }

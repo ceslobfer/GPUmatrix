@@ -5,9 +5,7 @@
 installTorch
 }
 \description{
-This variable checks if you have properly installed torch package
+This variable checks that the torch package is installed correctly.
 }
 \usage{installTorch}
-
-
 \keyword{installTorch}

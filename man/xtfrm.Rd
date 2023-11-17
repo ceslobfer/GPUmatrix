@@ -2,17 +2,13 @@
 \title{Auxiliary Function for Sorting and Ranking}
 \docType{methods}
 
-
+\description{
+This function mimics the 'base' function \code{'xtfrm'} to operate on gpu.matrix-class objects.
+}
 
 \alias{xtfrm-methods}
 \alias{xtfrm,gpu.matrix.tensorflow-method}
 \alias{xtfrm,gpu.matrix.torch-method}
-
-
-\description{
-Mimics \code{'xtfrm'} 'base' function.
-}
-
 
 \usage{
 
@@ -24,7 +20,7 @@ Mimics \code{'xtfrm'} 'base' function.
 
 \arguments{
 
-\item{x}{A GPUmatrix object}
+\item{x}{a \code{\linkS4class{gpu.matrix}}.}
 }
 
 

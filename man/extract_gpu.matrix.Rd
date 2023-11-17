@@ -40,7 +40,7 @@
 
 
 \description{
-Mimics the \code{[,[<-, [[, and [[<-} base functions. These operators act on 'GPUmatrix' matrices, vectors, matrices, arrays and lists.
+These operators mimic the base operators \code{[,[<-, [[, and [[<-} to compute on gpu.matrix-class objects.
 }
 
 
@@ -73,9 +73,9 @@ Mimics the \code{[,[<-, [[, and [[<-} base functions. These operators act on 'GP
 
 \arguments{
 
-\item{e1}{a gpu.matrix}
-\item{e2}{a gpu.matrix}
-\item{x}{a gpu.matrix from which extract element(s) or in which to replace element(s)}
+\item{e1}{a \code{\linkS4class{gpu.matrix}}.}
+\item{e2}{a \code{\linkS4class{gpu.matrix}}.}
+\item{x}{a \code{\linkS4class{gpu.matrix}} object from which extract element(s) or in which to replace element(s)}
 \item{i,j,\dots}{indices specifying elements to extract or replace.}
 \item{value}{typically an array-like R object of a similar class as x}
 \item{drop}{For matrices and arrays. If TRUE the result is coerced to the lowest possible dimension}

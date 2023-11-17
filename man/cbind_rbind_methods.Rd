@@ -20,8 +20,9 @@
 
 
 \description{
-Mimics the \code{'cbind'} and \code{'rbind'} functions.
-These functions take a sequence of vectors, matrices, data-frames and/or gpu.matrix matrices and combine by columns or rows, respectively.
+Mimics the 'base' functions \code{'cbind'} and \code{'rbind'} to operate on \code{\linkS4class{gpu.matrix}} objects. The 'base' functions \code{'cbind'} and \code{'rbind'} internally call the methods \code{cbind2} and \code{rbind2}.
+
+Therefore, ss done in \code{\link[Matrix]{cbind2}} of the package 'Matrix', we have defined in 'GPUmatrix' the methods \code{cbind2} and \code{rbind2} to operate on \code{\linkS4class{gpu.matrix}} objects too.
 }
 
 
@@ -37,20 +38,27 @@ These functions take a sequence of vectors, matrices, data-frames and/or gpu.mat
 
 \arguments{
 
-\item{x}{A gpu.matrix.tensorflow o gpu.matrix.torch object}
-\item{y}{A gpu.matrix.tensorflow o gpu.matrix.torch object or any other matrix class}
+\item{x,y}{A \code{\linkS4class{gpu.matrix}} object or any other matrix class}
 \item{\dots}{(generalized) vectors or matrices. These can be given as named arguments.}
 
 }
 
+\value{
+The result of using these functions is equivalent to using the basic \code{cbind} and \code{rbind} functions. For more details see \code{\link[base]{cbind}}.
+
+Note that if one of the input values is a gpu.matrix-class object, then the output will also be a gpu.matrix-class object.
+
+The data type of the values of the resulting gpu.matrix-class object (corresponding to the \code{dtype} parameter of the gpu.matrix function) is the one that allows the integration of all input values. That is, if you call \code{cbind(a,b)} where \code{a} is a gpu.matrix-class object with values of "int32" and \code{b} is a gpu.matrix-class with values of "float64", the result will be a gpu.matrix-class with values of "float64".
+}
+
+
+
 \seealso{
-\code{\link[base]{cbind}}, and \code{\link[base]{rbind}}
+\code{\link[base]{cbind}}, \code{\link[base]{rbind}}, \code{\link[Matrix]{cbind2}}
 }
 
 \examples{
-
 \donttest{
-
 \dontrun{
 
 a <- gpu.matrix(1:9,nrow=3,ncol=3)
@@ -73,9 +81,6 @@ d <- cbind(a,b)
 
 
 }
-
 }
-
-
 }
 

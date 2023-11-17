@@ -3,9 +3,9 @@
 \docType{methods}
 
 \description{
-\code{aperm} transposes a GPUmatrix by permuting its dimensions and optionally resizing it.
+\code{aperm} transposes a gpu.matrix-class object by permuting its dimensions. GPUmatrix package only works with matrices of two dimensions. Therefore, this function is equivalent to the function \code{t}.
 
-\code{t} returns the transpose of a matrix of two dimensions.
+\code{t} returns the transpose of a gpu.matrix-class object.
 }
 
 \alias{aperm}
@@ -32,8 +32,8 @@
 
 \arguments{
 
-\item{x,a}{A gpu.matrix.tensorflow o gpu.matrix.torch to be transposed}
-\item{perm}{the subscript permutation vector, usually a permutation of the integers 1:n, where n is the number of dimensions of a.}
+\item{x,a}{a \code{\linkS4class{gpu.matrix}} to be transposed.}
+\item{perm}{the subscript permutation vector, usually a permutation of the integers 1:n, where n is the number of dimensions of a. In GPUmatrix, the maximum value of n is 2 as GPUmatrix only works with matrices of 2 dimensions.}
 \item{\dots}{potential further arguments of methods.}
 
 }
@@ -45,11 +45,12 @@ For more information:
 and \code{\link[GPUmatrix]{as.gpu.matrix}}.
 }
 
-\value{
-It returns a transposed version of the gpu.matrix \code{a}, with subscripts permuted as indicated by the input \code{perm}. The output is a \code{matrix array} class object.
-
-The resulting matrix can be easily converted to a \code{gpu.matrix} class object using the \code{gpu.matrix} or the \code{as.gpu.matrix} functions.
+\details{
+The base function \code{\link[base]{aperm}} includes a third parameter "resize" that indicates whether the matrix should be resized or not. For GPUmatrix we considered this parameter to be always TRUE.
 }
+
+\value{
+It returns a transposed version of \code{a}, with subscripts permuted as indicated by the input \code{perm}. The output is also a \code{\linkS4class{gpu.matrix}} class object.}
 
 
 \examples{
@@ -58,10 +59,10 @@ The resulting matrix can be easily converted to a \code{gpu.matrix} class object
 \dontrun{
 
   #change the first with the second subscript.
-  #this example corresponds to transposing the matrix
   a <- gpu.matrix(1:9,nrow=3,ncol=3)
   b <- aperm(a,perm = c(2,1))
 
+  #the same can be done using the function t:
   t(a) #transpose of a.
 
 }
