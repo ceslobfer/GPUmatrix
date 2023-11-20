@@ -114,16 +114,25 @@ GPUglm <- function(...) {
 }
 
 
-glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL,
+glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL,
                          family = gaussian(), start = NULL, etastart = NULL, mustart = NULL,
-                         offset = NULL, acc = 1e-08, maxit = 25, k = 2, sparselim = 0.9,
-                         camp = 0.01, eigendec = FALSE, tol.values = 1e-07, tol.vectors = 1e-07,
-                         tol.solve = .Machine$double.eps, sparse = NULL,
-                         method = c("normal"), trace = FALSE,
+                         offset = NULL, acc = 1e-08, maxit = 25, k = 2,
+                         sparse = NULL,
+                         trace = FALSE,
                          dtype=NULL,
                          device=NULL,
                          type=NULL,...)
 {
+
+  # row.chunk
+  # sparselim
+  # camp
+  # eigendec
+  # tol.values
+  # tol.vectors
+  # tol.solve
+  # method
+
   ## TODO: remove the code related to methods eigen, Cholesky, qr. Later on we can add more methods. CHECK
   ## eigendec = TRUE? What is that for? Control does not work with it. CHECK
   ## Add sparse argument if the matrix is desired to be treated as sparse. Maybe x could be a sparse Matrix argument
@@ -139,7 +148,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL, row.chunk = NULL
   # if(!is.null(objectClassy) & is.null(device)){
   #   device <- device(y)
   # }
-
+  method = c("normal")
   nobs <- NROW(y)
   nvar <- ncol(x)
 

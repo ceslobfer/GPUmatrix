@@ -12,6 +12,7 @@ export(NMFgpumatrix)
 export(LR_GradientConjugate_gpumatrix)
 S3method(print,GPUglm)
 S3method(summary,GPUglm)
+
 S3method(print,summary.GPUglm)
 exportMethods("as.matrix",
               "as.gpu.matrix",
@@ -34,7 +35,6 @@ exportMethods("as.matrix",
               "rowRanks",
               "colRanks",
               "sort",
-              "xtfrm",
               "determinant",
               "density",
               "hist",
@@ -84,7 +84,6 @@ exportMethods("as.matrix",
               "mean",
               "colMeans",
               "rowMeans",
-              "aperm",
               "cov",
               "cov2cor",
               "cor",

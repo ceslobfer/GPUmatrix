@@ -80,9 +80,7 @@ setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
   return(res)
 })
 
-setMethod("xtfrm", signature(x="gpu.matrix.tensorflow"), function(x){
-  return(as.numeric(x))
-})
+
 
 # setMethod("sort", signature(x="gpu.matrix.tensorflow", decreasing = "missing"), function(x,decreasing){
 #   if (x@sparse) {
@@ -426,32 +424,6 @@ setMethod("tcrossprod", signature(x = "gpu.matrix.tensorflow", y = "missing"), f
 
 
 
-# setMethod("outer", signature(X = "gpu.matrix.tensorflow", Y = "ANY"), function(X,Y, ...){
-#
-#   castMatrix <- castTypeOperations(X,Y)
-#   X <- castMatrix[[1]]
-#   Y <- castMatrix[[2]]
-#
-#   return(as.array(tensorflow::tf$tensordot(X@gm, Y@gm, axes=0L)))
-#
-# } )
-# setMethod("outer", signature(X = "ANY", Y = "gpu.matrix.tensorflow"), function(X,Y, ...){
-#
-#   castMatrix <- castTypeOperations(X,Y)
-#   X <- castMatrix[[1]]
-#   Y <- castMatrix[[2]]
-#
-#   return(as.array(tensorflow::tf$tensordot(X@gm, Y@gm, axes=0L)))
-#
-# } )
-#
-# setMethod("%o%", signature(X = "gpu.matrix.tensorflow", Y = "ANY"), function(X,Y){
-#   return(outer(X,Y))
-# })
-# setMethod("%o%", signature(X = "ANY", Y = "gpu.matrix.tensorflow"), function(X,Y){
-#   return(outer(X,Y))
-# })
-
 tf_kron <- function(X,Y){
   castMatrix <- castTypeOperations(X,Y, sameType = T)
   X <- castMatrix[[1]]
@@ -594,12 +566,7 @@ setMethod("qr.solve", signature(a="ANY", b="gpu.matrix.tensorflow"), function(a,
 # })
 
 
-# setGeneric("rankMatrix", function(x) standardGeneric("rankMatrix"))
-# setMethod("rankMatrix", signature(x="gpu.matrix.tensorflow"), function(x){
-#   x <- warningSparseTensor(x)
-#   res <- Matrix::rankMatrix(x@gm)
-#   return(res)
-# })
+
 
 #Se debe mejorar
 setMethod("eigen", signature(x="gpu.matrix.tensorflow"), function(x){
@@ -842,11 +809,7 @@ setMethod("which.min", signature(x = "gpu.matrix.tensorflow"), function(x){
   return(res)
 })
 
-setMethod("aperm", signature(a="gpu.matrix.tensorflow"), function(a,perm,...){
-  res <- aperm(as.matrix(a),perm)
 
-  return(res)
-})
 
 
 
@@ -892,7 +855,7 @@ applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
     return(if (is.null(ans)) ans else if (length(d.ans) <
                                           2L) ans[1L][-1L] else array(ans, d.ans, dn.ans))
   }
-  newX <- aperm(X, c(s.call, s.ans))
+  newX <- t(X)
   dim(newX) <- c(prod(d.call), d2)
   ans <- vector("list", d2)
   if (length(d.call) < 2L) {
@@ -963,7 +926,7 @@ setMethod("cov", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x,y
   x_ <- t(x) - colMeans(x)
   y_ <- t(y) - colMeans(y)
 
-  res <- tcrossprod(x_, y_)/(ncol(x)-1)
+  res <- tcrossprod(x_, y_)/(ncol(x_)-1)
   return(res)
 })
 
@@ -977,14 +940,15 @@ setMethod("cov", signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x,y
   x_ <- t(x) - colMeans(x)
   y_ <- t(y) - colMeans(y)
 
-  res <- tcrossprod(x_, y_)/(ncol(x)-1)
+  res <- tcrossprod(x_, y_)/(ncol(x_)-1)
   return(res)
 })
 
 setMethod("cov", signature(x = "gpu.matrix.tensorflow", y = "missing"), function(x,y){
   x <- warningInteger(x)
   x <- warningSparseTensor(x)
-  res <- tcrossprod(t(x) - colMeans(x))/(ncol(x)-1)
+  x_ <- t(x) - colMeans(x)
+  res <- tcrossprod(x_/(ncol(x_)-1))
   return(res)
 })
 
