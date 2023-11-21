@@ -1074,7 +1074,12 @@ applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
     return(if (is.null(ans)) ans else if (length(d.ans) <
                                           2L) ans[1L][-1L] else array(ans, d.ans, dn.ans))
   }
-  newX <- t(X)
+  if(MARGIN==1){
+    newX <- t(X)
+  }else if(MARGIN==2){
+    newX <- X
+  }
+
   dim(newX) <- c(prod(d.call), d2)
   ans <- vector("list", d2)
   if (length(d.call) < 2L) {
@@ -1217,7 +1222,7 @@ setMethod("cor", signature(x = "ANY", y = "gpu.matrix.torch"), function(x,y){
 })
 
 
-setMethod("cor", signature(x = "gpu.matrix.torch", y = "missing", method = "missing"), function(x,y,method){
+setMethod("cor", signature(x = "gpu.matrix.torch", y = "missing"), function(x,y){
   # x <- warningInteger(x)
   x <- warningSparseTensor_torch(x)
   V <- cov(x)
@@ -1227,7 +1232,7 @@ setMethod("cor", signature(x = "gpu.matrix.torch", y = "missing", method = "miss
   return(res)
 })
 
-setMethod("cor", signature(x = "gpu.matrix.torch", y = "ANY", method = "character"), function(x,y,method){
+setMethod("cor", signature(x = "gpu.matrix.torch", y = "ANY",use="missing", method = "character"), function(x,y,method){
   x <- warningSparseTensor_torch(x)
   # x <- warningInteger(x)
   castMatrix <- castTypeOperations_torch(x,y)
@@ -1246,7 +1251,7 @@ setMethod("cor", signature(x = "gpu.matrix.torch", y = "ANY", method = "characte
   return(res)
 })
 
-setMethod("cor", signature(x = "gpu.matrix.torch", y = "missing", method = "character"), function(x,y,method){
+setMethod("cor", signature(x = "gpu.matrix.torch", y = "missing",use="missing", method = "character"), function(x,y,method){
   x <- warningSparseTensor_torch(x)
   # x <- warningInteger(x)
   if(method=="spearman"){

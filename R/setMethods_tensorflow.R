@@ -917,7 +917,7 @@ applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
 
 # setGeneric("apply", function(X, MARGIN, FUN, ..., simplify = TRUE) standardGeneric("apply"))
 setMethod("apply", signature(X="gpu.matrix.tensorflow"), function(X, MARGIN, FUN, ..., simplify = TRUE){
-  applyTest(X, MARGIN, FUN, ..., simplify = TRUE)
+  applyTest(X, MARGIN, FUN, ..., simplify = simplify)
 
 })
 
