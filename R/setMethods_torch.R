@@ -639,46 +639,85 @@ setMethod("solve", signature(a = "ANY", b = "gpu.matrix.torch"), function(a, b){
 
 setMethod("qr", signature(x="gpu.matrix.torch"), function(x,...){
   x <- warningSparseTensor_torch(x)
-  qrTorch <- torch::linalg_qr(x@gm)
+  qrTorch <- torch::linalg_qr(x@gm,mode = "complete")
   res <- list(q=gpu.matrix.torch(qrTorch[[1]], device=device(x)), r=gpu.matrix.torch(qrTorch[[2]],device=device(x)), x=x)
   return(res)
 })
 
 setMethod("qr.Q", signature(qr="list"), function(qr, complete=F,Dvec){
-  if(class(qr[[1]])[[1]] == "gpu.matrix.torch"){
-    res <- qr$q
-  }else{
-    res <- base::qr.Q(qr)
-  }
-  return(res)
-})
-setMethod("qr.X", signature(qr="list"), function(qr, complete=F,ncol){
   objectClass <- class(qr[[1]])[[1]]
   if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
-    res <- qr$x
+    if(complete){
+      res <- qr$q
+    }else{
+      res <- qr$q[,1:min(dim(qr$x))]
+    }
+    if (missing(Dvec)){
+      Dvec <- diag(rep(1,ncol(res)))
+    }else{
+      Dvec <- diag(Dvec,nrow = ncol(res),ncol = ncol(res))
+    }
+
+    res <- res %*% Dvec
+
   }else{
-    res <- base::qr.X(qr)
+    res <- base::qr.Q(qr,complete,Dvec)
   }
   return(res)
 })
+
+setMethod("qr.X", signature(qr="list"),function(qr, complete=F){
+  objectClass <- class(qr[[1]])[[1]]
+  if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
+    if(complete){
+      if(nrow(qr$x)>ncol(qr$x)){
+        toadd <- nrow(qr$x)-ncol(qr$x)
+        res <- cbind(qr$x,qr$q[,(nrow(qr$x)-toadd+1):nrow(qr$x)])
+      }else{
+        res <- qr$x[,1:min(dim(qr$x))]
+      }
+
+    }else{
+      res <- qr$x[,1:min(dim(qr$x))]
+    }
+
+  }else{
+    res <- base::qr.X(qr,complete)
+  }
+  return(res)
+})
+
 setMethod("qr.R", signature(qr="list"), function(qr, complete=F){
   objectClass <- class(qr[[1]])[[1]]
   if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
-    res <- qr$r
+    if(complete){
+      res <- qr$r
+    }else{
+      res <- qr$r[1:min(dim(qr$x)),]
+    }
+
   }else{
     res <- base::qr.R(qr)
   }
   return(res)
 })
+
 setMethod("qr.coef", signature(qr="list", y="ANY"), function(qr, y){
   objectClass <- class(qr[[1]])[[1]]
   if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
-    res <- qr$r %*% (t(qr$q) %*% y)
+    cf <- qr.solve(a = qr,b=y)
+    if(ncol(qr$x) > nrow(qr$x)){
+      toadd <- matrix(0,nrow=ncol(qr$x) - nrow(qr$x),ncol=1)
+      cf <- rbind(cf,toadd)
+    }
+    res <- cf
+
   }else{
     res <- base::qr.coef(qr,y)
   }
   return(res)
 })
+
 setMethod("qr.qy", signature(qr="list", y="ANY"), function(qr, y){
   objectClass <- class(qr[[1]])[[1]]
   if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){
@@ -715,8 +754,9 @@ setMethod("qr.solve", signature(a="gpu.matrix.torch", b="gpu.matrix.torch"), fun
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
-  res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
+  # res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+  # res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
+  res <- qr.solve(a=qr_gpu,b=b)
   return(res)
 })
 
@@ -726,18 +766,21 @@ setMethod("qr.solve", signature(a="gpu.matrix.torch", b="ANY"), function(a,b){
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
-  res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
+  # res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+  # res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
+  res <- qr.solve(a=qr_gpu,b=b)
   return(res)
 })
+
 setMethod("qr.solve", signature(a="ANY", b="gpu.matrix.torch"), function(a,b){
   b <- warningInteger(b)
   castMatrix <- castTypeOperations_torch(a,b,sameType = T)
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
-  res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
+  # res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+  # res <- GPUmatrix:::gpu.matrix.torch(res_solve, dtype = dtype(a))
+  res <- qr.solve(a=qr_gpu,b=b)
   return(res)
 })
 
@@ -749,14 +792,15 @@ setMethod("qr.solve", signature(a="list", b="ANY"), function(a,b){
     b <- castMatrix[[2]]
 
     qr_gpu <- a
-    res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+    # res_solve <- torch::torch_triangular_solve((t(qr_gpu$q) %*% b)@gm, qr_gpu$r@gm)[[1]]
+    res_solve <- torch::torch_triangular_solve((t(qr.Q(qr_gpu)) %*% b)@gm,qr.R(qr_gpu)@gm[,1:min(dim(qr_gpu$x))])[[1]]
     res <- gpu.matrix.torch(res_solve, dtype = dtype(a[[1]]))
   }else if((objectClass == "gpu.matrix.tensorflow")){
     castMatrix <- castTypeOperations(a[[1]], b, sameType = T)
     b <- castMatrix[[2]]
 
     qr_gpu <- a
-    res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+    res_solve <- tensorflow::tf$linalg$triangular_solve(qr.R(qr_gpu)@gm[,1:min(dim(qr_gpu$x))], (t(qr.Q(qr_gpu)) %*% b)@gm, lower = F)
     res <- gpu.matrix.tensorflow(res_solve)
   }else{
     res <- base::qr.solve(a,b)

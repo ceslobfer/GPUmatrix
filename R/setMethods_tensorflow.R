@@ -516,7 +516,7 @@ setMethod("solve", signature(a = "ANY", b = "gpu.matrix.tensorflow"), function(a
 
 setMethod("qr", signature(x="gpu.matrix.tensorflow"), function(x,...){
   x <- warningSparseTensor(x)
-  qrTF <- tensorflow::tf$linalg$qr(x@gm)
+  qrTF <- tensorflow::tf$linalg$qr(x@gm,full_matrices = TRUE)
   res <- list(q=gpu.matrix.tensorflow(qrTF[0]), r=gpu.matrix.tensorflow(qrTF[1]), x=x)
   return(res)
 })
@@ -527,10 +527,12 @@ setMethod("qr.solve", signature(a="gpu.matrix.tensorflow", b="gpu.matrix.tensorf
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
-  res <- gpu.matrix.tensorflow(res_solve)
+  # res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  # res <- gpu.matrix.tensorflow(res_solve)
+  res <- qr.solve(a=qr_gpu,b=b)
   return(res)
 })
+
 
 setMethod("qr.solve", signature(a="gpu.matrix.tensorflow", b="ANY"), function(a,b){
   b <- warningInteger(b)
@@ -538,20 +540,24 @@ setMethod("qr.solve", signature(a="gpu.matrix.tensorflow", b="ANY"), function(a,
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
-  res <- gpu.matrix.tensorflow(res_solve)
+  # res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  # res <- gpu.matrix.tensorflow(res_solve)
+  res <- qr.solve(a=qr_gpu,b=b)
   return(res)
 })
+
 setMethod("qr.solve", signature(a="ANY", b="gpu.matrix.tensorflow"), function(a,b){
   b <- warningInteger(b)
   castMatrix <- castTypeOperations(a,b,sameType = T)
   a <- castMatrix[[1]]
   b <- castMatrix[[2]]
   qr_gpu <- qr(a)
-  res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
-  res <- gpu.matrix.tensorflow(res_solve)
+  # res_solve <- tensorflow::tf$linalg$triangular_solve(qr_gpu$r@gm, (t(qr_gpu$q) %*% b)@gm, lower = F)
+  # res <- gpu.matrix.tensorflow(res_solve)
+  res <- qr.solve(a=qr_gpu,b=b)
   return(res)
 })
+
 
 
 # setMethod("qr.solve", signature(a="list", b="ANY"), function(a,b){
