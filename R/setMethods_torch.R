@@ -1133,6 +1133,7 @@ applyTest <- function (X, MARGIN, FUN, ..., simplify = TRUE)
 }
 
 setMethod("apply", signature(X="gpu.matrix.torch"), function(X, MARGIN, FUN, ..., simplify = TRUE){
+  warning("If the function applied to the GPU matrix returns a tensor or another GPU matrix, then the 'simplify' argument will always be FALSE.")
   applyTest(X, MARGIN, FUN, ..., simplify = simplify)
 
 })
