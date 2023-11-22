@@ -1,7 +1,8 @@
 \name{NMFgpumatrix}
 \title{Non negative factorization of a matrix}
 
-\description{The non-negative factorization (NMF) of a matrix is an approximate factorization were an initial matrix \code{V} is approximated by the product of two matrix \code{W} and \code{H} so that,
+\description{
+The non-negative factorization (NMF) of a matrix is an approximate factorization were an initial matrix \code{V} is approximated by the product of two matrix \code{W} and \code{H} so that,
 
 \eqn{V \approx WH}
 
@@ -18,9 +19,9 @@ NMFgpumatrix(V, k = 10, Winit = NULL,
 }
 \arguments{
   \item{V}{a \code{\linkS4class{gpu.matrix}}.}
-  \item{k}{TODO}
-  \item{Winit}{TODO}
-  \item{Hinit}{TODO}
+  \item{k}{The inner dimension of the product of the matrices W and H. That is, it corresponds to the number of columns in W and the number of rows in H.}
+  \item{Winit}{Initial value for matrix W.}
+  \item{Hinit}{Initial value for matrix H.}
   \item{tol}{tolerance to be used for the estimation.}
   \item{niter}{maximum number of iterations.}
 }
@@ -49,6 +50,7 @@ If the input gpu.matrix-class object is stored on the GPU, then the operations w
 \author{
 Angel Rubio and Cesar Lobato.
 }
+
 
 \value{
 The function returns a list that contains the corresponding matrix \eqn{W} and \eqn{H}. If the input \code{V} matrix is a gpu.matrix-class object, then both \eqn{W} and \eqn{H} are also gpu.matrix-class objects.

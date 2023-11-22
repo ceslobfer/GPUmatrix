@@ -59,7 +59,7 @@ The function \code{chol_solve} is a GPUmatrix own function. This function uses t
 
 These inputs correspond to the \code{solve} function:
 
-\item{a}{A square numeric or complex \code{\linkS4class{gpu.matrix}} containing the coefficients of the linear system.}
+\item{a}{a square numeric or complex \code{\linkS4class{gpu.matrix}} containing the coefficients of the linear system.}
 
 \item{b}{a numeric or complex vector or matrix giving the right-hand side(s) of the linear system. If \code{b} missing, \code{solve} will return the inverse of \code{a}.}
 

@@ -40,7 +40,9 @@ For more information see:
 }
 
 \details{
-The two functions (\code{density} and \code{hist}) have been programmed to mimic their corresponding counterpart functions with their default parameters. For more information on these functions see \code{\link[stats]{density}}, and \code{\link[graphics]{hist}}.
+The two functions (\code{density} and \code{hist}) have been programmed to call their corresponding counterpart functions with their default parameters. Therefore, the internal operations to obtain each graph are computed by the CPU, regardless of whether the input value is stored in the GPU.
+
+For more information on these functions see \code{\link[stats]{density}}, and \code{\link[graphics]{hist}}.
 
 }
 
@@ -56,7 +58,7 @@ The function \code{density} returns the same output as its counterpart function 
 \item{data.name}{	the deparsed name of the x argument.}
 \item{has.na}{logical, for compatibility (always FALSE).}
 
-The print method reports summary values on the x and y components."
+The print method reports summary values on the x and y components." (taken from \code{\link[stats]{density}}).
 
 On the other hand, the function \code{hist} returns the same output as its counterpart function \code{hist} from the library \code{graphics}: It returns "an object of class 'histogram' which is a list with components:
 
@@ -65,7 +67,8 @@ On the other hand, the function \code{hist} returns the same output as its count
 \item{density}{values \eqn{\hat{f}(x_i)}, as estimated density values. If \code{all(diff(breaks) == 1)}, the are the relative frequencies \code{counts/n} and in general satisfy \eqn{\sum_i{\hat{f}(x_i)(b_{i+1}-b_i)=1}}, where \eqn{b_i} = \code{breaks[i]}}.
 \item{mids}{the n cell midpoints.}
 \item{xname}{a character string with the actual x argument name.}
-\item{equidist}{logical, indicating if the distances between breaks are all the same.}
+\item{equidist}{logical, indicating if the distances between breaks are all the same."}
+(Taken from \code{\link[graphics]{hist}})
 }
 
 \examples{

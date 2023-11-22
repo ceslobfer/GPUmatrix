@@ -54,7 +54,7 @@ Mimic of the 'base' functions \code{\%*\%}, \code{crossprod}, \code{tcrossprod} 
 }
 
 \arguments{
-  \item{x}{a \code{\linkS4class{gpu.matrix}}}
+  \item{x}{a \code{\linkS4class{gpu.matrix}}.}
   \item{y}{a \code{\linkS4class{gpu.matrix}}, 'matrix' or 'Matrix' object. For the functions \code{tcrossprod} and \code{crossprod} is NULL (by default), that is equivalent to \code{x=y}.}
   \item{\dots}{potentially more arguments passed to and from methods.}
 }
@@ -105,7 +105,7 @@ Mimic of the 'base' functions \code{\%*\%}, \code{crossprod}, \code{tcrossprod} 
 
 \details{
 
-Internally, these functions call the appropriate tensorflow or torch function to perform the matrix product (depending on the type of input gpu.matrix-class). In the case of torch, the function \code{torch_matmul} is called internally.
+Internally, these functions call the appropriate tensorflow or torch function to perform the matrix product (depending on the type of input gpu.matrix-class).
 
 If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
 

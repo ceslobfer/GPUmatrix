@@ -25,22 +25,22 @@ as.gpu.matrix(x,\dots)
 a scalar, vector or matrix (both matrix or Matrix class).
 }
   \item{nrow}{
-Number of rows of the matrix. By default the number of rows of data if data is a matrix or a Matrix.
+Number of rows of the matrix. By default the number of rows of data if data is an object of class matrix or Matrix.
 }
   \item{ncol}{
-Number of columns of the matrix. By default the number of columns of data if data is a matrix or a Matrix.
+Number of columns of the matrix. By default the number of columns of data if data is an object of class matrix or Matrix.
 }
   \item{byrow}{
-The same as  function 'matrix': "logical. If FALSE (the default) the matrix is filled by columns, otherwise the matrix is filled by rows."
+The same as  function \code{matrix}: "logical. If FALSE (the default) the matrix is filled by columns, otherwise the matrix is filled by rows."
 }
   \item{dimnames}{
-The same as in  function 'matrix': "A dimnames attribute for the matrix: NULL or a list of length 2 giving the row and column names respectively. An empty list is treated as NULL, and a list of length one as row names. The list can be named, and the list names will be used as names for the dimensions."
+The same as in  function \code{matrix}: "A dimnames attribute for the matrix: NULL or a list of length 2 giving the row and column names respectively. An empty list is treated as NULL, and a list of length one as row names. The list can be named, and the list names will be used as names for the dimensions."
 }
   \item{dtype}{
 data type. User can indicate "float64", "float32" or "int" for "int64". if not specified, dtype will correspond to the input data type.
 }
   \item{sparse}{
-The same as in function 'Matrix' of the library 'Matrix': "logical or NULL, specifying if the result should be sparse or not. By default, it is made sparse when more than half of the entries are 0."
+The same as in function \code{Matrix} of the library 'Matrix': "logical or NULL, specifying if the result should be sparse or not. By default, it is made sparse when more than half of the entries are 0."
 }
   \item{colnames}{
 A vector with the column names.
@@ -48,13 +48,13 @@ A vector with the column names.
   \item{rownames}{
 A vector with the row names.
 }
-\item{type}{If gpu.matrix is 'torch' or "tensorflow". If it is NULL, \code{gpu.matrix} will try to create a gpu.matrix.torch object.}
-\item{device}{Only for \code{type = "torch"}. It indicates de devide to load cuda. If not indicated, 'device' will be set to 'cuda' if \code{torch::cuda_is_available()} }
+\item{type}{If the gpu.matrix is 'torch' or "tensorflow". If it is NULL, \code{gpu.matrix} will try to create a gpu.matrix.torch object.}
+\item{device}{It indicates the device to load cuda. If not indicated, 'device' will be set to 'cuda' if it is available.}
 \item{\dots}{additional arguments to be passed to or from methods.}
 
 }
 \details{
-The function \code{gpu.matrix} mimics the function \code{Matrix} of the 'Matrix' library and the base function \code{matrix}. If tensorflow and/or torch are properly installed, the created gpu.matrix will be stored on the GPU. The example shows how to check this.
+The \code{gpu.matrix} function mimics the \code{Matrix} function of the 'Matrix' library and the basic \code{matrix} function. If tensorflow and/or torch are properly installed and the \code{device} parameter is set to "cuda" (by default), then the created gpu.matrix object will be stored on the GPU. The example shows how to check this.
 
 The user can apply to the created gpu.matrix-class object -using the same operators- the basic functions that can be applied to a object of class 'matrix' and/or class 'Matrix'.
 
@@ -123,6 +123,12 @@ a@gm$device
 #create a sparse
 a <- gpu.matrix(data=c(0,1,1,0,1,0),nrow = 3,ncol = 2,sparse = T)
 a
+
+#create a complex gpu.matrix
+a <- gpu.matrix(data=c(0+1i,1i,1,0,1,0),nrow = 3,ncol = 2)
+a
+
+
 
 
 }

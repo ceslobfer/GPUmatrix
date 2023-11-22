@@ -67,16 +67,12 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 
 \alias{rowRanks}
 \alias{colRanks}
-\alias{rankMatrix}
 \alias{rowRanks-methods}
 \alias{colRanks-methods}
-\alias{rankMatrix-methods}
 \alias{rowRanks,gpu.matrix.tensorflow-method}
 \alias{rowRanks,gpu.matrix.torch-method}
 \alias{colRanks,gpu.matrix.tensorflow-method}
 \alias{colRanks,gpu.matrix.torch-method}
-\alias{rankMatrix,gpu.matrix.tensorflow-method}
-\alias{rankMatrix,gpu.matrix.torch-method}
 
 \alias{rowSums}
 \alias{colSums}
@@ -124,8 +120,7 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 \S4method{rowRanks}{gpu.matrix.torch}(x)
 \S4method{colRanks}{gpu.matrix.tensorflow}(x)
 \S4method{colRanks}{gpu.matrix.torch}(x)
-\S4method{rankMatrix}{gpu.matrix.tensorflow}(x)
-\S4method{rankMatrix}{gpu.matrix.torch}(x)
+
 
 \S4method{rowSums}{gpu.matrix.tensorflow}(x)
 \S4method{rowSums}{gpu.matrix.torch}(x)
@@ -162,6 +157,10 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 
 The value returned by almost each function is a numeric vector stored in the CPU. Only the function \code{rowRanks}, \code{colRanks}, and \code{sum} return a gpu.matrix-class object.
 
+These functions internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+If the input gpu.matrix-class object is stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
+
 }
 
 
@@ -173,27 +172,26 @@ For more information:
 \code{\link[matrixStats]{rowMaxs}},
 \code{\link[matrixStats]{colMaxs}},
 \code{\link[base]{max}},
-\code{\link[base]{which.max}}.
+\code{\link[base]{which.max}}, and \code{\link[torch]{torch_max}}.
 
 \code{\link[matrixStats]{rowMins}},
 \code{\link[matrixStats]{colMins}},
 \code{\link[base]{min}},
-\code{\link[base]{which.min}}.
+\code{\link[base]{which.min}}, and \code{\link[torch]{torch_min}}.
 
 \code{\link[base]{rowMeans}},
 \code{\link[base]{colMeans}},
-\code{\link[base]{mean}}.
+\code{\link[base]{mean}}, and \code{\link[torch]{torch_mean}}.
 
 \code{\link[matrixStats]{rowVars}},
-\code{\link[matrixStats]{colVars}}.
+\code{\link[matrixStats]{colVars}}, and \code{\link[torch]{torch_var}}.
 
 \code{\link[matrixStats]{rowRanks}},
-\code{\link[matrixStats]{colRanks}},
-\code{\link[Matrix]{rankMatrix}}
+\code{\link[matrixStats]{colRanks}}, and \code{\link[torch]{torch_argsort}}.
 
 \code{\link[base]{rowSums}},
 \code{\link[base]{colSums}},
-\code{\link[base]{sum}}
+\code{\link[base]{sum}}, and \code{\link[torch]{torch_sum}}.
 
 }
 

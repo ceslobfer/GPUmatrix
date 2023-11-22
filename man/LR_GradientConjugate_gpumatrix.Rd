@@ -17,7 +17,7 @@ LR_GradientConjugate_gpumatrix(X, y, beta = NULL,
   \item{X}{the design matrix. Could be either a object of class \code{\linkS4class{gpu.matrix}}, \code{\linkS4class{matrix}}, or  \code{\linkS4class{Matrix}}.}
   \item{y}{vector of observations.}
   \item{beta}{initial solution.}
-  \item{lambda}{numeric, the penalty per parameter to be used.}
+  \item{lambda}{numeric. Penalty factor also known as the L2 norm or L2 penalty, which is computed as the sum of the squared coefficients: \eqn{\lambda||\beta_i||_2^2}}
   \item{iterations}{maximum number of iterations.}
   \item{tol}{tolerance to be used for the estimation.}
 }
@@ -31,11 +31,22 @@ The function returns a vector containing the values of the coefficients. This re
 Angel Rubio and Cesar Lobato.
 }
 
+\details{
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+}
+
+
 \references{
 [1] Minka TP (2003). “A comparison of numerical optimizers for logistic regression.” URL: https://tminka.github.io/papers/logreg/minka-logreg.pdf.
 }
 
 \examples{
-a <- 5
+\donttest{
+\dontrun{
+x <- gpu.matrix(rnorm(100*3),nrow=100,ncol=3)
+y <- sample(c(0,1),size=100,replace = T)
+a <- LR_GradientConjugate_gpumatrix(X = x,y = y)
+}
+}
 }
 

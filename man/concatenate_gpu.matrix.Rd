@@ -2,15 +2,17 @@
 \title{concatenate_gpu.matrix}
 \docType{methods}
 
+\description{
+Mimics the 'base' function \code{'c'} to operate on \code{\linkS4class{gpu.matrix}} objects: function which "combines its arguments to form a vector. All arguments are coerced to a common type which is the type of the returned value."
+In most of the cases, the returned object is of type 'numeric'.
+}
+
+
 \alias{c-methods}
 \alias{c,gpu.matrix.tensorflow-method}
 \alias{c,gpu.matrix.torch-method}
 \alias{c,numMatrixLike-method}
 
-\description{
-Mimics \code{'c'} basic function to operate on \code{\linkS4class{gpu.matrix}} objects: function which "combines its arguments to form a vector. All arguments are coerced to a common type which is the type of the returned value."
-In most of the cases, the returned object is of type "numeric".
-}
 
 \usage{
 \S4method{c}{gpu.matrix.tensorflow}(x,\dots,recursive)
@@ -26,11 +28,11 @@ In most of the cases, the returned object is of type "numeric".
 }
 
 \value{
-It will return a vector of type "numeric" with the combined values.
+It will return a vector of type 'numeric' with the combined values.
 }
 
 \seealso{
-\code{\link[base]{c}}
+See also: \code{\link[base]{c}}.
 }
 
 

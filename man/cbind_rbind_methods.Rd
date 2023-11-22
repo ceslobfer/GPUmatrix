@@ -2,6 +2,12 @@
 \title{cbind_rbind_methods}
 \docType{methods}
 
+\description{
+Mimics the 'base' functions \code{'cbind'} and \code{'rbind'} to operate on \code{\linkS4class{gpu.matrix}} objects. The 'base' functions \code{'cbind'} and \code{'rbind'} internally call the methods \code{cbind2} and \code{rbind2}.
+
+Therefore, ss done in \code{\link[Matrix]{cbind2}} of the package 'Matrix', we have defined in 'GPUmatrix' the methods \code{cbind2} and \code{rbind2} to operate on \code{\linkS4class{gpu.matrix}} objects too.
+}
+
 
 \alias{cbind2}
 \alias{rbind2}
@@ -18,14 +24,6 @@
 
 
 
-
-\description{
-Mimics the 'base' functions \code{'cbind'} and \code{'rbind'} to operate on \code{\linkS4class{gpu.matrix}} objects. The 'base' functions \code{'cbind'} and \code{'rbind'} internally call the methods \code{cbind2} and \code{rbind2}.
-
-Therefore, ss done in \code{\link[Matrix]{cbind2}} of the package 'Matrix', we have defined in 'GPUmatrix' the methods \code{cbind2} and \code{rbind2} to operate on \code{\linkS4class{gpu.matrix}} objects too.
-}
-
-
 \usage{
 
 \S4method{cbind2}{ANY,gpu.matrix.tensorflow}(x,y)
@@ -38,7 +36,7 @@ Therefore, ss done in \code{\link[Matrix]{cbind2}} of the package 'Matrix', we h
 
 \arguments{
 
-\item{x,y}{A \code{\linkS4class{gpu.matrix}} object or any other matrix class}
+\item{x,y}{a \code{\linkS4class{gpu.matrix}} object or any other matrix class.}
 \item{\dots}{(generalized) vectors or matrices. These can be given as named arguments.}
 
 }

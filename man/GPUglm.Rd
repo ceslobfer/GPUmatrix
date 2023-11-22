@@ -6,16 +6,11 @@ These functions mimic the functions \code{speedglm} and \code{speedglm.wfit} of 
 \alias{GPUglm}
 \alias{glm.fit.GPU}
 \usage{
-glm.fit.GPU(x,y, intercept = TRUE, weights = NULL,
-           row.chunk = NULL,family = gaussian(),
-           start = NULL, etastart = NULL, mustart = NULL,
-           offset = NULL, acc = 1e-08, maxit = 25,
-           k = 2, sparselim = 0.9,camp = 0.01,
-           eigendec = FALSE, tol.values = 1e-07,
-           tol.vectors = 1e-07,
-           tol.solve = .Machine$double.eps,
-           sparse = NULL,method = c("normal"),
-           trace = FALSE,dtype=NULL,device=NULL,type=NULL,...)
+glm.fit.GPU(x, y, intercept = TRUE, weights = NULL, family =
+                   gaussian(), start = NULL, etastart = NULL, mustart =
+                   NULL, offset = NULL, acc = 1e-08, maxit = 25, k = 2,
+                   sparse = NULL, trace = FALSE, dtype = NULL, device =
+                   NULL, type = NULL, ...)
 
 GPUglm(...)
 }
@@ -25,15 +20,13 @@ As mentioned in the description, these functions mimic \code{\link[speedglm]{spe
 
 The common parameters with \code{speedglm}:
 
-\item{x}{the same as \code{speedglm}: the design matrix of dimension \code{n*p} where \code{n} is the number of observations and \code{p} is the number of features. \code{x} can be either a 'matrix', 'Matrix' or 'GPUmatrix' object.}
+\item{x}{the same as \code{speedglm}: the design matrix of dimension \code{n*p} where \code{n} is the number of observations and \code{p} is the number of features. \code{x} can be either a 'matrix', 'Matrix' or 'gpu.matrix-class' object.}
 
-\item{y}{the same as \code{speedglm}: a vector of \code{n} observations. \code{y} can be either a 'matrix', 'Matrix' or 'GPUmatrix' object.}
+\item{y}{the same as \code{speedglm}: a vector of \code{n} observations. \code{y} can be either a 'matrix', 'Matrix' or 'gpu.matrix-class' object.}
 
 \item{intercept}{the same as \code{speedglm}: Logical. If first column of \code{x} should be consider as 'intercept' (default) or not. Notice that seting this parameter TRUE or FALSE will not change the design matrix used to fit the model.}
 
 \item{weights}{the same as \code{speedglm}: an optional vector of ‘prior weights’ to be used in the fitting process. Should be NULL (default) or a numeric vector.}
-
-\item{row.chunk}{TODO}
 
 \item{family}{the same as \code{speedglm}: a description of the error distribution and link function to be used in the model. For \code{glm.fit.GPU} this can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link[stats]{family}} for details of family functions.)}
 
@@ -51,21 +44,7 @@ The common parameters with \code{speedglm}:
 
 \item{k}{the same as \code{speedglm}: numeric, the penalty per parameter to be used; the default k = 2 is the classical AIC.}
 
-\item{sparselim}{TODO}
-
-\item{camp}{TODO}
-
-\item{eigendec}{TODO}
-
-\item{tol.values}{TODO}
-
-\item{tol.vectors}{TODO}
-
-\item{tol.solve}{TODO}
-
 \item{sparse}{if matrix \code{x} is desired to be treated as sparse. Not yet implemented.}
-
-\item{method}{TODO}
 
 \item{trace}{If the user wants to see the development of the iterations. By default FALSE}
 
@@ -81,6 +60,13 @@ The \code{glm.fit.GPU} function internally initialises matrices of the 'GPUmatri
 
 }
 
+\details{
+The \code{GPUglm} function internally calls the \code{glm} function by selecting \code{glm.fit.GPU} as the method. The input parameters of the \code{GPUglm} function are equivalent to those of the \code{glm} function.
+
+If the gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
+
+}
 
 
 \value{

@@ -2,6 +2,11 @@
 \title{kroneker Products}
 \docType{methods}
 
+\description{
+Kroneker product of two gpu.matrix-class objects. This function mimics the 'base' function \code{'kronecker'} to operate on gpu.matrix-class objects.
+}
+
+
 \alias{\%x\%}
 \alias{\%x\%-methods}
 \alias{\%x\%,ANY,gpu.matrix.tensorflow-method}
@@ -9,12 +14,13 @@
 \alias{\%x\%,gpu.matrix.tensorflow,ANY-method}
 \alias{\%x\%,gpu.matrix.torch,ANY-method}
 
-\description{
-Kroneker product of two gpu.matrix-class objects. It mimics the base function \code{'kronecker'} to operate on gpu.matrix-class objects.
-}
 
 \details{
-If gpu.matrix-class input is of type 'torch', the function internally call the function \code{\link[torch]{torch_kron}} of the library 'torch'
+The function \code{\%x\%} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
+
 }
 
 \usage{
@@ -27,7 +33,7 @@ If gpu.matrix-class input is of type 'torch', the function internally call the f
 
 \arguments{
 \item{X}{A \code{\linkS4class{gpu.matrix}}.}
-\item{Y}{A \code{\linkS4class{gpu.matrix}} or a matrix or a numeric variable}
+\item{Y}{A \code{\linkS4class{gpu.matrix}} or a matrix or a numeric variable.}
 
 }
 

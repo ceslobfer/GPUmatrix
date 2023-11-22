@@ -1,7 +1,7 @@
 \name{fft}
 \title{Fast Discrete Fourier Transform (FFT)}
 \description{
-This function mimics the function \code{fft} of the library stats to compute on gpu.matrix-class objects: it "Computes the Discrete Fourier Transform (DFT) of an array with a fast algorithm, the “Fast Fourier Transform” (FFT)."
+This function mimics the function \code{fft} of the library 'stats' to compute on gpu.matrix-class objects: it "Computes the Discrete Fourier Transform (DFT) of an array with a fast algorithm, the “Fast Fourier Transform” (FFT)."
 
 }
 
@@ -20,7 +20,7 @@ This function mimics the function \code{fft} of the library stats to compute on 
 }
 
 \arguments{
-\item{z}{a real or complex \code{\linkS4class{gpu.matrix}} object containing the values to be transformed.}
+\item{z}{a  \code{\linkS4class{gpu.matrix}} object containing the values to be transformed.}
 }
 
 \seealso{
@@ -31,7 +31,9 @@ For more information see:
 \details{
 This function mimics the function \code{\link[stats]{fft}} to operate on gpu.matrix-class objects.
 
-Internally, this function calls the \code{tff} function from the 'tensorflow' library or the \code{torch_fft_ifft} function from the torch library (depending on the type of gpu.matrix-class object used). For more details see \code{\link[torch]{torch_fft_ifft}} (there is no help page for the function corresponding to Tensorflow.).
+The function \code{fft} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
 
 }
 

@@ -43,24 +43,30 @@ These functions mimic the functions \code{eigen} ,\code{svd},\code{chol} to oper
 
 
 \arguments{
-\item{x}{a \code{\linkS4class{gpu.matrix}}. More details are explained below.}
+\item{x}{a \code{\linkS4class{gpu.matrix}}. \code{X} must fulfil certain characteristics depending on the function to be called (see details).}
 }
 
 \details{
 
-These functions mimic the behaviour of their respective basis functions.
+These functions mimic the behaviour of their respective 'base' functions.
 
-In the case of the \code{eigen} function, the input value can be a numeric or complex gpu.matrix class. Internally, \code{eigen} calls the base function of the same name.
+In the case of the \code{eigen} function, the input value can be a numeric or complex gpu.matrix class.
 
-For \code{svd} function, the input value could be a numeric or complex gpu.matrix-class. Internally, this function call its corresponding function of the tensorflow or torch library depending on the type of input gpu.matrix-class.
+For \code{svd} function, the input value could be a numeric or complex gpu.matrix-class object.
 
-For \code{chol} function, the input must be a positive-definite squere matrix. Internally, this function call its corresponding function of the tensorflow or torch library depending on the type of input gpu.matrix-class.
+For \code{chol} function, the input must be a positive-definite squere matrix.
+
+
+Internally, these functions call its corresponding function of the tensorflow or torch library depending on the type of input gpu.matrix-class.
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
 
 }
 
 \seealso{
 For more information see:
-\code{\link[base]{eigen}}, \code{\link[base]{svd}}, \code{\link[base]{chol}}, \code{\link[torch]{torch_svd}}, and \code{\link[torch]{torch_cholesky}}.
+\code{\link[base]{eigen}}, \code{\link[base]{svd}}, \code{\link[base]{chol}}, \code{\link[torch]{linalg_eig}}, \code{\link[torch]{torch_svd}}, and \code{\link[torch]{torch_cholesky}}.
 
 \code{chol} function is called by the function \code{\link{chol_solve}}.
 }

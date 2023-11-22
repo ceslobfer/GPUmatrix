@@ -1,7 +1,7 @@
 \name{diag}
 \title{diag}
 \description{
-It mimics the base function \code{'diag'} to operate on gpu.matrix-class objects: "extract or replace the diagonal of a matrix, or constructs a diagonal matrix."
+This function mimics the base function \code{'diag'} to operate on gpu.matrix-class objects: "extract or replace the diagonal of a matrix, or constructs a diagonal matrix."
 }
 
 \alias{diag}

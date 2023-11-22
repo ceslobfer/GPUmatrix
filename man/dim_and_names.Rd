@@ -2,9 +2,11 @@
 \title{Number of rows and columns and its corresponding names}
 
 \description{
-These functions mimics the base functions \code{rownames}, \code{colnames}, \code{dimnames}, \code{dim}, \code{length}, \code{ncol}, \code{nrow} to operate on gpu.matrix-class objects.
+These functions mimic the 'base' functions \code{rownames}, \code{colnames}, \code{dimnames}, \code{dim}, \code{length}, \code{ncol}, \code{nrow} to operate on gpu.matrix-class objects.
 
-On the side, the "dim family of functions"" set or get the dimension of a gpu.matrix-class object. On the other hand, the "rownames family of functions"" set or get the corresponding names of rows and columns of a gpu.matrix-class object.
+The "\code{dim} family functions" set or get the dimension of a gpu.matrix-class object.
+
+The "\code{rownames} and \code{colnames} family functions" set or get the corresponding names of rows and columns of a gpu.matrix-class object.
 }
 
 \alias{rownames}

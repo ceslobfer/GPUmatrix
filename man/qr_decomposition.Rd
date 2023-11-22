@@ -55,7 +55,7 @@ These functions mimic the base \code{qr} family functions to operate on gpu.matr
 
 \S4method{qr.Q}{list}(qr,complete,Dvec)
 \S4method{qr.R}{list}(qr,complete)
-\S4method{qr.X}{list}(qr,complete,ncol)
+\S4method{qr.X}{list}(qr,complete)
 
 \S4method{qr.coef}{list}(qr,y)
 \S4method{qr.qy}{list}(qr,y)
@@ -80,7 +80,6 @@ These functions mimic the base \code{qr} family functions to operate on gpu.matr
 \item{complete}{The same as in 'base' function \code{qr.Q}, and \code{qr.X}}
 \item{Dvec}{The same as in 'base' function \code{qr.Q}}
 \item{a}{a \code{\linkS4class{gpu.matrix}} corresponding to the left-hand side of equations \code{ax=b} or \code{ax=y}.}
-\item{ncol}{The same as in 'base' function \code{qr.X}}
 
 
 }
@@ -88,8 +87,8 @@ These functions mimic the base \code{qr} family functions to operate on gpu.matr
 \details{
 The function \code{qr} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
 
-The QR decomposition can be used to solve the equation \code{Ax=b} for a given matrix A of mxn where m < n, and a vector of observations b. In this context, the functions \code{qr.coef}, and \code{qr.resid} return the coefficients, and residuals values. Moreover, the functions \code{qr.qy}, and \code{qr.qty} returns \code{Q \%*\% y} and \code{Q \%*\% t(y)}.
-Note that if parameter \code{complete} is TRUE then an arbitrary orthogonal completion of the \bold{Q} matrix or wheter the \bold{Q} matrix is to be completed by binding zero-value rows beneath the square upper triangle. This parameter does not have influence on \code{qr.X}.
+The QR decomposition can be used to solve the equation \code{Ax=b} for a given matrix A, and a vector of observations b. In this context, the functions \code{qr.coef}, and \code{qr.resid} return the coefficients, and residuals values. Moreover, the functions \code{qr.qy}, and \code{qr.qty} returns \code{Q \%*\% y} and \code{Q \%*\% t(y)}.
+Note that if parameter \code{complete} is TRUE then an arbitrary orthogonal completion of the \bold{X} and \bold{Q} matrix or wheter the \bold{R} matrix is to be completed by binding zero-value rows beneath the square upper triangle.
 
 The function \code{solve.qr} solves the system of equations \code{Ax=b} via the QR decomposition. This function internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
 
@@ -121,3 +120,37 @@ The function \code{qr.solve} returns a gpu.matrix-class object containing the co
 See \code{\link[base]{qr}}, \code{\link[torch]{linalg_qr}}, \code{\link[torch]{torch_triangular_solve}}
 }
 
+\examples{
+\donttest{
+\dontrun{
+## overdetermined system
+A <- gpu.matrix(runif(12),nrow =  4)
+b <- gpu.matrix(rnorm(4),ncol=1)
+qr.solve(a = A, b)
+qr_gpu <- qr(A)
+qr.solve(a=qr_gpu,b)
+qr.coef(qr = qr_gpu,b)
+qr.resid(qr = qr_gpu,b)
+qr.qty(qr = qr_gpu,b)
+qr.qy(qr = qr_gpu,b)
+qr.X(qr = qr_gpu,complete = T)
+qr.Q(qr = qr_gpu,complete = T)
+qr.R(qr = qr_gpu,complete = T)
+
+
+## underdetermined system
+A <- gpu.matrix(runif(12),nrow =  3)
+b <- gpu.matrix(rnorm(3),ncol=1)
+qr.solve(a = A, b)
+qr_gpu <- qr(A)
+qr.solve(a=qr_gpu,b)
+qr.coef(qr = qr_gpu,b)
+qr.resid(qr = qr_gpu,b)
+qr.qty(qr = qr_gpu,b)
+qr.qy(qr = qr_gpu,b)
+qr.X(qr = qr_gpu,complete = T)
+qr.Q(qr = qr_gpu,complete = T)
+qr.R(qr = qr_gpu,complete = T)
+}
+}
+}

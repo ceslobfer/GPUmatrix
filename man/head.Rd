@@ -1,6 +1,7 @@
 \name{matrix_general_operators_methods}
 \title{Return the first or last part of a GPUmatrix object}
 \docType{methods}
+
 \description{
 \code{head} and \code{tail} mimic the functions \code{head} and \code{tail} from \code{utils} to operate on gpu.matrix-class objects. By default \code{head} shows the first 6 rows of a matrix or first 6 elements of a vector or list. \code{tail} shows the last 6 rows of a matrix or last 6 elements of a vector or list.
 
