@@ -7,7 +7,7 @@ device <- function(x){
       res <- "cpu"
     }
   }else if (class(x)[[1]] == "gpu.matrix.torch"){
-    res <- Atf@gm$device
+    res <- x@gm$device
   }
 
   return(res)

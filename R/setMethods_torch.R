@@ -1189,7 +1189,7 @@ setMethod("cov2cor", signature(V="gpu.matrix.torch"), function(V){
 
 normalizeGPU <- function(x) {
   xcenter <- t(t(x)- colMeans(x))
-  xnorm <- t(t(xcenter)/sqrt(GPUmatrix:::colVars(xcenter)))
+  xnorm <- t(t(xcenter)/sqrt(colVars(xcenter)))
   return(xnorm)
 }
 

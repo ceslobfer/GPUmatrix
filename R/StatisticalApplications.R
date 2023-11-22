@@ -67,7 +67,7 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
     }
   }
 
-  p <- GPUmatrix:::sigmoid(X %*% beta)
+  p <- sigmoid(X %*% beta)
   a <- p*(1-p)
   g <- tX %*% (p - y)
   u <- g
@@ -78,7 +78,7 @@ LR_GradientConjugate_gpumatrix <- function(X,y,beta = NULL, lambda = 0, iteratio
       uhu <- (sum(u*(tX %*% (a * (X %*% u)))) + lambda * sum(u*u))
       beta <- beta-sum(g*u)/uhu * u
     } else{
-      p <- GPUmatrix:::sigmoid(X %*% beta)
+      p <- sigmoid(X %*% beta)
       # beta_old <- beta
       g_old <- g
       a <- p*(1-p)

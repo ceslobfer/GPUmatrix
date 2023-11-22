@@ -3,7 +3,7 @@ setMethod("Logic",
           function(e1, e2)
           {
             op = .Generic[[1]]
-            castMatrix <- castTypeOperations_tensorflow(e1,e2)
+            castMatrix <- castTypeOperations(e1,e2)
             e1 <- castMatrix[[1]]
             e2 <- castMatrix[[2]]
             dtype(e2) <- "bool"
@@ -25,7 +25,7 @@ setMethod("Logic",
           function(e1, e2)
           {
             op = .Generic[[1]]
-            castMatrix <- castTypeOperations_tensorflow(e1,e2)
+            castMatrix <- castTypeOperations(e1,e2)
             e1 <- castMatrix[[1]]
             e2 <- castMatrix[[2]]
             dtype(e2) <- "bool"
