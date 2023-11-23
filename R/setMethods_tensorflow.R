@@ -250,7 +250,7 @@ setMethod("cbind2",signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(x
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
-    res <- gpu.matrix.tensorflow(cbind(x@gm,y@gm))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$concat(c(x@gm,y@gm),axis=1L))
   }
 
   if (is.null(colnames(x)) & !is.null(colnames(y))) colnames(x) <- rep(NA,ncol(x))
@@ -282,7 +282,7 @@ setMethod("cbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
-    res <- gpu.matrix.tensorflow(cbind(x@gm,y@gm))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$concat(c(x@gm,y@gm),axis=1L))
   }
 
   if (is.null(colnames(x)) & !is.null(colnames(y)) & !is.vector(xOrigin)) colnames(x) <- rep(NA,ncol(x))
@@ -312,7 +312,7 @@ setMethod("rbind2", signature(x = "gpu.matrix.tensorflow", y = "ANY"), function(
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
-    res <- gpu.matrix.tensorflow(rbind(x@gm,y@gm))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$concat(c(x@gm,y@gm),axis=0L))
   }
 
 
@@ -339,7 +339,7 @@ setMethod("rbind2",signature(x = "ANY", y = "gpu.matrix.tensorflow"), function(x
   }else{
     if (x@sparse) x <- warningSparseTensor(x)
     if (y@sparse) y <- warningSparseTensor(y)
-    res <- gpu.matrix.tensorflow(rbind(x@gm,y@gm))
+    res <- gpu.matrix.tensorflow(tensorflow::tf$concat(c(x@gm,y@gm),axis=0L))
   }
 
 

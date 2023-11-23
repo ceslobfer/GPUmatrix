@@ -46,6 +46,8 @@ n <- 100
 x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
 y <- rbinom(m, 1, prob = inv.logit(x%*%sol))
+s1 <- glm.fit.GPU(x,y,family = binomial(),dtype="float32")
+s2 <- glm.fit.GPU(x,y,family = poisson(),dtype="float64", device = "cpu")
 
 system.time(s1 <- glm.fit(x,y,family = binomial())$coefficients)
 system.time(s2 <- speedglm.wfit(y,x,family = binomial())$coefficients)
@@ -181,6 +183,14 @@ plotGLM<- function(nrowInterval=c(1000,3000,5000,7000,9000,10000,11000),
 
 
 plotGLMRes <- plotGLM()
+
+plotGLMRes + theme(
+  axis.line = element_line(color = "white"),  # Color de las líneas de los ejes
+  axis.text = element_text(color = "white"),  # Color del texto de los ejes
+  panel.background = element_rect(fill = "#1b1732")  # Color de fondo negro
+)
+library(ggthemes)
+plotGLMRes+dark_theme_classic()
 counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)
 treatment <- gl(3,3)
@@ -195,6 +205,6 @@ summary(sglm.D93)
 
 # GPU glm
 library(GPUmatrix)
-gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson())
+gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson(), device = NULL)
 summary(gpu.glm.D93)
 
