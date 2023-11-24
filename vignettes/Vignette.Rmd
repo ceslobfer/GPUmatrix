@@ -3,8 +3,9 @@ title: "Get started with GPUmatrix package"
 bibliography: "references.bib"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 date: "February 2023"
-output: 
-  rmarkdown: html_vignette
+output:
+  md_document:
+    variant: markdown_github
 vignette: >
   %\VignetteIndexEntry{Get started with GPUmatrix package}
   %\usepackage[UTF-8]{inputenc}
@@ -89,46 +90,56 @@ The GPUmatrix package is based on S4 objects in R and we have created a construc
 ```{r, eval=T}
 library(GPUmatrix)
 #R matrix initialization
-if(installTorch){
-  m <- matrix(c(1:20)+40,10,2)
-  #Show CPU matrix
-  m
-  #GPU matrix initialization
-  Gm <- gpu.matrix(c(1:20)+40,10,2)
-  #Show GPU matrix
-  Gm
-}
+m <- matrix(c(1:20)+40,10,2)
+#Show CPU matrix
+m
+#GPU matrix initialization
+Gm <- gpu.matrix(c(1:20)+40,10,2)
+#Show GPU matrix
+Gm
+
 ```
 
-In the previous example, a normal R CPU matrix called `m` and its GPU counterpart `Gm` are created. Just like regular matrices, the created GPU matrices allow for indexing of its elements and assignment of values. The concatenation operators `rbind()` and `cbind()` work independently of the type of matrices that are to be concatenated, resulting in a ***gpu.matrix***:
+Although the indexing of tensors in both torch and tensorflow is 0-based, the indexing of GPUmatrix objects is 1-based, making it as close as possible to working with native R matrices and more convenient for the user. In the previous example, a normal R CPU matrix called `m` and its GPU counterpart `Gm` are created. Just like regular matrices, the created GPU matrices allow for indexing of its elements and assignment of values. The concatenation operators `rbind()` and `cbind()` work independently of the type of matrices that are to be concatenated, resulting in a ***gpu.matrix***:
 
 ```{r,eval=T}
-if(installTorch){
-  Gm[c(2,3),1]
-  
-  Gm[,2]
-   
-  Gm2 <- cbind(Gm[c(1,2),], Gm[c(6,7),])
-  Gm2
-  
-  Gm2[1,3] <- 0
-  Gm2
-}
+
+Gm[c(2,3),1]
+
+Gm[,2]
+ 
+Gm2 <- cbind(Gm[c(1,2),], Gm[c(6,7),])
+Gm2
+
+Gm2[1,3] <- 0
+Gm2
+
 ```
 
-Although the indexing of tensors in both torch and tensorflow is 0-based, the indexing of GPUmatrix objects is 1-based, making it as close as possible to working with native R matrices and more convenient for the user.
+It is also possible to initialize the data with NaN values:
+
+```{r,eval=T}
+Gm3 <- gpu.matrix(nrow = 2,ncol=3)
+Gm3[,2]
+Gm3[1,2] <- 1 
+Gm3
+Gm3[1,3] <- 0
+Gm3
+
+```
+
+These examples demonstrate that, contrary to standard R, subsetting a gpu.matrix ---even when selecting only one column or row--- still results in a gpu.matrix. This behavior is analogous to using 'drop=F' in standard R. The default standard matrices in R have limitations. The only allowed numeric data types are int and float64. It neither natively allows the creation or handling of sparse matrices. To make up for this lack of functionality, other R packages hosted in CRAN have been created to manage these types.
 
 ## 1.1 Using GPUMatrix on CPU
 
 In the GPUmatrix constructor, we can specify the location of the matrix, i.e., we can decide to host it on the GPU or in RAM memory to use it with the CPU. As a package, as its name suggests, oriented towards algebraic operations in R using the GPU, it will by default be hosted on the GPU, but it allows the same functionalities using the CPU. To do this, we use the `device` attribute of the constructor and assign it the value ***"cpu"***.
 
 ```{r, eval=T}
-if(installTorch){   
-  #GPUmatrix initialization with CPU option   
-  Gm <- gpu.matrix(c(1:20)+40,10,2,device="cpu")   
-  #Show CPU matrix from GPUmatrix   
-  Gm 
-}
+#GPUmatrix initialization with CPU option   
+Gm <- gpu.matrix(c(1:20)+40,10,2,device="cpu")   
+#Show CPU matrix from GPUmatrix   
+Gm 
+
 ```
 
 ## 1.2 Using GPUMatrix with Tensorflow
@@ -148,10 +159,10 @@ The default matrices in R have limitations. The numeric data types it allows are
 
 ## 2.1 Cast from other packages
 
-GPUmatrix allows for compatibility with sparse matrices and different data types such as float32. For this reason, casting operations between different matrix types from multiple packages to GPU matrix type have been implemented:
+GPUmatrix allows for compatibility with sparse matrices and different data types such as float32. For this reason, casting operations between different matrix types from multiple packages to GPUmatrix type have been implemented:
 
 ```{r, echo=FALSE}
-knitr::kable(NULL,caption = "Table 1. Casting operations between different packages")
+knitr::kable(NULL,caption = "Table 1. Cast options from other packages. If back cast is TRUE, then it is possible to convert a gpu.matrix to this object and vice versa. If is FALSE, it is possible to convert these objects to gpu.matrix but not vice versa.")
 ```
 
 |   Matrix class    |  Package   | Data type default |         SPARSE         | Back cast |
@@ -168,60 +179,76 @@ knitr::kable(NULL,caption = "Table 1. Casting operations between different packa
 |   torch_tensor    |   torch    |      float64      | Depends of tensor type |   TRUE    |
 | tensorflow.tensor | tensorflow |      float64      | Depends of tensor type |   TRUE    |
 
-There are two functions for casting to create a ***gpu.matrix***: **`as.gpu.matrix()`** and the **`gpu.matrix()`** constructor itself. Both have the same input parameters for casting: the object to be cast and extra parameters for creating a GPU matrix.
+There are two functions for casting to create a ***gpu.matrix***: **`as.gpu.matrix()`** and the **`gpu.matrix()`** constructor itself. Both have the same input parameters for casting: the object to be cast and extra parameters for creating a GPUmatrix.
+
+reate 'Gm' from 'm' matrix R-base:
 
 ```{r, eval=T}
-if(installTorch){
-  #Create 'Gm' from 'm' matrix
-  m <- matrix(c(1:20)+40,10,2)
-  Gm <- gpu.matrix(m)
-  Gm
-  
-  #Create 'Gm' from 'M' with Matrix package
-  library(Matrix)
-  M <- Matrix(c(1:20)+40,10,2)
-  Gm <- gpu.matrix(M)
-  Gm
-  
-  #Create 'Gm' from 'mfloat32' with float package
-  library(float)
-  mfloat32 <- fl(m)
-  Gm <- gpu.matrix(mfloat32)
-  Gm
-   
-  #Create 'Gms' type sparse from 'Ms' type sparse dgCMatrix with Matrix package
-  Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
-  Ms
-   
-  Gms <- gpu.matrix(Ms)
-  Gms
-}
+
+m <- matrix(c(1:10)+40,5,2)
+Gm <- gpu.matrix(m)
+Gm
+
+```
+
+Create 'Gm' from 'M' with Matrix package:
+
+```{r, eval=T}
+library(Matrix)
+M <- Matrix(c(1:10)+40,5,2)
+Gm <- gpu.matrix(M)
+Gm
+
+```
+
+Create 'Gm' from 'mfloat32' with float package:
+
+```{r, eval=T}
+library(float)
+mfloat32 <- fl(m)
+Gm <- gpu.matrix(mfloat32)
+Gm
+
+```
+
+Interestingly, GPUmatrix returns a float32 data type matrix if the input is a float matrix.
+
+It is also possible to a gpu.matrix create 'Gms' type sparse from 'Ms' type sparse dgCMatrix, dgeMatrix, ddiMatrix or dpoMatrix with Matrix package:
+
+```{r, eval=T}
+
+Ms <- Matrix(sample(0:1, 10, replace = TRUE), nrow=5, ncol=2, sparse=TRUE)
+Ms
+ 
+Gms <- gpu.matrix(Ms)
+Gms
+
 ```
 
 ## 2.2 Data type and sparsity
 
-The data types allowed by GPUmatrix are: **float64**, **float32**, **int**, **bool** or **logical**, **complex64** and **complex32**. We can create a GPU matrix with a specific data type using the **`dtype`** parameter of the **`gpu.matrix()`** constructor function or change the data type of a previously created GPU matrix using the **`dtype()`** function. The same applies to GPU sparse matrices, we can create them from the constructor using the **`sparse`** parameter, which will obtain a Boolean value of `TRUE`/`FALSE` depending on whether we want the resulting matrix to be sparse or not. We can also modify the sparsity of an existing GPU matrix with the functions **`to_dense()`**, if we want it to go from sparse to dense, and **`to_sparse()`**, if we want it to go from dense to sparse.
+The data types allowed by GPUmatrix are: **float64**, **float32**, **int**, **bool** or **logical**, **complex64** and **complex32**. We can create a GPU matrix with a specific data type using the **`dtype`** parameter of the **`gpu.matrix()`** constructor function. It is also possible change the data type of a previously created GPU matrix using the the data type of a previously created GPU matrix using the **`dtype()`** function. The same applies to GPU sparse matrices, we can create them from the constructor using the **`sparse`** parameter, which will obtain a Boolean value of `TRUE`/`FALSE` depending on whether we want the resulting matrix to be sparse or not. We can also modify the sparsity of an existing GPU matrix with the functions **`to_dense()`**, if we want it to go from sparse to dense, and **`to_sparse()`**, if we want it to go from dense to sparse.
 
 ```{r, eval=T}
-if(installTorch){
-  #Creating a float32 matrix
-  Gm32 <- gpu.matrix(c(1:20)+40,10,2, dtype = "float32")
-  Gm32
-  
-  #Creating a non sparse martix with data type float32 from a sparse matrix type float64
-  Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
-  Gm32 <- gpu.matrix(Ms, dtype = "float32", sparse = F)
-  Gm32
-   
-  #Convert Gm32 in sparse matrix Gms32
-  Gms32 <- to_sparse(Gm32)
-  Gms32
-  
-  ##Convert data type Gms32 in float64
-  Gms64 <- Gms32
-  dtype(Gms64) <- "float64"
-  Gms64
-}
+
+#Creating a float32 matrix
+Gm32 <- gpu.matrix(c(1:20)+40,10,2, dtype = "float32")
+Gm32
+
+#Creating a non sparse martix with data type float32 from a sparse matrix type float64
+Ms <- Matrix(sample(0:1, 20, replace = TRUE), nrow=10, ncol=2, sparse=TRUE)
+Gm32 <- gpu.matrix(Ms, dtype = "float32", sparse = F)
+Gm32
+ 
+#Convert Gm32 in sparse matrix Gms32
+Gms32 <- to_sparse(Gm32)
+Gms32
+
+##Convert data type Gms32 in float64
+Gms64 <- Gms32
+dtype(Gms64) <- "float64"
+Gms64
+
 
 ```
 
@@ -229,18 +256,18 @@ if(installTorch){
 
 ## 3.1 Arithmetic and comparison operators
 
-GPUmatrix supports all basic arithmetic operators in R: `+`, `-`, `*`, `^`, `/`, `%*%` and `%%`. Its usage is the same as for basic R matrices, and it allows compatibility with other matrix objects from the previously mentioned packages, always returning the result in GPUmatrix format.
+GPUmatrix supports all basic arithmetic operators in R: `+`, `-`, `*`, `^`, `/`, `%*%` and `%%`. Its usage is the same as for basic R matrices, and it allows compatibility with other matrix objects from the packages mentioned above.
 
 ```{r, eval=T}
-if(installTorch){
-  (Gm + Gm) == (m + m)
-  
-  (Gm + M) == (mfloat32 + Gm)
-  
-  (M + M) == (mfloat32 + Gm)
-  
-  (Ms + Ms) > (Gms + Gms)*2
-}
+
+(Gm + Gm) == (m + m)
+
+(Gm + M) == (mfloat32 + Gm)
+
+(M + M) == (mfloat32 + Gm)
+
+(M + M) > (Gm + Gm)*2
+
 ```
 
 As seen in the previous example, the comparison operators (`==`, `!=`, `>`, `<`, `>=`, `<=`) also work following the same dynamic as the arithmetic operators.
@@ -298,23 +325,23 @@ knitr::kable(NULL,caption = "Table 3. Complex operators that accept a gpu.matrix
 
 ## 3.3 Other functions
 
-In the manual, we can find a multitude of functions that can be applied to *gpu.matrix* type matrices. Most of the functions are functions from the base R package that can be used on *gpu.matrix* matrices in the same way they would be applied to regular matrices of R. There are other functions from other packages like **Matrix** or **matrixStats** that have been implemented due to their widespread use within the user community, such as `rowVars` or `colMaxs`. The output of these functions, which originally produced R default matrix type objects, will now return *gpu.matrix* type matrices if the input type of the function is *gpu.matrix*.
+We can find a multitude of functions that can be applied to *gpu.matrix* type matrices. Most of the functions are functions from the base R package that can be used on *gpu.matrix* matrices in the same way they would be applied to regular matrices of R. There are other functions from other packages like **Matrix** or **matrixStats** that have been implemented due to their widespread use within the user community, such as `rowVars` or `colMaxs`. The output of these functions, which originally produced R default matrix type objects, will now return *gpu.matrix* type matrices if the input type of the function is *gpu.matrix*.
 
 ```{r,eval=T}
-if(installTorch){
-  m <- matrix(c(1:20)+40,10,2)
-  Gm <- gpu.matrix(c(1:20)+40,10,2)
-  
-  head(tcrossprod(m),1)
-  
-  head(tcrossprod(Gm),1)
-  
-  Gm <- tail(Gm,3)
-  rownames(Gm) <- c("a","b","c")
-  tail(Gm,2)
-  
-  colMaxs(Gm)
-}
+
+m <- matrix(c(1:20)+40,10,2)
+Gm <- gpu.matrix(c(1:20)+40,10,2)
+
+head(tcrossprod(m),1)
+
+head(tcrossprod(Gm),1)
+
+Gm <- tail(Gm,3)
+rownames(Gm) <- c("a","b","c")
+tail(Gm,2)
+
+colMaxs(Gm)
+
 ```
 
 There is a wide variety of functions implemented in GPUmatrix, and they are adapted to be used just like regular R matrices.
@@ -324,7 +351,7 @@ knitr::kable(NULL,caption = "Table 4. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:---------------:|:------------------------------------:|:---------------:|
+|:----------------:|:----------------------------------:|:----------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -401,21 +428,23 @@ knitr::kable(NULL,caption = "Table 4. Functions that accept one or several gpu.m
 
 We have compared the computation time for different matrix functions, different precision and running the operations either on the GPU or on the CPU (using both GPUmatrix and plain R).
 
-The functions that we tested are '`*`' (Hadamard or element-wise product of matrices), '`exp`', (exponential of each element of a matrix), '`rowMeans`' (means of the rows of a matrix), '`%*%`' (standard product of matrices), '`solve`' (inverse of a matrix) and '`svd`' (singular value decomposition of a matrix). We have also included a Hadamard and standard multiplication of matrices where one of the matrices is sparse. The proportion of non-null elements is either 1% or 0.1%.
+The functions that we tested are '`*`' (Hadamard or element-wise product of matrices), '`exp`', (exponential of each element of a matrix), '`rowMeans`' (means of the rows of a matrix), '`%*%`' (standard product of matrices), '`solve`' (inverse of a matrix) and '`svd`' (singular value decomposition of a matrix).
 
 These functions were tested on square matrices whose row sizes are 500, 700, 1000, 1400, 2000, 2800 and 4000.
 
-![Figure 1: Computation time (in seconds) for MKL-R (solid green), solid lines with circles for float 64, dashed lines with triangles for float 32, pink lines for GPUmatrix with CPU, and blue lines for GPUmatrix with GPU using CUDA. Time shown in y-axis is in logarithmic scale. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The operations are the element-wise or Hadamard product of two matrices, the exponential of each element of a matrix, the mean of the rows of a matrix, the standard matrix product, the inverse of a matrix, and the singular value decomposition of a matrix (SVD).](images/performanceComparison.png){width="800"}
+![Figure 1: Computation time (in seconds) where MKL-R solid green, solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64 and blue lines for GPUmatrix with float32. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The operations are the element-wise or Hadamard product of two matrices, the exponential of each element of a matrix, the mean of the rows of a matrix, the standard matrix product, the inverse of a matrix, and the singular value decomposition of a matrix (SVD).](images/performanceComparison.png){width="800"}
 
-In Figure 1 it is important to note that the y-axis is in logarithmic scale. For example, the element-wise product of a matrix on GPU32 is almost two orders of magnitude faster than the same operation on CPU. The results show that the GPU is particularly effective for element-wise operations (Hadamard product, exponential of a matrix). For these operations, it is easier to fully utilize the huge number of cores of a GPU. R-MKL seems to use a single core to perform element-wise operations. The torch implementation is much faster, but not as much as the GPU. rowMeans is also faster on the GPU than on the CPU. In this case, the Torch CPU implementation is on par with the GPU. When the operations become more complex, as in the standard product of matrices and computing the inverse, CPU and GPU (using double precision) are on closer to each other. However, GPU32 is still much faster than its CPU32 counterpart. Finally, it is not advisable -in terms of speed- to use the GPU for even more complex operations such as the SVD. In this case, GPU64 is the slowest method. GPU32 hardly stands up to comparison with CP32.
+Figure 1 compares the different computational architectures, namely, CPU -standard R matrices running on MKL on FP64-, CPU64 -GPUmatrix matrices computed on the CPU with FP64-, CPU32 -similar to the previous using FP32-, GPU64 -GPUmatrix matrices stored and computed on the GPU with FP64- and GPU32 -identical to the previous using FP32-.
 
-![Figure 2: Computation time (in seconds) for the Matrix package (solid violet), pink lines with circles for float 64, blue lines with triangles for float 32, solid lines for GPUmatrix with CPU, and dashed lines for GPUmatrix with GPU using CUDA. Time shown in y-axis is in logarithmic scale. Time shown in y-axis is in logarithmic scale. The small model is a random square matrix of size 2,000 x 2,000. The proportion of non-zero elements is either 0.001 or 0.01. The large model is a 20,000 x 20,000 matrix with the same proportion of non-zero elements. The element-wise multiplication is performed on the sparse matrix. The right panel shows the time required to multiply these matrices by dense matrices whose sizes are 2,000 x 500 and 20,000 x 500, respectively.](images/SparsePerformanceComparison.png){width="800"}
+It is important to note that the y-axis is in logarithmic scale. For example, the element-wise product of a matrix on GPU32 is almost two orders of magnitude faster than the same operation on CPU. The results show that the GPU is particularly effective for element-wise operations (Hadamard product, exponential of a matrix). For these operations, it is easier to fully utilize the huge number of cores of a GPU. R-MKL seems to use a single core to perform element-wise operations. The torch implementation is much faster, but not as much as the GPU. rowMeans is also faster on the GPU than on the CPU. In this case, the Torch CPU implementation is on par with the GPU. When the operations become more complex, as in the standard product of matrices and computing the inverse, CPU and GPU (using double precision) are closer to each other. However, GPU32 is still much faster than its CPU32 counterpart. Finally, it is not advisable -in terms of speed- to use the GPU for even more complex operations such as the SVD. In this case, GPU64 is the slowest method. GPU32 hardly stands up to comparison with CPU32.
 
-Regarding sparse matrices, Torch or Tensorflow for R have very limited support for this type of matrices. In many cases, it is necessary to cast the sparse matrix to a full matrix and perform the operations on the full matrix. However, there are two operations that do not require this casting: element-wise multiplication of matrices and multiplication of a sparse matrix and a full matrix. We created four sparse matrices. The size of two of them (small ones) is 2,000 x 2,000. The fraction of nonzero entries is 0.01 and 0.001. The size of the other two (large) is 20,000 x 20,000. The fraction of non-null entries is also 0.01 and 0.001. Figure 2 shows the results for these matrices.
+![Figure 2: Computation time (in seconds) for the Matrix package (solid violet), yellow lines for GPUmatrix with float32, orange lines for GPUmatrix with float64, solid lines for CPU and dashed lines for GPU with CUDA. Time shown in y-axis is in logarithmic scale. The small model is a random square matrix of size 2,000 x 2,000. The proportion of non-zero elements is either 0.001 or 0.01. The large model is a 20,000 x 20,000 matrix with the same proportion of non-zero elements. The element-wise multiplication is performed on the sparse matrix. The right panel shows the time required to multiply these matrices by dense matrices whose sizes are 2,000 x 500 and 20,000 x 500, respectively.](images/SparsePerformanceComparison.png){width="800"}
 
-GPUmatrix clearly outperforms CPU computation for the standard matrix product, since it is not possible to use MKL in these cases. For the Hadamard product, the GPU outperforms the CPU only for the larger matrices.
+Regarding sparse matrices, Torch or Tensorflow for R have very limited support for them. In many cases, it is necessary to cast the sparse matrix to a full matrix and perform the operations on the full matrix. However, there are two operations that do not require this casting: element-wise multiplication of matrices and multiplication of a sparse matrix and a full matrix. We created four sparse matrices. The size of two of them (small ones) is 2,000 x 2,000. The fraction of nonzero entries is 0.01 and 0.001. The size of the other two (large) is 20,000 x 20,000. The fraction of non-null entries is also 0.01 and 0.001. Figure 2 shows the results for these matrices. As mentioned earlier, the implementation of sparse operations in torch or tensorflow for R is far from perfect, probably, because the only storage mode is "coo" in their respective R packages. Matrix package outperforms either GPU or CPU, even for float32, in all the cases.
 
-In all cases, the larger the matrix, the more advantageous it is to compute on the GPU. For the small matrices 500 x 500, the CPU is the fastest method for all operations except the exponential computation.
+GPUmatrix clearly outperforms CPU computation for the element-wise matrix product, since it is not possible to use MKL in these cases.
+
+In all cases, the larger the matrix, the more advantageous it is to compute on the GPU. For the small matrices 500 x 500, the CPU is among the fastest methods for all operations except the exponential computation.
 
 # 4. Statistical functions applications
 
@@ -426,7 +455,7 @@ The main advantage of GPUmatrix is its versatility: R code needs only minor chan
 The non-negative factorization (NMF) of a matrix is an approximate factorization were an initial matrix $\mathbf{V}$ is approximated by the product of two matrix $\mathbf{W}$ and $\mathbf{H}$ so that,
 
 $$
-\mathbf{V} \approx \mathbf{W}\mathbf{H}$$ We have implemented our own non-negative matrix factorization function (`NMFgpumatrix()`) using the Lee and Seung multiplicative update rule.
+\mathbf{V}_{m \times n} \approx \mathbf{W}_{m \times k}\mathbf{H}_{k \times n}$$ We have implemented our own non-negative matrix factorization function (`NMFgpumatrix()`) using the Lee and Seung multiplicative update rule.
 
 The rules are
 
@@ -436,7 +465,7 @@ $$ and $$
 \mathbf{H}_{[i, j]}^{n+1} \leftarrow \mathbf{H}_{[i, j]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)_{[i, j]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)_{[i, j]}}
 $$ to update the $\mathbf{W}$ and $\mathbf{H}$ respectively.
 
-![Figure 3: Computation time (in seconds) of non-negative factorization for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines with circles for float 64, dashed lines with triangles for float 32, pink lines for GPUmatrix with CPU, and blue lines for GPUmatrix with GPU using CUDA. Time shown in y-axis is in logarithmic scale. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices.](images/plotNMFgpumatrix.png){width="800"}
+![Figure 3: Computation time (in seconds) of non-negative factorization for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The internal size of the factorization is 10.](images/plotNMFgpumatrix.png){width="800"}
 
 The implemented function is `NMFgpumatrix`. This function operates in the same way with basic R matrices as with GPUmatrix matrices, and it does not require any additional changes beyond initializing the input matrix as a GPUmatrix. Indeed, the input matrices W, H, and V can be either *gpu.matrix* or *R base* matrices interchangeably. Figure 3 shows that using GPUmatrix boosts the performance improvement using both GPU and CPU. This improvement is especially apparent with float32 matrices.
 
@@ -444,17 +473,17 @@ The implemented function is `NMFgpumatrix`. This function operates in the same w
 
 Logistic regression is a widespread statistical analysis technique that is the "first to test" method for classification problems where the outcome is binary. R base implements this analysis in the `glm` function. However, `glm` can be very slow for big models and, in addition, does not accept sparse coefficient matrices as input. In this example, we have implemented a logistic regression solver that accepts as input both dense or sparse matrices.
 
-![Figure 4: Computation time (in seconds) of the logistic regression using the conjugate gradient method for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for float 64, dashed lines for float 32, pink lines for GPUmatrix with CPU, and blue lines for GPUmatrix with GPU using CUDA. Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/100). Therefore, the leftmost part of the graph shows the computing time for a 10,000 x 100 matrix and the rightmost part a 50,000 x 100 matrix.](images/LRGC_glm.png){width="800"}
+![Figure 4: Computation time (in seconds) of the logistic regression using the conjugate gradient method for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/100). Therefore, the leftmost part of the graph shows the computing time for a 10,000 x 100 matrix and the rightmost part a 50,000 x 500 matrix.](images/LRGC_glm.png){width="800"}
 
 The developed function performs the logistic regression using the Conjugate Gradient method (CG) Figure 4. This method has shown to be very effective for logistic regression of big models [@minka2003comparison]. The code is general enough to accommodate standard R matrices, sparse matrices from the Matrix package and, more interestingly, GPUmatrices from the GPUmatrix package.
 
 We would like to stress several points here. Firstly, the conjugate gradient is an efficient technique that outperforms `glm.fit` in this case. Secondly, this code runs on matrix, Matrix or GPUmatrix objects without the need of carefully selecting the type of input. Thirdly, using the GPUmatrix accelerates the computation time two-fold if compared to standard R (and more than ten fold if compared to `glm.fit` function)
 
-![Figure 5: Computation time (in seconds) of the logistic regression using the conjugate gradient method in a sparse matrix. Solid green for MKL-R dense case (i.e. the computation is performed without any consideration of the sparsity of the matrix). Solid lines for float 64, dashed lines for float 32, pink lines for GPUmatrix dense with CPU, blue lines for GPUmatrix dense with GPU using CUDA, yellow lines for GPUmatrix sparse with CPU, orange lines for GPUmatrix sparse with CUDA. Violet line, using Matrix package(that implicitly considers the matrix to be sparse). Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/100). Therefore, the leftmost part of the graph shows the computing time for a 10,000 x 100 matrix and the rightmost part a 50,000 x 100 matrix.](images/LRGC.png){width="800"}
+![Figure 5: Computation time (in seconds) of the logistic regression using the conjugate gradient method in a sparse matrix. Solid green for MKL-R dense case (i.e. the computation is performed without any consideration of the sparsity of the matrix). Solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix dense with float64, blue lines for GPUmatrix dense with float32, yellow lines for GPUmatrix sparse with float32, orange lines for GPUmatrix sparse with float64. Violet line, using Matrix package(that implicitly considers the matrix to be sparse). Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/100). Therefore, the leftmost part of the graph shows the computing time for a 10,000 x 100 matrix and the rightmost part a 50,000 x 500 matrix.](images/LRGC.png){width="800"}
 
-We have tested the function also using a sparse input. In this case, the memory requirements are much smaller. However, there are no advantages in execution time (despite the sparsity is 90%).
+We have tested the function also using a sparse input. In this case, the memory requirements are much smaller. However, there are no advantages in execution time (despite the sparsity is 90 \\%).
 
-Torch (and Tensorflow) for R only provides a type of sparse matrices: the "coo" systems where each element is described by its position (i and j) and its value. Matrix (and torch and tensorflow for Python) include other storage models (column compressed format, for example) where the matrix computations can be better optimized. It seems that there is still room for improvement in the sparse matrix algebra in Torch.
+Torch (and Tensorflow) for R only provides a type of sparse matrices: the "coo" coding where each element is described by its position (i and j) and its value. Matrix (and torch and tensorflow for Python) include other storage models (column compressed format, for example) where the matrix computations can be better optimized. It seems that there is still room for improvement in the sparse matrix algebra in Torch for R.
 
 Sparse Matrix -that includes the column compressed form- performs extraordinary well in this case Figure 5. In all the other cases, GPUmatrix in CPU was faster than R-MKL. In this case, despite Matrix is single-threaded, it is roguhly ten times faster than GPUmatrix.
 
@@ -462,17 +491,15 @@ Sparse Matrix -that includes the column compressed form- performs extraordinary 
 
 One of the most frequently used functions in R is "glm", that stands for generalized linear models. In turn, "glm" relies on the "glm.fit". This function uses the iteratively reweighted least squares algorithm to provide the solution of a generalized linear model. glm.fit, subsequently, calls a C function to do the "hard work" for solving the linear models, including the least squares solution of the intermediate linear systems.
 
-Since glm.fit calls a C function is not easy to develop a "plug-in" substitute using GPUmatrix. Specifically, the qr algorithm in torch and in the C function (that is similar to base R) substantially differ: in torch the function returns directly the Q and R matrices whereas the C function called by glm.fit returns a matrix and several auxiliary vectors that can be used to reconstruct the Q and R matrices.
+Since glm.fit calls a C function is not easy to develop a "plug-in" substitute using GPUmatrix. Specifically, the qr algorithm in torch or tensorflow for R and in the C function (that is similar to base R) substantially differ: in torch the function returns directly the Q and R matrices whereas the C function called by glm.fit returns a matrix and several auxiliary vectors that can be used to reconstruct the Q and R matrices.
 
 One side-effect of the dependency of base glm on a C function is that, even if R is compiled to use an optimized linear algebra library, the function does not exploit that and the execution time is much longer than expected for this task.
 
-In order to ameliorate this problem, there are other packages (fastlm and speedglm) that mimic the behavior of the base glm. fastlm relies on using multithreaded RcppEigen functions to boost the performance. On the contrary, speedglm is writen in plain R and the performance is increased especially if R runs using an optimized BLAS library.
+In order to ameliorate this problem, there are other packages (fastlm and speedglm) that mimic the behavior of the base glm. fastlm relies on using multithreaded RcppEigen functions to boost the performance. On the contrary, speedglm is written in plain R and the performance is increased especially if R runs using an optimized BLAS library.
 
-We have used speedglm as starting point for our glm implementation in the GPU since all the code is written in R and includes no calls to external functions. Specifically, the most time-consuming task for large general linear models, is the solution of the intermediate least squares problems. In the GPUmatrix implementation, we used most of the code of speed.glm. The only changes are casts on the matrix of the least squares problem and the corresponding independent term to solve the problem using the GPU. Timing results of the last section show that GPU.glm outperforms speed.glm for large models.
+We have used speedglm as starting point for our glm implementation in the GPU since all the code is written in R and includes no calls to external functions. Specifically, the most time-consuming task for large general linear models, is the solution of the intermediate least squares problems. In the GPUmatrix implementation, we used most of the code of speed.glm. The only changes are casts on the matrix of the least squares problem and the corresponding independent term to solve the problem using the GPU. Timing results of the last section show that `GPUglm` outperforms speed.glm for large models.
 
-Of course there is room for improvement. For example, the computation related to the link function of the general model are solved in the CPU -using plain R- to avoid a cumbersome rewriting of the functions to access mu, eta, etc. in the different general model families. A careful rewriting of the functions related to each family would boost even more the performance of the GPUglm function.
-
-The following script illustrates how to use the GPU.glm function in toy examples. In the following section we study this function when solving larger problems.
+The following script illustrates how to use the `GPUglm` function in toy examples.
 
 ```{r message=FALSE, warning=FALSE}
 # Standard glm
@@ -493,9 +520,15 @@ summary(sglm.D93)
 library(GPUmatrix)
 gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson())
 summary(gpu.glm.D93)
+
+
 ```
 
 Results are identical in this test.
+
+![Figure 6: Computation time (in seconds) of general linear model using speedglm funciton with MKL-R matrix (i.e. R with the optimized MKL BLAS library, solid green), solid black line for glm function, solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/10). Therefore, the leftmost part of the graph shows the computing time for a 1,000 x 100 matrix and the rightmost part a 10,000 x 1000 matrix.](images/plotGLMRes.png){width="800"}
+
+Figure 6 compares the timing of the implementation using speedglm, glm and the implementation of glm in GPUmatrix.
 
 #### References
 
