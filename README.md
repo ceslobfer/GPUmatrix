@@ -843,7 +843,7 @@ These functions were tested on square matrices whose row sizes are 500,
 700, 1000, 1400, 2000, 2800 and 4000.
 
 <figure>
-<img src="images/performanceComparison.png" width="800"
+<img src="./vignettes/images/performanceComparison.png" width="800"
 alt="Figure 1: Computation time (in seconds) where MKL-R solid green, solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64 and blue lines for GPUmatrix with float32. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The operations are the element-wise or Hadamard product of two matrices, the exponential of each element of a matrix, the mean of the rows of a matrix, the standard matrix product, the inverse of a matrix, and the singular value decomposition of a matrix (SVD)." />
 <figcaption aria-hidden="true">Figure 1: Computation time (in seconds)
 where MKL-R solid green, solid lines for CPU, dashed lines for GPU with
@@ -880,7 +880,7 @@ complex operations such as the SVD. In this case, GPU64 is the slowest
 method. GPU32 hardly stands up to comparison with CPU32.
 
 <figure>
-<img src="images/SparsePerformanceComparison.png" width="800"
+<img src="./vignettes/images/SparsePerformanceComparison.png" width="800"
 alt="Figure 2: Computation time (in seconds) for the Matrix package (solid violet), yellow lines for GPUmatrix with float32, orange lines for GPUmatrix with float64, solid lines for CPU and dashed lines for GPU with CUDA. Time shown in y-axis is in logarithmic scale. The small model is a random square matrix of size 2,000 x 2,000. The proportion of non-zero elements is either 0.001 or 0.01. The large model is a 20,000 x 20,000 matrix with the same proportion of non-zero elements. The element-wise multiplication is performed on the sparse matrix. The right panel shows the time required to multiply these matrices by dense matrices whose sizes are 2,000 x 500 and 20,000 x 500, respectively." />
 <figcaption aria-hidden="true">Figure 2: Computation time (in seconds)
 for the Matrix package (solid violet), yellow lines for GPUmatrix with
@@ -936,17 +936,15 @@ We have implemented our own non-negative matrix factorization function
 
 The rules are
 
-$$
-\mathbf{W}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{W}\_{\[i, j\]}^n \frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}{\left(\mathbf{W}^n \mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}
-$$
+$\mathbf{W}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{W}\_{\[i, j\]}^n \frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}{\left(\mathbf{W}^n \mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)\_{\[i, j\]}}$
+
 and
-$$
-\mathbf{H}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{H}\_{\[i, j\]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)\_{\[i, j\]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)\_{\[i, j\]}}
-$$
+
+$\mathbf{H}\_{\[i, j\]}^{n+1} \leftarrow \mathbf{H}\_{\[i, j\]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)\_{\[i, j\]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)\_{\[i, j\]}}$
 to update the **W** and **H** respectively.
 
 <figure>
-<img src="images/plotNMFgpumatrix.png" width="800"
+<img src="./vignettes/images/plotNMFgpumatrix.png" width="800"
 alt="Figure 3: Computation time (in seconds) of non-negative factorization for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The internal size of the factorization is 10." />
 <figcaption aria-hidden="true">Figure 3: Computation time (in seconds)
 of non-negative factorization for MKL-R (i.e. R with the optimized MKL
@@ -977,7 +975,7 @@ example, we have implemented a logistic regression solver that accepts
 as input both dense or sparse matrices.
 
 <figure>
-<img src="images/LRGC_glm.png" width="800"
+<img src="./vignettes/images/LRGC_glm.png" width="800"
 alt="Figure 4: Computation time (in seconds) of the logistic regression using the conjugate gradient method for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/100). Therefore, the leftmost part of the graph shows the computing time for a 10,000 x 100 matrix and the rightmost part a 50,000 x 500 matrix." />
 <figcaption aria-hidden="true">Figure 4: Computation time (in seconds)
 of the logistic regression using the conjugate gradient method for MKL-R
@@ -1006,7 +1004,7 @@ compared to standard R (and more than ten fold if compared to `glm.fit`
 function)
 
 <figure>
-<img src="images/LRGC.png" width="800"
+<img src="./vignettes/images/LRGC.png" width="800"
 alt="Figure 5: Computation time (in seconds) of the logistic regression using the conjugate gradient method in a sparse matrix. Solid green for MKL-R dense case (i.e. the computation is performed without any consideration of the sparsity of the matrix). Solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix dense with float64, blue lines for GPUmatrix dense with float32, yellow lines for GPUmatrix sparse with float32, orange lines for GPUmatrix sparse with float64. Violet line, using Matrix package(that implicitly considers the matrix to be sparse). Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/100). Therefore, the leftmost part of the graph shows the computing time for a 10,000 x 100 matrix and the rightmost part a 50,000 x 500 matrix." />
 <figcaption aria-hidden="true">Figure 5: Computation time (in seconds)
 of the logistic regression using the conjugate gradient method in a
@@ -1184,7 +1182,7 @@ summary(gpu.glm.D93)
 Results are identical in this test.
 
 <figure>
-<img src="images/plotGLMRes.png" width="800"
+<img src="./vignettes/images/plotGLMRes.png" width="800"
 alt="Figure 6: Computation time (in seconds) of general linear model using speedglm funciton with MKL-R matrix (i.e. R with the optimized MKL BLAS library, solid green), solid black line for glm function, solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. The calculations are performed on random matrices whose size are n x (n/10). Therefore, the leftmost part of the graph shows the computing time for a 1,000 x 100 matrix and the rightmost part a 10,000 x 1000 matrix." />
 <figcaption aria-hidden="true">Figure 6: Computation time (in seconds)
 of general linear model using speedglm funciton with MKL-R matrix
