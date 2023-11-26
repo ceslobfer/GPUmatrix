@@ -2,6 +2,11 @@
 \title{Matrix Products}
 \docType{methods}
 
+\description{
+Mimic of the 'base' functions \code{\%*\%}, \code{crossprod}, \code{tcrossprod} to operate on gpu.matrix-class objects.
+}
+
+
 \alias{\%*\%}
 \alias{\%*\%-methods}
 \alias{\%*\%,ANY,gpu.matrix.tensorflow-method}
@@ -29,11 +34,6 @@
 \alias{tcrossprod,gpu.matrix.torch,missing-method}
 
 
-
-\description{
- Mimics the base function for matrix multiplication.
- Given the matrices \code{x} and \code{y} as inputs, return a matrix standard product. The input \code{x} and \code{y} can be of class 'GPUmatrix'. Thus, the operation will be performed by the GPU.
-}
 \usage{
 \S4method{\%*\%}{gpu.matrix.tensorflow,ANY}(x, y)
 \S4method{\%*\%}{gpu.matrix.torch,ANY}(x, y)
@@ -52,13 +52,14 @@
 \S4method{tcrossprod}{gpu.matrix.torch,missing}(x, y = NULL,\dots)
 
 }
+
 \arguments{
-  \item{x}{a gpu.matrix}
-  \item{y}{a gpu.matrix, matrix or Matrix object, or for \code{[t]crossprod()}
-    \code{NULL} (by default); the latter case is formally equivalent to
-    \code{y = x}.}
-    \item{\dots}{potentially more arguments passed to and from methods.}
+  \item{x}{a \code{\linkS4class{gpu.matrix}}.}
+  \item{y}{a \code{\linkS4class{gpu.matrix}}, 'matrix' or 'Matrix' object. For the functions \code{tcrossprod} and \code{crossprod} is NULL (by default), that is equivalent to \code{x=y}.}
+  \item{\dots}{potentially more arguments passed to and from methods.}
 }
+
+
 \section{Methods}{
   \describe{
     \item{\%*\%}{\code{signature(x = "gpu.matrix.tensorflow", y = "ANY")}:
@@ -99,11 +100,27 @@
   \code{\link{crossprod}} and \code{\link{\%*\%}}.
   \pkg{Matrix} package \code{\link{\%&\%}} for boolean matrix product
   methods.
+  Also see \code{\link[torch]{torch_matmul}}
 }
+
+\details{
+
+Internally, these functions call the appropriate tensorflow or torch function to perform the matrix product (depending on the type of input gpu.matrix-class).
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
+}
+
+
+\value{
+A gpu.matrix-class object with the result of the matrix product.
+}
+
+
 \examples{
 \donttest{
 \dontrun{
-  a <- gpu.matrix.tensorflow(as.numeric(1:9),nrow=3,ncol=3)
+  a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
   b <- a\%*\%a
 
   b <- tcrossprod(a)

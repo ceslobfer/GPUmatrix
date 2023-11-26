@@ -19,8 +19,7 @@ LineEndingConversion: Posix
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
-PackageCheckArgs: --as-cran
 
 PythonType: conda
-PythonVersion: 3.9.12
-PythonPath: C:/Users/clobatofern/Anaconda3/envs/tf/python.exe
+PythonVersion: 3.9.18
+PythonPath: C:/Users/clobatofern/Anaconda3/envs/r-tensorflow/python.exe

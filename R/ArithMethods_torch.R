@@ -7,7 +7,7 @@ warningSparseTensor_torch <- function(x){
 }
 
 is_dtype_greater <- function(dtype1, dtype2) {
-  dtype_order <- c("float64","float32","int")
+  dtype_order <- c("float64","float32","long","int")
 
   if(match(dtype1, dtype_order) > match(dtype2, dtype_order)) {
     return(TRUE)
@@ -151,7 +151,7 @@ MatprodGPUmat_torch <- function(x,y){
 setMethod("-", signature(e1 = "gpu.matrix.torch", e2 = "missing"), function(e1, e2){
   if(e1@sparse){
     if(requireNamespace('torch')){
-      e1@gm <- torch::torch_sparse_coo_tensor(indices = e1@gm$indices(), values = -e1@gm$values(), size = dim(e1))
+      e1@gm <- torch::torch_sparse_coo_tensor(indices = e1@gm$indices()+1L, values = -e1@gm$values(), size = dim(e1))
     }
   }else{
     e1@gm <- -e1@gm
@@ -172,7 +172,7 @@ setMethod("Arith",
           function(e1, e2)
           {
             op = .Generic[[1]]
-            if (length(e2)==1 & !e1@sparse){
+            if (length(e2)==1 & !e1@sparse & class(e1)[1]!=class(e2)[1]){
               if(requireNamespace('torch')){
                 e2 <- torch::torch_tensor(e2,dtype = e1@gm$dtype,device = device(e1))
               }
@@ -201,14 +201,15 @@ setMethod("Arith",
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1@gm%%e2
+
+                       e1@gm <- e1@gm%%e2@gm
                        return(e1)
                      },
                      '%/%'={
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1@gm%/%e2
+                       e1@gm <- e1@gm%/%e2@gm
                        return(e1)
                      }
               )
@@ -235,16 +236,10 @@ setMethod("Arith",
 
                      },
                      '^'={
-                       # if (e1@sparse) e1<-to_dense_torch(e1)
-                       #Mejorar
-                       if (inherits(e2,"gpu.matrix.torch")) {
-                         e2<-warningSparseTensor_torch(e2)
-                         e1<-warningSparseTensor_torch(e1)
-
-                         e1@gm <- e1@gm ^ e2@gm
-                       }else{
-                         e1@gm <- e1@gm ^ e2
-                       }
+                       castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
+                       e1 <- castMatrix[[1]]
+                       e2 <- castMatrix[[2]]
+                       e1@gm <- e1@gm ^ e2@gm
 
                        return(e1)
                      },
@@ -304,14 +299,14 @@ setMethod("Arith",
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1%%e2@gm
+                       e1@gm <- e1@gm%%e2@gm
                        return(e1)
                      },
                      '%/%'={
                        castMatrix <- castTypeOperations_torch(e1,e2, todense = T)
                        e1 <- castMatrix[[1]]
                        e2 <- castMatrix[[2]]
-                       e1@gm <- e1%/%e2@gm
+                       e1@gm <- e1@gm%/%e2@gm
                        return(e1)
                      }
               )
@@ -333,7 +328,6 @@ setMethod("Arith",
                      },
                      '^'={
                        e2 <- warningSparseTensor_torch(e2)
-
                        e2@gm <- e1 ^ e2@gm
                        return(e2)
                      },

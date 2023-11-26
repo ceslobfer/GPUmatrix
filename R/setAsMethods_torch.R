@@ -19,7 +19,11 @@ setMethod("as.gpu.matrix", signature(x = "ANY"), function(x, ...) gpu.matrix(x,.
 # setAs("gpu.matrix.torch","double", function(from){
 #   return(as.double(as.vector(from)))
 # })
-setMethod("as.matrix", signature(x = "gpu.matrix.torch"), function(x, ...) as(x,"matrix") )
+setMethod("as.matrix", signature(x = "gpu.matrix.torch"), function(x, ...){
+  res <- as(x,"matrix")
+  dimnames(res) <- dimnames(x)
+  return(res)
+})
 # setMethod("as.matrix.default", signature(x = "gpu.matrix.torch"), function(x, ...) as(x,"matrix") )
 
 
@@ -37,9 +41,9 @@ setMethod("as.array",  signature(x = "gpu.matrix.torch"), function(x, ...){
 
 setMethod("as.vector", "gpu.matrix.torch", function(x, mode){
   x <- warningSparseTensor_torch(x)
-
-    res <- as.numeric(x@gm$cpu())
-    return(res)
+  x <- as.matrix(x)
+  res <- as.vector(x,mode)
+  return(res)
 })
 
 setMethod("as.list", signature(x = "gpu.matrix.torch"), function(x, ...){

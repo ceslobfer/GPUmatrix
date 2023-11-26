@@ -3,16 +3,13 @@
 
 \description{
 
-These functions compute different decompositions of a matrix using the GPU.
+These functions mimic the functions \code{eigen} ,\code{svd},\code{chol} to operate on gpu.matrix-class objects:
 
-\code{'eigen'} mimics the base function \code{'eigen'} that computes the eigenvalues and eigenvectors of a numeric (double, integer, logical) or complex matrix.
+\code{'eigen'} mimics the base function \code{'eigen'} that "computes the eigenvalues and eigenvectors of a numeric (double, integer, logical) or complex matrix."
 
-\code{'svd'} mimics the base function \code{'svd'} that computes the singular-value decomposition of a rectangular matrix.
+\code{'svd'} mimics the base function \code{'svd'} that "computes the singular-value decomposition of a rectangular matrix."
 
-\code{'qr'} mimics the base function \code{'qr'} that computes the QR decomposition of a matrix.
-
-
-\code{'chol'} mimics the base function \code{'chol'} that computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix.
+\code{'chol'} mimics the base function \code{'chol'} that "computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix."
 
 }
 
@@ -25,11 +22,6 @@ These functions compute different decompositions of a matrix using the GPU.
 \alias{svd-methods}
 \alias{svd,gpu.matrix.tensorflow-method}
 \alias{svd,gpu.matrix.torch-method}
-
-\alias{qr}
-\alias{qr-methods}
-\alias{qr,gpu.matrix.tensorflow-method}
-\alias{qr,gpu.matrix.torch-method}
 
 \alias{chol}
 \alias{chol-methods}
@@ -47,31 +39,36 @@ These functions compute different decompositions of a matrix using the GPU.
 \S4method{chol}{gpu.matrix.tensorflow}(x)
 \S4method{chol}{gpu.matrix.torch}(x)
 
-\S4method{qr}{gpu.matrix.tensorflow}(x)
-\S4method{qr}{gpu.matrix.torch}(x)
-
 }
 
 
 \arguments{
+\item{x}{a \code{\linkS4class{gpu.matrix}}. \code{X} must fulfil certain characteristics depending on the function to be called (see details).}
+}
 
-\item{x}{a numeric or complex gpu.matrix whose spectral decomposition or whose
-SVD decomposition or whose QR decomposition or whose Cholesky factorization is
-to be computed. For the Cholesky factorization, x must be real symmetric
-positive-definite square gpu.matrix.}
+\details{
+
+These functions mimic the behaviour of their respective 'base' functions.
+
+In the case of the \code{eigen} function, the input value can be a numeric or complex gpu.matrix class.
+
+For \code{svd} function, the input value could be a numeric or complex gpu.matrix-class object.
+
+For \code{chol} function, the input must be a positive-definite squere matrix.
+
+
+Internally, these functions call its corresponding function of the tensorflow or torch library depending on the type of input gpu.matrix-class.
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
 
 }
 
-
 \seealso{
 For more information see:
+\code{\link[base]{eigen}}, \code{\link[base]{svd}}, \code{\link[base]{chol}}, \code{\link[torch]{linalg_eig}}, \code{\link[torch]{torch_svd}}, and \code{\link[torch]{torch_cholesky}}.
 
-\code{\link[base]{eigen}},
- \code{\link[base]{svd}},
- \code{\link[base]{chol}},
- \code{\link[base]{qr}},
- \code{\link{solve}}
-
+\code{chol} function is called by the function \code{\link{chol_solve}}.
 }
 
 \value{
@@ -86,14 +83,8 @@ The output of these functions correspond to their equivalent base functions:
 \item{u}{a matrix whose columns contain the left singular vectors of \code{x}}
 \item{v}{a matrix whose columns contain the right singular vectors of \code{x}}
 
-\code{qr} mimics the base function \code{qr} that computes the QR decomposition of a matrix. It returns a list with the following items:
-\item{qr}{a matrix with the same dimensions as x. The upper triangle contains the \bold{R} of the decomposition and the lower triangle contains information on the \bold{Q} of the decomposition}
-\item{qraux}{a vector of length \code{ncol(x)} which contains additional information on \bold{Q}.}
-\item{rank}{the rank of \code{x} as computed by the decomposition(*): always full rank in the LAPACK case.}
-\item{pivot}{information on the pivoting strategy used during the decomposition.}
 
-
-\code{chol} mimics the base function \code{chol} that computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix. It returns a GPUmatrix object with The upper triangular factor of the Cholesky decomposition, i.e., the matrix R such that R'R = x.
+\code{chol} mimics the base function \code{chol} that computes Compute the Cholesky factorization of a real symmetric positive-definite square matrix. It returns a gpu.matrix-class object with The upper triangular factor of the Cholesky decomposition, i.e., the matrix \eqn{R} such that \eqn{R'R = X}.
 }
 
 \examples{

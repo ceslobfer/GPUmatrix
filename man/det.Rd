@@ -1,10 +1,7 @@
 \name{det}
 \title{Calculate the Determinant of a 'GPUMatrix'}
-
-
 \description{
-
-Mimic of the base functions \code{'det'} and \code{'determinant'}: \code{'det'} calculates the determinant of a gpu.matrix. \code{'determinant'} is a generic function that returns separately the modulus of the determinant, optionally on the logarithm scale, and the sign of the determinant.
+These functions mimic the 'base' functions \code{det} and \code{determinant} to operate on gpu.matrix-class objects: "\code{det} calculates the determinant of a matrix. \code{determinant} is a generic function that returns separately the modulus of the determinant, optionally on the logarithm scale, and the sign of the determinant."
 
 }
 
@@ -36,21 +33,31 @@ Mimic of the base functions \code{'det'} and \code{'determinant'}: \code{'det'} 
 
 \arguments{
 
-\item{x}{numeric gpu.matrix}
-\item{\dots}{extra generic parameters of gpu.matrix function}
+\item{x}{a \code{\linkS4class{gpu.matrix}} object.}
+\item{\dots}{Optional parameters. For more details seee \code{\link[base]{det}}}
 \item{logarithm}{logical; if TRUE (default) return the logarithm of the modulus of the determinant.}
 
 }
 
 \seealso{
 For more information see:
-\code{\link[base]{det}}
+\code{\link[base]{det}}.
 }
 
-\value{
-\code{det} returns the same output corresponding to the base function 'det', which is the determinant of \code{x}.
+\details{
 
-\code{determinant} returns the corresponding output of the base function 'determinant', which is a list with components:
+The function \code{det} and \code{determinant} internally call the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+}
+
+
+
+\value{
+
+\code{det} returns the same output corresponding to the base function \code{det}, which is the determinant of \code{x}. The returned value is a object of class numeric sotred in the cpu.
+
+\code{determinant} returns the corresponding output of the base function \code{determinant}, which is an object of class \code{det}, that contains the following components:
 
 \item{modulus}{a numeric value. The modulus (absolute value) of the determinant if logarithm is FALSE; otherwise the logarithm of the modulus.}
 \item{sign}{integer; either +1 or -1 according to whether the determinant is positive or negative.}
@@ -62,7 +69,7 @@ For more information see:
 \dontrun{
 
 x <- gpu.matrix(1:4,nrow=2, ncol = 2)
-unlist(determinant(x)) #modulus of the determinant.
+determinant(x) #modulus of the determinant.
 det(x)#the determinant.
 
 }

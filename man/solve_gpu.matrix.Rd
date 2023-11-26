@@ -2,6 +2,16 @@
 \title{Solve a System of Equations}
 \docType{methods}
 
+\description{
+
+The function \code{solve} mimics of the 'base' function \code{solve} to operate on gpu.matrix-class objects: it "solves the equation \code{a \%*\% x = b}."
+
+The function \code{ginv} mimics the function \code{ginv} of package 'MASS' to operate on gpu.matrix-class objects: it "Calculates the Moore-Penrose generalized inverse of a matrix X."
+
+The function \code{chol_solve} is a GPUmatrix own function. This function uses the Cholesky decomposition to solve a system of equations.
+
+}
+
 \alias{solve}
 \alias{solve-methods}
 \alias{solve,ANY,gpu.matrix.tensorflow-method}
@@ -22,21 +32,6 @@
 \alias{chol_solve,ANY,gpu.matrix.tensorflow-method}
 \alias{chol_solve,gpu.matrix.torch,ANY-method}
 \alias{chol_solve,gpu.matrix.tensorflow,ANY-method}
-
-
-\description{
-These functions are used to solve a system of equations or to compute the inverse of a matrix.
-
-They mimic of the 'base' function \code{'solve'}: This generic function
-solves the equation ax=b for x, where b can be either a vector or a matrix (gpu.matrix).
-
-\code{ginv} mimics the function \code{ginv} of package MASS: it calculates the Moore-Penrose generalized inverse of a gpu.matrix.
-
-\code{chol_solve} function is a GPUmatrix own function. This function uses the Cholesky decomposition to solve a system of equations.
-
-}
-
-
 
 
 \usage{
@@ -62,36 +57,62 @@ solves the equation ax=b for x, where b can be either a vector or a matrix (gpu.
 
 \arguments{
 
-\item{a,x}{A square numeric or complex gpu.matrix containing the coefficients of the linear system. gpu.matrix that are logical matrices are coerced to numeric. For chol_solve, x must be the cholesky cecomposition of matrix a if a real symmetric positive-definite square gpu.matrix}
+These inputs correspond to the \code{solve} function:
 
-\item{b,y}{a numeric or complex vector or matrix giving the right-hand
-                          side(s) of the linear system. If missing, b is taken to be an
-                          identity matrix and solve will return the inverse of a.}
+\item{a}{a square numeric or complex \code{\linkS4class{gpu.matrix}} containing the coefficients of the linear system.}
+
+\item{b}{a numeric or complex vector or matrix giving the right-hand side(s) of the linear system. If \code{b} missing, \code{solve} will return the inverse of \code{a}.}
+
+
+These inputs correspond to the \code{chol_solve} function:
+
+\item{x}{Given the equation \code{Ax=b}, \code{x} must be the transponsed of the cholesky decomposition of matrix \code{A} if \code{A} is a real symmetric positive-definite square matrix.}
+
+\item{y}{a numeric or complex vector or matrix giving the right-hand side(s) of the linear system.}
+
+These inputs correspond to the \code{ginv} function:
 
 \item{X}{Matrix for which the Moore-Penrose inverse is required.}
 \item{tol}{A relative tolerance to detect zero singular values.}
 
 }
 
+\details{
+The functions \code{solve}, and \code{ginv} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
+}
+
+\value{
+The result of these functions is  an object of the class gpu.matrix.
+}
+
+
+
 \seealso{
-See also \code{\link[base]{solve}} and \code{\link[MASS]{ginv}}.
+See also \code{\link[base]{solve}}, \code{\link[MASS]{ginv}}, \code{\link[torch]{torch_inverse}}, and \code{\link[torch]{torch_pinverse}}.
 
 For cholesky decomposition see \code{\link[base]{chol}} from base or
  \code{\link[GPUmatrix]{matrix_decomposition}} from GPUmatrix.
+
+Also see \code{\link{qr.solve}}.
+
 }
 
 \examples{
 \donttest{
 \dontrun{
 
+#solve a system of equations:
 a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
-inv <- solve(a) #the inverse matrix
-a \%*\% inv
-
 b <- c(1,1,1)
 betas <- solve(a,b)
 a \%*\% betas
 
+#the inverse matrix
+inv <- solve(a)
+a \%*\% inv
 
 #inverse using ginv
 inv_2 <- GPUmatrix::ginv(a)
@@ -105,7 +126,7 @@ A <- tcrossprod(a) #A is symmetrix positive-definite
 b <- gpu.matrix(rnorm(3))
 
 x_solve <- solve(A,b) #using solve to compare results
-x_chol_solve <- chol_solve(chol(A),b) #using chol_solve
+x_chol_solve <- chol_solve(t(chol(A)),b) #using chol_solve
 #NOTE: notice that the input for chol_solve is the Cholesky decomposition
 # of matrix A.
 

@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms &amp; Ángel Rubio" />
+
+
+<title>Get started with GPUmatrix package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Get started with GPUmatrix package</h1>
+<h3 class="subtitle">Seamlessly harness the power of GPU computing in
+R</h3>
+<h4 class="author">Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms &amp;
+Ángel Rubio</h4>
+<h4 class="date">February 2023</h4>
+
+
+
+<hr />
+<div id="abstract" class="section level2">
+<h2>Abstract</h2>
+<p><strong>Motivation:</strong> GPU computational power is a great
+resource for computational biology. specifically in statistics and
+linear algebra. Unfortunately, very few packages connect R with the GPU
+and none of them are transparent enough to perform the computations on
+the GPU without substantial changes in the code. Another problem of
+these packages is lacking proper maintenance: several of the previous
+attempts were removed from CRAN. It would be desirable to have a R
+package, properly maintained, that exploits the use of the GPU with
+minimal changes in the existing code.</p>
+<p><strong>Results:</strong> We have developed the GPUMatrix package
+(available at CRAN). GPUMatrix mimics the behavior of the Matrix
+package. Therefore, is easy to learn and very few changes in the code
+are required to work on the GPU. GPUMatrix relies on either the
+tensorflow or the torch R packages to perform the GPU operations.</p>
+<hr />
+<p>Before starting, please be advised that this R package is designed to
+have the lowest learning curve for the R user to perform algebraic
+operations using the GPU. Therefore, this tutorial will mostly cover
+procedures that will go beyond the operations that the user can already
+perform with R’s CPU matrices.</p>
+</div>
+<div id="installation" class="section level1">
+<h1>0 Installation</h1>
+<div id="dependences" class="section level2">
+<h2>0.1 Dependences</h2>
+<p>GPUmatrix is an R package that utilizes tensors through the
+<strong>torch</strong> or <strong>tensorflow</strong> packages (see
+Advanced Users section for more information). One or the other must be
+installed for the use of GPUmatrix. Both packages are hosted in CRAN and
+have specific installation instructions. In both cases, it is necessary
+to have an NVIDIA® GPU card with the latest drivers installed in order
+to use the packages, as well as a version of Python 3. The NVIDIA card
+must be compatible; please see the list of capable cards <a href="https://developer.nvidia.com/cuda-gpus#compute">here</a>. If there
+is no compatible graphics card or not graphic card at all, you can still
+install tensorFlow and torch, but only with the CPU version, which means
+that GPUmatrix will only be able to run in CPU mode.</p>
+<div id="for-torch-link-installation-here" class="section level3">
+<h3>For torch: (<a href="https://torch.mlverse.org/docs/articles/installation.html">Link
+installation here</a>)</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;torch&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install_torch</span>() <span class="co"># In some cases is required.</span></span></code></pre></div>
+<ul>
+<li><p><strong>MUST INSTALL:</strong></p>
+<ul>
+<li><p>CUDA Toolkit 11.7. Link <a href="https://docs.nvidia.com/cuda/archive/11.7.0/index.html">here</a>.</p></li>
+<li><p>cuDNN 8.4 . Link <a href="https://docs.nvidia.com/deeplearning/cudnn/archives/cudnn-840/install-guide/index.html">here</a>.</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="for-tensorflow-link-installation-here" class="section level3">
+<h3>For Tensorflow: (<a href="https://tensorflow.rstudio.com/install/">Link installation
+here</a>)</h3>
+<p>The installation of TensorFlow allows the selection to install the
+GPU, CPU, or both versions. This will depend on the version of
+TensorFlow that we install with the <code>install_tensorflow()</code>
+function. The mode in which the tensors are created using GPUmatrix, if
+we choose to use TensorFlow, will depend on the installation mode. The
+options to switch from CPU to GPU are not enabled when using GPUmatrix
+with TensorFlow for this precise reason. To install the GPU version, it
+is not necessary to specify the version since <u>if it detects that the
+CUDA dependencies are met</u>, it will automatically install using the
+GPU mode. If you want to install the CPU version, you need to specify it
+as follows:</p>
+<p><code>install_tensorflow(version=&quot;nightly-cpu&quot;)</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;tensorflow&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tensorflow)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install_tensorflow</span>(<span class="at">version =</span> <span class="st">&quot;nightly-gpu&quot;</span>)</span></code></pre></div>
+<ul>
+<li><p><strong>MUST INSTALL:</strong></p>
+<ul>
+<li><p>CUDA Toolkit 11.2. Link <a href="https://developer.nvidia.com/cuda-11.3.0-download-archive">here</a>.</p></li>
+<li><p>cuDNN 8.1 . Link <a href="https://docs.nvidia.com/deeplearning/cudnn/archives/cudnn-840/install-guide/index.html">here</a>.</p></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="gpumatrix-installation" class="section level2">
+<h2>0.2 GPUmatrix installation</h2>
+<p><u>Once the dependencies for Torch or TensorFlow are installed</u>,
+the GPUmatrix package, being a package hosted on CRAN, can be easily
+installed using:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;GPUmarix&quot;</span>)</span></code></pre></div>
+<p>Alternatively, it is possible to install the package from GitHub ot
+get the last version of the package.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot; ceslobfer/GPUmatrix&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="initialization-gpumatrix" class="section level1">
+<h1>1 Initialization GPUmatrix</h1>
+<p>The GPUmatrix package is based on S4 objects in R and we have created
+a constructor function that acts similarly to the default
+<code>matrix()</code> constructor in R for CPU matrices. The constructor
+function is <code>gpu.matrix()</code> and accepts the same parameters as
+<code>matrix()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GPUmatrix)</span></code></pre></div>
+<pre><code>## Torch tensors allowed</code></pre>
+<pre><code>## Tensorflow tensors allowed</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#R matrix initialization</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Show CPU matrix</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  m</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#GPU matrix initialization</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Show GPU matrix</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  Gm</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Loading required namespace: torch</code></pre>
+<pre><code>## GPUmatrix
+## torch_tensor
+##  41  51
+##  42  52
+##  43  53
+##  44  54
+##  45  55
+##  46  56
+##  47  57
+##  48  58
+##  49  59
+##  50  60
+## [ CUDADoubleType{10,2} ]</code></pre>
+<p>In the previous example, a normal R CPU matrix called <code>m</code>
+and its GPU counterpart <code>Gm</code> are created. Just like regular
+matrices, the created GPU matrices allow for indexing of its elements
+and assignment of values. The concatenation operators
+<code>rbind()</code> and <code>cbind()</code> work independently of the
+type of matrices that are to be concatenated, resulting in a
+<strong><em>gpu.matrix</em></strong>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  Gm[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>),<span class="dv">1</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  Gm[,<span class="dv">2</span>]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  Gm2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Gm[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),], Gm[<span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">7</span>),])</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  Gm2</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  Gm2[<span class="dv">1</span>,<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  Gm2</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## GPUmatrix
+## torch_tensor
+##  41  51   0  56
+##  42  52  47  57
+## [ CUDADoubleType{2,4} ]</code></pre>
+</div>
+<div id="cast-gpu-matrices-and-data-types" class="section level1">
+<h1>2 Cast GPU matrices and data types</h1>
+<p>The default matrices in R have limitations. The numeric data types it
+allows are int and float64, with float64 being the type used generally
+in R by default. It also does not natively allow for the creation and
+handling of sparse matrices. To make up for this lack of functionality,
+other R packages hosted in CRAN have been created that allow for
+programming these types of functionality in R. The problem with these
+packages is that in most cases they are not compatible with each other,
+meaning we can have a sparse matrix with float64 and a non-sparse matrix
+with float32, but not a sparse matrix with float32.</p>
+<div id="cast-from-other-packages" class="section level2">
+<h2>2.1 Cast from other packages</h2>
+<p>GPUmatrix allows for compatibility with sparse matrices and different
+data types such as float32. For this reason, casting operations between
+different matrix types from multiple packages to GPU matrix type have
+been implemented:</p>
+<table>
+<caption>Table 1. Casting operations between different
+packages</caption>
+<colgroup>
+<col width="19%" />
+<col width="19%" />
+<col width="19%" />
+<col width="22%" />
+<col width="19%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Matrix class</th>
+<th align="center">Package</th>
+<th align="center">Data type default</th>
+<th align="center">SPARSE</th>
+<th align="center">Back cast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">matrix</td>
+<td align="center">base</td>
+<td align="center">float64</td>
+<td align="center">FALSE</td>
+<td align="center">Yes</td>
+</tr>
+<tr class="even">
+<td align="center">data.frame</td>
+<td align="center">base</td>
+<td align="center">float64</td>
+<td align="center">FALSE</td>
+<td align="center">Yes</td>
+</tr>
+<tr class="odd">
+<td align="center">integer</td>
+<td align="center">base</td>
+<td align="center">float64</td>
+<td align="center">FALSE</td>
+<td align="center">Yes</td>
+</tr>
+<tr class="even">
+<td align="center">numeric</td>
+<td align="center">base</td>
+<td align="center">float64</td>
+<td align="center">FALSE</td>
+<td align="center">Yes</td>
+</tr>
+<tr class="odd">
+<td align="center">dgeMatrix</td>
+<td align="center">Matrix</td>
+<td align="center">float64</td>
+<td align="center">FALSE</td>
+<td align="center">No</td>
+</tr>
+<tr class="even">
+<td align="center">ddiMatrix</td>
+<td align="center">Matrix</td>
+<td align="center">float64</td>
+<td align="center">TRUE</td>
+<td align="center">No</td>
+</tr>
+<tr class="odd">
+<td align="center">dpoMatrix</td>
+<td align="center">Matrix</td>
+<td align="center">float64</td>
+<td align="center">FALSE</td>
+<td align="center">No</td>
+</tr>
+<tr class="even">
+<td align="center">dgCMatrix</td>
+<td align="center">Matrix</td>
+<td align="center">float64</td>
+<td align="center">TRUE</td>
+<td align="center">No</td>
+</tr>
+<tr class="odd">
+<td align="center">float32</td>
+<td align="center">float</td>
+<td align="center">float32</td>
+<td align="center">FALSE</td>
+<td align="center">No</td>
+</tr>
+<tr class="even">
+<td align="center">torch_tensor</td>
+<td align="center">torch</td>
+<td align="center">float64</td>
+<td align="center">Depends of tensor type</td>
+<td align="center">Yes</td>
+</tr>
+<tr class="odd">
+<td align="center">tensorflow.tensor</td>
+<td align="center">tensorflow</td>
+<td align="center">float64</td>
+<td align="center">Depends of tensor type</td>
+<td align="center">Yes</td>
+</tr>
+</tbody>
+</table>
+<p>There are two functions for casting to create a
+<strong><em>gpu.matrix</em></strong>:
+<strong><code>as.gpu.matrix()</code></strong> and the
+<strong><code>gpu.matrix()</code></strong> constructor itself. Both have
+the same input parameters for casting: the object to be cast and extra
+parameters for creating a GPU matrix.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Create &#39;Gm&#39; from &#39;m&#39; matrix</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(m)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  Gm</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Create &#39;Gm&#39; from &#39;M&#39; with Matrix package</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(Matrix)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  M <span class="ot">&lt;-</span> <span class="fu">Matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(M)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  Gm</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Create &#39;Gm&#39; from &#39;mfloat32&#39; with float package</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(float)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  mfloat32 <span class="ot">&lt;-</span> <span class="fu">fl</span>(m)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(mfloat32)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  Gm</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Create &#39;Gms&#39; type sparse from &#39;Ms&#39; type sparse dgCMatrix with Matrix package</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  Ms <span class="ot">&lt;-</span> <span class="fu">Matrix</span>(<span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span><span class="dv">2</span>, <span class="at">sparse=</span><span class="cn">TRUE</span>)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  Ms</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  Gms <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(Ms)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  Gms</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:GPUmatrix&#39;:
+## 
+##     det</code></pre>
+<pre><code>## GPUmatrix
+## torch_tensor
+## [ SparseCUDADoubleType{}
+## indices:
+##  1  1  2  4  4  6  7  7  8  8
+##  0  1  0  0  1  1  0  1  0  1
+## [ CUDALongType{2,10} ]
+## values:
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+## [ CUDADoubleType{10} ]
+## size:
+## [10, 2]
+## ]</code></pre>
+</div>
+<div id="data-type-and-sparsity" class="section level2">
+<h2>2.2 Data type and sparsity</h2>
+<p>The data types allowed by GPUmatrix are: <strong>float64</strong>,
+<strong>float32</strong>, <strong>int</strong>, <strong>bool</strong> or
+<strong>logical</strong>, <strong>complex64</strong> and
+<strong>complex32</strong>. We can create a GPU matrix with a specific
+data type using the <strong><code>dtype</code></strong> parameter of the
+<strong><code>gpu.matrix()</code></strong> constructor function or
+change the data type of a previously created GPU matrix using the
+<strong><code>dtype()</code></strong> function. The same applies to GPU
+sparse matrices, we can create them from the constructor using the
+<strong><code>sparse</code></strong> parameter, which will obtain a
+Boolean value of <code>TRUE</code>/<code>FALSE</code> depending on
+whether we want the resulting matrix to be sparse or not. We can also
+modify the sparsity of an existing GPU matrix with the functions
+<strong><code>to_dense()</code></strong>, if we want it to go from
+sparse to dense, and <strong><code>to_sparse()</code></strong>, if we
+want it to go from dense to sparse.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Creating a float32 matrix</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  Gm32 <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>, <span class="at">dtype =</span> <span class="st">&quot;float32&quot;</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  Gm32</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Creating a non sparse martix with data type float32 from a sparse matrix type float64</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  Ms <span class="ot">&lt;-</span> <span class="fu">Matrix</span>(<span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span><span class="dv">2</span>, <span class="at">sparse=</span><span class="cn">TRUE</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  Gm32 <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(Ms, <span class="at">dtype =</span> <span class="st">&quot;float32&quot;</span>, <span class="at">sparse =</span> F)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  Gm32</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Convert Gm32 in sparse matrix Gms32</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  Gms32 <span class="ot">&lt;-</span> <span class="fu">to_sparse</span>(Gm32)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  Gms32</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="do">##Convert data type Gms32 in float64</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  Gms64 <span class="ot">&lt;-</span> Gms32</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dtype</span>(Gms64) <span class="ot">&lt;-</span> <span class="st">&quot;float64&quot;</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  Gms64</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## GPUmatrix
+## torch_tensor
+## [ SparseCUDADoubleType{}
+## indices:
+##  0  1  1  2  3  3  5  6  7  7  9
+##  0  0  1  0  0  1  0  0  0  1  0
+## [ CUDALongType{2,11} ]
+## values:
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+##  1
+## [ CUDADoubleType{11} ]
+## size:
+## [10, 2]
+## ]</code></pre>
+</div>
+</div>
+<div id="gpumatrix-functions" class="section level1">
+<h1>3 GPUmatrix functions</h1>
+<div id="arithmetic-and-comparison-operators" class="section level2">
+<h2>3.1 Arithmetic and comparison operators</h2>
+<p>GPUmatrix supports all basic arithmetic operators in R:
+<code>+</code>, <code>-</code>, <code>*</code>, <code>^</code>,
+<code>/</code>, <code>%*%</code> and <code>%%</code>. Its usage is the
+same as for basic R matrices, and it allows compatibility with other
+matrix objects from the previously mentioned packages, always returning
+the result in GPUmatrix format.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  (Gm <span class="sc">+</span> Gm) <span class="sc">==</span> (m <span class="sc">+</span> m)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  (Gm <span class="sc">+</span> M) <span class="sc">==</span> (mfloat32 <span class="sc">+</span> Gm)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  (M <span class="sc">+</span> M) <span class="sc">==</span> (mfloat32 <span class="sc">+</span> Gm)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  (Ms <span class="sc">+</span> Ms) <span class="sc">&gt;</span> (Gms <span class="sc">+</span> Gms)<span class="sc">*</span><span class="dv">2</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Warning in warningSparseTensor_torch(m1): Not allowed with sparse matrix,
+## matrix will be cast to dense for the operation. May cause memory problems</code></pre>
+<pre><code>## Warning in warningSparseTensor_torch(m2): Not allowed with sparse matrix,
+## matrix will be cast to dense for the operation. May cause memory problems</code></pre>
+<pre><code>##        [,1]  [,2]
+##  [1,]  TRUE FALSE
+##  [2,] FALSE FALSE
+##  [3,] FALSE FALSE
+##  [4,]  TRUE  TRUE
+##  [5,] FALSE FALSE
+##  [6,]  TRUE FALSE
+##  [7,]  TRUE FALSE
+##  [8,] FALSE FALSE
+##  [9,] FALSE FALSE
+## [10,]  TRUE FALSE</code></pre>
+<p>As seen in the previous example, the comparison operators
+(<code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>,
+<code>&gt;=</code>, <code>&lt;=</code>) also work following the same
+dynamic as the arithmetic operators.</p>
+</div>
+<div id="math-operators" class="section level2">
+<h2>3.2 Math operators</h2>
+<p>Similarly to arithmetic operators, mathematical operators follow the
+same operation they would perform on regular matrices of R.
+<code>Gm</code> is a <em>gpu.matrix</em> variable:</p>
+<table>
+<caption>Table 2. Mathematical operators that accept a gpu.matrix as
+input</caption>
+<thead>
+<tr class="header">
+<th align="center">Mathematical operators</th>
+<th align="center">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><code>log</code></td>
+<td align="center"><code>log(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>log2</code></td>
+<td align="center"><code>log2(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>log10</code></td>
+<td align="center"><code>log10(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>cos</code></td>
+<td align="center"><code>cos(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>cosh</code></td>
+<td align="center"><code>cosh(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>acos</code></td>
+<td align="center"><code>acos(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>acosh</code></td>
+<td align="center"><code>acosh(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>sin</code></td>
+<td align="center"><code>sin(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>sinh</code></td>
+<td align="center"><code>sinh(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>asin</code></td>
+<td align="center"><code>asin(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>asinh</code></td>
+<td align="center"><code>asinh(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>tan</code></td>
+<td align="center"><code>tan(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>atan</code></td>
+<td align="center"><code>atan(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>tanh</code></td>
+<td align="center"><code>tanh(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>atanh</code></td>
+<td align="center"><code>atanh(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>sqrt</code></td>
+<td align="center"><code>sqrt(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>abs</code></td>
+<td align="center"><code>abs(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>sign</code></td>
+<td align="center"><code>sign(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>ceiling</code></td>
+<td align="center"><code>ceiling(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>floor</code></td>
+<td align="center"><code>floor(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>cumsum</code></td>
+<td align="center"><code>cumsum(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>cumprod</code></td>
+<td align="center"><code>cumprod(Gm)</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>exp</code></td>
+<td align="center"><code>exp(Gm)</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>expm1</code></td>
+<td align="center"><code>expm1(Gm)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="other-functions" class="section level2">
+<h2>3.2 Other functions</h2>
+<p>In the manual, we can find a multitude of functions that can be
+applied to <em>gpu.matrix</em> type matrices. Most of the functions are
+functions from the base R package that can be used on
+<em>gpu.matrix</em> matrices in the same way they would be applied to
+regular matrices of R. There are other functions from other packages
+like <strong>Matrix</strong> or <strong>matrixStats</strong> that have
+been implemented due to their widespread use within the user community,
+such as <code>rankMatrix</code> or <code>colMaxs</code>. The output of
+these functions, which originally produced R default matrix type
+objects, will now return <em>gpu.matrix</em> type matrices if the input
+type of the function is <em>gpu.matrix</em>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="fu">tcrossprod</span>(m),<span class="dv">1</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="fu">tcrossprod</span>(Gm),<span class="dv">1</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">tail</span>(Gm,<span class="dv">3</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(Gm) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tail</span>(Gm,<span class="dv">2</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colMaxs</span>(Gm)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## [1] 50 60</code></pre>
+<p>There is a wide variety of functions implemented in GPUmatrix, and
+they are adapted to be used just like regular R matrices.</p>
+<table>
+<caption>Table 3. Functions that accept one or several gpu.matrix
+matrices as input</caption>
+<colgroup>
+<col width="22%" />
+<col width="55%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Functions</th>
+<th align="center">Usage</th>
+<th align="center">Package</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><code>determinant</code></td>
+<td align="center"><code>determinant(Gm, logarithm=T)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>fft</code></td>
+<td align="center"><code>fft(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>sort</code></td>
+<td align="center"><code>sort(Gm,decreasing=F)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>round</code></td>
+<td align="center"><code>round(Gm, digits=0)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>show</code></td>
+<td align="center"><code>show(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>length</code></td>
+<td align="center"><code>length(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>dim</code></td>
+<td align="center"><code>dim(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>dim&lt;-</code></td>
+<td align="center"><code>dim(Gm) &lt;- c(...,...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>rownames</code></td>
+<td align="center"><code>rownames(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>rownames&lt;-</code></td>
+<td align="center"><code>rownames(Gm) &lt;- c(...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>row.names</code></td>
+<td align="center"><code>row.names(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>row.names&lt;-</code></td>
+<td align="center"><code>row.names(Gm) &lt;- c(...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>colnames</code></td>
+<td align="center"><code>colnames(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>colnames&lt;-</code></td>
+<td align="center"><code>colnames(Gm) &lt;- c(...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>rowSums</code></td>
+<td align="center"><code>rowSums(Gm)</code></td>
+<td align="center"><code>Matrix</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>colSums</code></td>
+<td align="center"><code>colSums(Gm)</code></td>
+<td align="center"><code>Matrix</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>cbind</code></td>
+<td align="center"><code>cbind(Gm,...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>rbind</code></td>
+<td align="center"><code>rbind(Gm,...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>head</code></td>
+<td align="center"><code>head(Gm,...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>tail</code></td>
+<td align="center"><code>tail(Gm,...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>nrow</code></td>
+<td align="center"><code>nrow(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>ncol</code></td>
+<td align="center"><code>ncol(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>t</code></td>
+<td align="center"><code>t(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>crossprod</code></td>
+<td align="center"><code>crossprod(Gm,...)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>tcrossprod</code></td>
+<td align="center"><code>tcrossprod(Gm,…)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>outer</code></td>
+<td align="center"><code>outer(Gm,…)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>%o%</code></td>
+<td align="center"><code>Gm %o% … || … %o% Gm</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>%x%</code></td>
+<td align="center"><code>Gm %x% … || … %x% Gm</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>%^%</code></td>
+<td align="center"><code>Gm %^% … || … %^% Gm</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>diag</code></td>
+<td align="center"><code>diag(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>diag&lt;-</code></td>
+<td align="center"><code>diag(Gm) &lt;- c(…)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>solve</code></td>
+<td align="center"><code>solve(Gm, …)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>qr</code></td>
+<td align="center"><code>qr(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>eigen</code></td>
+<td align="center"><code>eigen(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>svd</code></td>
+<td align="center"><code>svd(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>ginv</code></td>
+<td align="center"><code>ginv(Gm, tol = sqrt(.Machine$double.eps))</code></td>
+<td align="center"><code>MASS</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>chol</code></td>
+<td align="center"><code>chol(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>chol_solve</code></td>
+<td align="center"><code>chol_solve(Gm, …)</code></td>
+<td align="center"><code>GPUmatrix</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>mean</code></td>
+<td align="center"><code>mean(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>density</code></td>
+<td align="center"><code>density(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>hist</code></td>
+<td align="center"><code>hist(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>colMeans</code></td>
+<td align="center"><code>colMeans(Gm)</code></td>
+<td align="center"><code>Matrix</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>rowMeans</code></td>
+<td align="center"><code>rowMeans(Gm)</code></td>
+<td align="center"><code>Matrix</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>sum</code></td>
+<td align="center"><code>sum(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>min</code></td>
+<td align="center"><code>min(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>max</code></td>
+<td align="center"><code>max(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>which.max</code></td>
+<td align="center"><code>which.max(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>which.min</code></td>
+<td align="center"><code>which.min(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>aperm</code></td>
+<td align="center"><code>aperm(Gm)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>apply</code></td>
+<td align="center"><code>apply(Gm, MARGIN, FUN, …, simplify=TRUE)</code></td>
+<td align="center"><code>base</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>cov</code></td>
+<td align="center"><code>cov(Gm)</code></td>
+<td align="center"><code>stats</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>cov2cor</code></td>
+<td align="center"><code>cov2cor(Gm)</code></td>
+<td align="center"><code>stats</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>cor</code></td>
+<td align="center"><code>cor(Gm, …)</code></td>
+<td align="center"><code>stats</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>rowVars</code></td>
+<td align="center"><code>rowVars(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>colVars</code></td>
+<td align="center"><code>colVars(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>colMaxs</code></td>
+<td align="center"><code>colMaxs(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>rowMaxs</code></td>
+<td align="center"><code>rowMaxs(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>rowRanks</code></td>
+<td align="center"><code>rowRanks(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>colRanks</code></td>
+<td align="center"><code>colRanks(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>colMins</code></td>
+<td align="center"><code>colMins(Gm)</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>rowMins</code></td>
+<td align="center"><code>rowMins</code></td>
+<td align="center"><code>matrixStats</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>dtype</code></td>
+<td align="center"><code>dtype(Gm)</code></td>
+<td align="center"><code>GPUmatrix</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>dtype&lt;-</code></td>
+<td align="center"><code>dtype(Gm)</code></td>
+<td align="center"><code>GPUmatrix</code></td>
+</tr>
+<tr class="even">
+<td align="center"><code>to_dense</code></td>
+<td align="center"><code>to_dense(Gm)</code></td>
+<td align="center"><code>GPUmatrix</code></td>
+</tr>
+<tr class="odd">
+<td align="center"><code>to_sparse</code></td>
+<td align="center"><code>to_sparse(Gm)</code></td>
+<td align="center"><code>GPUmatrix</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="function-time-comparison" class="section level2">
+<h2>3.3 Function time comparison</h2>
+<p>The computation time for the different functions and operations
+differs depending on the operation to be performed (Fig 1). Although the
+default data type is float64, operations with float32 have no comparison
+in terms of computation time. For this reason, we recommend their use
+whenever the data types and the objective allow it. This comparison is
+made using the Intel MKL BLAS.</p>
+<div class="figure">
+<img src="data:image/png;base64,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" alt />
+<p class="caption">Computation time for GPU and R-base CPU for different
+operations. Time is in seconds and Size=n where matrix is <em>(n x
+n)</em> dimension<em>.</em></p>
+</div>
+</div>
+</div>
+<div id="toy-example-non-negative-factorization-of-a-matrix" class="section level1">
+<h1>4. Toy example: Non negative factorization of a matrix</h1>
+<p>As a toy example We will show a simple example on performing the non
+negative matrix factorization of a matrix (NMF) using the Lee and Seung
+multiplicative update rule.</p>
+<p>The rules are</p>
+<p><span class="math display">\[
+\mathbf{W}_{[i, j]}^{n+1} \leftarrow \mathbf{W}_{[i, j]}^n
+\frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)_{[i,
+j]}}{\left(\mathbf{W}^n
+\mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)_{[i, j]}}
+\]</span> and <span class="math display">\[
+\mathbf{H}_{[i, j]}^{n+1} \leftarrow \mathbf{H}_{[i, j]}^n
+\frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)_{[i,
+j]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n
+\mathbf{H}^n\right)_{[i, j]}}
+\]</span> to update the <span class="math inline">\(\mathbf{W}\)</span>
+and <span class="math inline">\(\mathbf{H}\)</span> respectively.</p>
+<p>It is straightforward to build two functions for these rules. The
+corresponding R code is:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>updateH <span class="ot">&lt;-</span> <span class="cf">function</span>(V,W,H) {</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  H <span class="ot">&lt;-</span> H <span class="sc">*</span> (<span class="fu">t</span>(W) <span class="sc">%*%</span> V)<span class="sc">/</span>((<span class="fu">t</span>(W) <span class="sc">%*%</span> W) <span class="sc">%*%</span> H)}</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>updateW <span class="ot">&lt;-</span> <span class="cf">function</span>(V,W,H) {</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  W <span class="ot">&lt;-</span> W <span class="sc">*</span> (V <span class="sc">%*%</span> <span class="fu">t</span>(H))<span class="sc">/</span>(W <span class="sc">%*%</span> (H <span class="sc">%*%</span> <span class="fu">t</span>(H)) )}</span></code></pre></div>
+<p>We include a simple script that builds a matrix and run this update
+rules 100 times.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">200</span><span class="sc">*</span><span class="dv">10</span>),<span class="dv">200</span>,<span class="dv">10</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span><span class="sc">*</span><span class="dv">100</span>),<span class="dv">10</span>,<span class="dv">100</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> A <span class="sc">%*%</span> B</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>W <span class="ot">&lt;-</span> W1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">200</span><span class="sc">*</span><span class="dv">10</span>),<span class="dv">200</span>,<span class="dv">10</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> H1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span><span class="sc">*</span><span class="dv">100</span>),<span class="dv">10</span>,<span class="dv">100</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (iter <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>) {</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  W <span class="ot">&lt;-</span> <span class="fu">updateW</span>(V,W,H)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  H <span class="ot">&lt;-</span> <span class="fu">updateH</span>(V,W,H)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(W[<span class="dv">1</span>,<span class="dv">1</span>])</span></code></pre></div>
+<pre><code>## [1] 0.5982573</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(H[<span class="dv">1</span>,<span class="dv">1</span>])</span></code></pre></div>
+<pre><code>## [1] 0.2008674</code></pre>
+<p>We include now a similar script where the operations are done on the
+GPU:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(GPUmatrix)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  Vg <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(V)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  Wg <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(W1)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  Hg <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(H1)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (iter <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>) {</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    Wg <span class="ot">&lt;-</span> <span class="fu">updateW</span>(Vg,Wg,Hg)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    Hg <span class="ot">&lt;-</span> <span class="fu">updateH</span>(Vg,Wg,Hg)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(Wg[<span class="dv">1</span>,<span class="dv">1</span>])</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(Hg[<span class="dv">1</span>,<span class="dv">1</span>])</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## GPUmatrix
+## torch_tensor
+##  0.5983
+## [ CUDADoubleType{1,1} ]
+## GPUmatrix
+## torch_tensor
+##  0.2009
+## [ CUDADoubleType{1,1} ]</code></pre>
+<p>Results are identical since the initial values also coincide.</p>
+</div>
+<div id="advanced-options" class="section level1">
+<h1>5. Advanced options</h1>
+<div id="using-gpumatrix-on-cpu" class="section level2">
+<h2>5.1 Using GPUMatrix on CPU</h2>
+<p>In the GPUmatrix constructor, we can specify the location of the
+matrix, i.e., we can decide to host it on the GPU or in RAM memory to
+use it with the CPU. As a package, as its name suggests, oriented
+towards algebraic operations in R using the GPU, it will by default be
+hosted on the GPU, but it allows the same functionalities using the CPU.
+To do this, we use the <code>device</code> attribute of the constructor
+and assign it the value <strong><em>“cpu”</em></strong>.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(installTorch){</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#GPUmatrix initialization with CPU option</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  Gm <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>,<span class="at">device=</span><span class="st">&quot;cpu&quot;</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Show CPU matrix from GPUmatrix</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  Gm</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## GPUmatrix
+## torch_tensor
+##  41  51
+##  42  52
+##  43  53
+##  44  54
+##  45  55
+##  46  56
+##  47  57
+##  48  58
+##  49  59
+##  50  60
+## [ CPUDoubleType{10,2} ]</code></pre>
+<p>R provides a standard BLAS version that is not multithreaded and not
+fully optimized for present computers. In the previous paragraphs, we
+compared the CUDA-GPU with MKL-R, i.e. using CUDA for linear algebra
+through torch or tensorflow or boosting the standard R with the Intel
+MKL library. Switching from Standard R to MKL R implies changing the
+default behavior of R and ther can be side-effects. For examples some
+standard packages such as igraph do not work in this case.</p>
+<p>Torch and Tensorflow on the CPU are compiled using MKL as linear
+algebra library. Therefore, the performance between using MKL-R or using
+the GPUMatrix library on the CPU should be similar. The only differences
+would be related to the overhead from translating the objects or the
+different versions of the MKL library.</p>
+<p>Interestingly, the standard R matrix operations are indeed slightly
+slower than using the GPUMatrix package -perhaps owing to a more recent
+version of the MKL library- (Fig 2), especially in element-wise
+operations, where MKL-R does not seem to exploit the multithreaded
+implementation of the Intel MKL BLAS version and Torch and Tensorflow
+does.</p>
+<p>In addition, if MKL-R is not implemented for float32 -since R does
+not include this type of variable-. The multiplication of float32
+matrices on MKL-R does not use MKL and is, in fact, much slower than
+multiplying float64 matrices (data not shown). Torch and Tensorflow do
+include MKL for float32 and there is an improvement in the performance
+(they are around two-fold faster).</p>
+<div class="figure">
+<img src="data:image/png;base64,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" alt />
+<p class="caption">Computation time for GPUMatrix on CPU and MKL-R for
+different operations. Time is in seconds and Size=n where matrix is
+<em>(n x n)</em> dimension. There is a substantial speed performance in
+element-wise operations.</p>
+</div>
+</div>
+<div id="using-gpumatrix-with-tensorflow" class="section level2">
+<h2>5.2 Using GPUMatrix with Tensorflow</h2>
+<p>As commented in the introduction and dependency section, GPUmatrix
+can be used with both TensorFlow and Torch. By default, the GPU matrix
+constructor is initialized with Torch tensors because, in our opinion,
+it provides an advantage in terms of installation and usage compared to
+TensorFlow. Additionally, it allows the use of GPUmatrix not only with
+GPU tensors but also with CPU tensors. To use GPUmatrix with TensorFlow,
+simply use the <code>type</code> attribute in the constructor function
+and assign it the value <strong>“tensorflow”</strong> as shown in the
+following example:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># library(GPUmatrix)</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>tensorflowGPUmatrix <span class="ot">&lt;-</span> <span class="fu">gpu.matrix</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">+</span><span class="dv">40</span>,<span class="dv">10</span>,<span class="dv">2</span>, <span class="at">type =</span> <span class="st">&quot;tensorflow&quot;</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>tensorflowGPUmatrix</span></code></pre></div>
+<div id="references" class="section level4">
+<h4>References</h4>
+<p>Bates D, Maechler M, Jagan M (2022). Matrix: Sparse and Dense Matrix
+Classes and Methods. R package version 1.5-3, <a href="https://CRAN.R-project.org/package=Matrix" class="uri">https://CRAN.R-project.org/package=Matrix</a>.</p>
+<p>Schmidt D (2022). “float: 32-Bit Floats.” R package version 0.3-0, <a href="https://cran.r-project.org/package=float" class="uri">https://cran.r-project.org/package=float</a>.</p>
+<p>Falbel D, Luraschi J (2022). torch: Tensors and Neural Networks with
+‘GPU’ Acceleration. R package version 0.9.0, <a href="https://CRAN.R-project.org/package=torch" class="uri">https://CRAN.R-project.org/package=torch</a>.</p>
+<p>Allaire J, Tang Y (2022). tensorflow: R Interface to ‘TensorFlow’. R
+package version 2.11.0,  <a href="https://CRAN.R-project.org/package=tensorflow" class="uri">https://CRAN.R-project.org/package=tensorflow</a>.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

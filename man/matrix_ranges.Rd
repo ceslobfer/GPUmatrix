@@ -1,17 +1,11 @@
 \name{matrix_ranges}
 \docType{methods}
-\title{Get different statistics for a matrix or get the same statistics for each row or column.}
+\title{Get different statistics for a gpu.matrix-class.}
 
-\description{Functions to summarize the values of a matrix by rows (columns):
-maximum value,
-index of maximum value,
-minimum value,
-index of minimum value,
-mean,variance,
-sum of values,
-ranking of values.
+\description{
+Functions to summarise different values of a gpu.matrix-class object by rows or columns. Specifically: the maximum value, the index of the maximum value, the minimum value, the index of the minimum value, the mean, the variance, the sum of the values and the rank of the values.
 
-These functions mimic the corresponding function of \code{'base'}, \code{'matrixStats'} and \code{'Matrix'} libraries. See also section for more details.
+These functions mimic the corresponding function of \code{'base'}, \code{'matrixStats'} and \code{'Matrix'} libraries.
 }
 
 \alias{rowMaxs}
@@ -73,16 +67,12 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 
 \alias{rowRanks}
 \alias{colRanks}
-\alias{rankMatrix}
 \alias{rowRanks-methods}
 \alias{colRanks-methods}
-\alias{rankMatrix-methods}
 \alias{rowRanks,gpu.matrix.tensorflow-method}
 \alias{rowRanks,gpu.matrix.torch-method}
 \alias{colRanks,gpu.matrix.tensorflow-method}
 \alias{colRanks,gpu.matrix.torch-method}
-\alias{rankMatrix,gpu.matrix.tensorflow-method}
-\alias{rankMatrix,gpu.matrix.torch-method}
 
 \alias{rowSums}
 \alias{colSums}
@@ -130,8 +120,7 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 \S4method{rowRanks}{gpu.matrix.torch}(x)
 \S4method{colRanks}{gpu.matrix.tensorflow}(x)
 \S4method{colRanks}{gpu.matrix.torch}(x)
-\S4method{rankMatrix}{gpu.matrix.tensorflow}(x)
-\S4method{rankMatrix}{gpu.matrix.torch}(x)
+
 
 \S4method{rowSums}{gpu.matrix.tensorflow}(x)
 \S4method{rowSums}{gpu.matrix.torch}(x)
@@ -143,27 +132,38 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 }
 
 \arguments{
-\item{x}{A gpu.matrix}
+\item{x}{a \code{\linkS4class{gpu.matrix}}.}
 }
-
-
 
 \value{
 
-\code{max}, \code{rowMaxs}, \code{colMaxs} calculate de maximum value of the gpu.matrix, of each row and of each column respectively. \code{which.max} determines the location of the maximum value.
+\code{max}, \code{rowMaxs}, \code{colMaxs} calculate the maximum value of a gpu.matrix-class object, of each row and of each column respectively. \code{which.max} determines the location of the maximum value.
 
-\code{min}, \code{rowMinss}, \code{colMins} calculate de minimum value of the gpu.matrix, of each row and of each column respectively. \code{which.min} determines the location of the minimum value.
+\code{min}, \code{rowMins}, \code{colMins} calculate the minimum value of a gpu.matrix-class object, of each row and of each column respectively. \code{which.min} determines the location of the minimum value.
 
-\code{mean}, \code{rowMeans}, \code{colMeans} calculate the mean (average) value of the gpu.matrix, of each row and of each column respectively.
+\code{mean}, \code{rowMeans}, \code{colMeans} calculate the mean (average) value of a gpu.matrix-class object, of each row and of each column respectively.
 
-\code{rowVars}, \code{colVars} calculate the variance of each row and of each column of a gpu.matrix respectively.
-
-
-\code{rowRanks}, \code{colRanks}, \code{rankMatrix} get the rank of the gpu.matrix, of each row and of each column respectively.
+\code{rowVars}, \code{colVars} calculate the variance of each row and of each column of a gpu.matrix-class object respectively.
 
 
-\code{rowSums}, \code{colSums}, \code{sum} sum the value of a gpu.matrix, of each row and of each column respectively.
+\code{rowRanks}, \code{colRanks}, \code{rankMatrix} get the rank of a gpu.matrix-class object, of each row and of each column respectively.
+
+
+\code{rowSums}, \code{colSums}, \code{sum} sum the value of a a gpu.matrix-class object, of each row and of each column respectively.
 }
+
+
+\details{
+
+The value returned by almost each function is a numeric vector stored in the CPU. Only the function \code{rowRanks}, \code{colRanks}, and \code{sum} return a gpu.matrix-class object.
+
+These functions internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+If the input gpu.matrix-class object is stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
+
+}
+
+
 
 
 \seealso{
@@ -172,27 +172,26 @@ For more information:
 \code{\link[matrixStats]{rowMaxs}},
 \code{\link[matrixStats]{colMaxs}},
 \code{\link[base]{max}},
-\code{\link[base]{which.max}}.
+\code{\link[base]{which.max}}, and \code{\link[torch]{torch_max}}.
 
 \code{\link[matrixStats]{rowMins}},
 \code{\link[matrixStats]{colMins}},
 \code{\link[base]{min}},
-\code{\link[base]{which.min}}.
+\code{\link[base]{which.min}}, and \code{\link[torch]{torch_min}}.
 
 \code{\link[base]{rowMeans}},
 \code{\link[base]{colMeans}},
-\code{\link[base]{mean}}.
+\code{\link[base]{mean}}, and \code{\link[torch]{torch_mean}}.
 
 \code{\link[matrixStats]{rowVars}},
-\code{\link[matrixStats]{colVars}}.
+\code{\link[matrixStats]{colVars}}, and \code{\link[torch]{torch_var}}.
 
 \code{\link[matrixStats]{rowRanks}},
-\code{\link[matrixStats]{colRanks}},
-\code{\link[Matrix]{rankMatrix}}
+\code{\link[matrixStats]{colRanks}}, and \code{\link[torch]{torch_argsort}}.
 
 \code{\link[base]{rowSums}},
 \code{\link[base]{colSums}},
-\code{\link[base]{sum}}
+\code{\link[base]{sum}}, and \code{\link[torch]{torch_sum}}.
 
 }
 

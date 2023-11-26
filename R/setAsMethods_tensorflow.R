@@ -47,11 +47,9 @@ setMethod("is.numeric",  signature(x = "gpu.matrix.tensorflow"), function(x){
 } )
 
 setMethod("as.vector", "gpu.matrix.tensorflow", function(x, mode){
-  if (x@sparse) {
-    res <- as.vector(t(x)@gm$values)
-  }else{
-    res <- as.vector(x@gm)
-  }
+  x <- warningSparseTensor(x)
+  x <- as.matrix(x)
+  return(as.vector(x, mode))
 })
 
 setMethod("as.list", signature(x = "gpu.matrix.tensorflow"), function(x, ...){

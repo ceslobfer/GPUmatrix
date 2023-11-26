@@ -2,6 +2,10 @@
 \title{extract_gpu.matrix}
 \docType{methods}
 
+\description{
+These operators mimic the base operators \code{[,[<-, [[, and [[<-} to compute on gpu.matrix-class objects.
+}
+
 
 \alias{[-methods}
 \alias{[,gpu.matrix.tensorflow,index,index-method}
@@ -39,11 +43,6 @@
 
 
 
-\description{
-Mimics the \code{[,[<-, [[, and [[<-} base functions. These operators act on 'GPUmatrix' matrices, vectors, matrices, arrays and lists.
-}
-
-
 \usage{
 \S4method{-}{gpu.matrix.tensorflow,missing}(e1,e2)
 \S4method{-}{gpu.matrix.torch,missing}(e1,e2)
@@ -73,13 +72,17 @@ Mimics the \code{[,[<-, [[, and [[<-} base functions. These operators act on 'GP
 
 \arguments{
 
-\item{e1}{a gpu.matrix}
-\item{e2}{a gpu.matrix}
-\item{x}{a gpu.matrix from which extract element(s) or in which to replace element(s)}
+\item{e1}{a \code{\linkS4class{gpu.matrix}}.}
+\item{e2}{a \code{\linkS4class{gpu.matrix}}.}
+\item{x}{a \code{\linkS4class{gpu.matrix}} object from which extract element(s) or in which to replace element(s)}
 \item{i,j,\dots}{indices specifying elements to extract or replace.}
-\item{value}{typically an array-like R object of a similar class as x}
+\item{value}{typically an array-like R object of a similar class as \code{x}.}
 \item{drop}{For matrices and arrays. If TRUE the result is coerced to the lowest possible dimension}
 
+}
+
+\details{
+When replacing a value or values in a gpu.matrix, the gpu.matrix will not change its datatype (corresponding to the parameter \code{dtype} of the function \code{\link{gpu.matrix}}) based on the datatype in value. For example, the code \code{x[1,1] <- value} where the array \code{x} is a gpu.matrix with integer values and \code{value} has 'double' values, only the integer part of \code{value} will be stored in \code{x[1,1]}.
 }
 
 

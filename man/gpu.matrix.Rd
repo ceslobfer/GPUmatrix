@@ -3,18 +3,19 @@
 \alias{as.gpu.matrix}
 \alias{as.gpu.matrix-methods}
 \alias{as.gpu.matrix,ANY-method}
-\title{
-create and store a matrix in the GPU
-}
+\title{create and store a matrix in the GPU}
 \description{
-Mimic the base \code{'matrix'} function.
+Mimic the base \code{'matrix'} function to create a gpu.matrix-class object, that could be of class \code{gpu.matrix.torch} or \code{gpu.matrix.tensorflow} depending on the system installed in the computer.
 
-gpu.matrix creates a gpu.matrix.torch or gpu.matrix.tensorflow from input data. The created matrix is stored in the GPU. This function also mimics the function 'Matrix' of the library 'Matrix'.
+The matrix created will be stored in the GPU (by default) or in the CPU. The example section explains how to be sure where the matrix is stored.
+
+This function also mimics the function \code{Matrix} of the library 'Matrix'.
 }
 \usage{
-gpu.matrix(data = NA, nrow = NULL, ncol = NULL, byrow = FALSE,
-                       dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(),
-                       rownames=c(),device="cuda", type="torch")
+gpu.matrix(data = NULL, nrow = NULL, ncol = NULL,
+           byrow = FALSE,dimnames = NULL,
+           dtype=NULL, sparse=NULL,colnames=c(),
+           rownames=c(),device=NULL,type=NULL)
 
 as.gpu.matrix(x,\dots)
 \S4method{as.gpu.matrix}{ANY}(x,\dots)
@@ -24,22 +25,22 @@ as.gpu.matrix(x,\dots)
 a scalar, vector or matrix (both matrix or Matrix class).
 }
   \item{nrow}{
-Number of rows of the matrix. By default the number of rows of data if data is a matrix or a Matrix.
+Number of rows of the matrix. By default the number of rows of data if data is an object of class matrix or Matrix.
 }
   \item{ncol}{
-Number of columns of the matrix. By default the number of columns of data if data is a matrix or a Matrix.
+Number of columns of the matrix. By default the number of columns of data if data is an object of class matrix or Matrix.
 }
   \item{byrow}{
-The same as  function 'matrix': "logical. If FALSE (the default) the matrix is filled by columns, otherwise the matrix is filled by rows."
+The same as  function \code{matrix}: "logical. If FALSE (the default) the matrix is filled by columns, otherwise the matrix is filled by rows."
 }
   \item{dimnames}{
-The same as in  function 'matrix': "A dimnames attribute for the matrix: NULL or a list of length 2 giving the row and column names respectively. An empty list is treated as NULL, and a list of length one as row names. The list can be named, and the list names will be used as names for the dimensions."
+The same as in  function \code{matrix}: "A dimnames attribute for the matrix: NULL or a list of length 2 giving the row and column names respectively. An empty list is treated as NULL, and a list of length one as row names. The list can be named, and the list names will be used as names for the dimensions."
 }
   \item{dtype}{
-By default "float64". User can indicate "float32" or "int" for "int64".
+data type. User can indicate "float64", "float32" or "int" for "int64". if not specified, dtype will correspond to the input data type.
 }
   \item{sparse}{
-The same as in function 'Matrix' of the library 'Matrix': "logical or NULL, specifying if the result should be sparse or not. By default, it is made sparse when more than half of the entries are 0."
+The same as in function \code{Matrix} of the library 'Matrix': "logical or NULL, specifying if the result should be sparse or not. By default, it is made sparse when more than half of the entries are 0."
 }
   \item{colnames}{
 A vector with the column names.
@@ -47,30 +48,34 @@ A vector with the column names.
   \item{rownames}{
 A vector with the row names.
 }
-\item{type}{If gpu.matrix is "torch"(default) or "tensorflow."}
-\item{device}{By default "cuda" (alternative "cpu" only with torch). Indicates de devide to load cuda.}
+\item{type}{If the gpu.matrix is 'torch' or "tensorflow". If it is NULL, \code{gpu.matrix} will try to create a gpu.matrix.torch object.}
+\item{device}{It indicates the device to load cuda. If not indicated, 'device' will be set to 'cuda' if it is available.}
 \item{\dots}{additional arguments to be passed to or from methods.}
 
 }
 \details{
-gpu.matrix. mimics the functions Matrix of the library Matrix and the base function matrix. If tensorflow and/or torch are properly installed then the gpu.matrix will be stored on the GPU. The example shows how to check this.
+The \code{gpu.matrix} function mimics the \code{Matrix} function of the 'Matrix' library and the basic \code{matrix} function. If tensorflow and/or torch are properly installed and the \code{device} parameter is set to "cuda" (by default), then the created gpu.matrix object will be stored on the GPU. The example shows how to check this.
 
-User can apply -using the same operator- to this matrix the basic functions that can be applied to a matrix of class 'matrix' or class 'Matrix'.
+The user can apply to the created gpu.matrix-class object -using the same operators- the basic functions that can be applied to a object of class 'matrix' and/or class 'Matrix'.
 
-It can work also with sparse matrices as the library Matrix.
+It can also work with sparse matrices as the 'Matrix' library.
 }
 \value{
-Returns matrix of class 'gpu.matrix' of the library GPUmatrix that can be either "gpu.matrix.tensorflow" or ""gpu.matrix.torch". For both torch and tensorflow the functions to be applied to a matrix are the same.
+Returns a GPUmatrix object that can be either "gpu.matrix.tensorflow" or "gpu.matrix.torch". For both torch and tensorflow the functions to be applied to a matrix are the same.
 
-If the gpu.matrix is not sparse it will show on the console the matrix as it is. If the gpu.matrix is sparse, it will return to the console the position where there are number different from zero. The internal values of the matrix can be seen using the operator "@".
+If the gpu.matrix-class object is not sparse it will show on the console the matrix as it is. If the gpu.matrix is sparse, it will return to the console the position where there are number different from zero. The internal values of the matrix can be seen using the operator "@".
 
-Even if the matrix is sparse or not, both kind of matrices works equally with all functions.
+If the gpu.matrix-class object contains complex numbers, use the  \code{@gm$real} and \code{@gm$imag} operators to access the corresponding real and imaginary values.
+
+Even if the gpu.matrix-class object is sparse or not, both kind of matrices works equally with all functions.
 }
 \author{
 Cesar Lobato and Angel Rubio.
 }
 \seealso{
-See \code{\linkS4class{Matrix}} and \code{\linkS4class{matrix}}.
+See \code{\linkS4class{gpu.matrix}}, \code{\linkS4class{Matrix}}, and \code{\linkS4class{matrix}}.
+
+For more details about the parameter \code{dtype} visit \code{\link{dtype}}
 }
 \examples{
 
@@ -114,6 +119,18 @@ a@gm$device
 
 #the output of a@gm@device should have a similar shape:
 #[1] "/job:localhost/replica:0/task:0/device:GPU:0"
+
+#create a sparse
+a <- gpu.matrix(data=c(0,1,1,0,1,0),nrow = 3,ncol = 2,sparse = T)
+a
+
+#create a complex gpu.matrix
+a <- gpu.matrix(data=c(0+1i,1i,1,0,1,0),nrow = 3,ncol = 2)
+a
+
+
+
+
 }
 }
 }

@@ -1,12 +1,9 @@
 \name{density}
-\title{Kernel Density Estimation}
-
-
+\title{Kernel Density Estimation and Histograms}
 \description{
+The function \code{density} mimics the function \code{density} of the library \code{stats} to operate on gpu.matrix-class objects: "It computes kernel density estimates. Its default method does so with the given kernel and bandwidth for univariate observations."
 
-The function \code{'density'} mimics the function \code{'density'} of the library \code{'stats'}. It computes kernel density estimates. Its default method does so with the given kernel and bandwidth for univariate observations.
-
-The function \code{'hist'} mimics the function \code{'hist'} of the library \code{'graphics'}. It computes a histogram of the given data values.
+The function \code{'hist'} mimics the function \code{'hist'} of the library \code{'graphics'} to operate on gpu.matrix-class objects: "It computes a histogram of the given data values."
 
 }
 
@@ -31,7 +28,7 @@ The function \code{'hist'} mimics the function \code{'hist'} of the library \cod
 
 
 \arguments{
-\item{x}{the GPUmatrix object from which the estimate density is to be computed or the GPUmatrix object for which the histogram is desired.}
+\item{x}{the \code{\linkS4class{gpu.matrix}} object from which the estimate density is to be computed or the histogram is desired.}
 \item{\dots}{further arguments and graphical parameters.}
 }
 
@@ -42,8 +39,16 @@ For more information see:
 
 }
 
+\details{
+The two functions (\code{density} and \code{hist}) have been programmed to call their corresponding counterpart functions with their default parameters. Therefore, the internal operations to obtain each graph are computed by the CPU, regardless of whether the input value is stored in the GPU.
+
+For more information on these functions see \code{\link[stats]{density}}, and \code{\link[graphics]{hist}}.
+
+}
+
 \value{
-Same output as in the base function \code{density}. It returns "an object with class 'density' whose underlying structure is a list containing the following components.
+
+The function \code{density} returns the same output as its counterpart function \code{density} from the library \code{stats}: It returns "an object with class 'density' whose underlying structure is a list containing the following components.
 
 \item{x}{the n coordinates of the points where the density is estimated.}
 \item{y}{the estimated density values. These will be non-negative, but can be zero.}
@@ -53,7 +58,17 @@ Same output as in the base function \code{density}. It returns "an object with c
 \item{data.name}{	the deparsed name of the x argument.}
 \item{has.na}{logical, for compatibility (always FALSE).}
 
-The print method reports summary values on the x and y components."
+The print method reports summary values on the x and y components." (taken from \code{\link[stats]{density}}).
+
+On the other hand, the function \code{hist} returns the same output as its counterpart function \code{hist} from the library \code{graphics}: It returns "an object of class 'histogram' which is a list with components:
+
+\item{breaks}{the n+1n+1 cell boundaries (= breaks if that was a vector). These are the nominal breaks, not with the boundary fuzz.}
+\item{counts}{n integers; for each cell, the number of x[] inside.}
+\item{density}{values \eqn{\hat{f}(x_i)}, as estimated density values. If \code{all(diff(breaks) == 1)}, the are the relative frequencies \code{counts/n} and in general satisfy \eqn{\sum_i{\hat{f}(x_i)(b_{i+1}-b_i)=1}}, where \eqn{b_i} = \code{breaks[i]}}.
+\item{mids}{the n cell midpoints.}
+\item{xname}{a character string with the actual x argument name.}
+\item{equidist}{logical, indicating if the distances between breaks are all the same."}
+(Taken from \code{\link[graphics]{hist}})
 }
 
 \examples{

@@ -2,9 +2,11 @@
 \title{Number of rows and columns and its corresponding names}
 
 \description{
-The dim family of functions set or get the dimension of a 'GPUmatrix'.
+These functions mimic the 'base' functions \code{rownames}, \code{colnames}, \code{dimnames}, \code{dim}, \code{length}, \code{ncol}, \code{nrow} to operate on gpu.matrix-class objects.
 
-The rownames family of functions set or get the corresponding names of rows and columns.
+The "\code{dim} family functions" set or get the dimension of a gpu.matrix-class object.
+
+The "\code{rownames} and \code{colnames} family functions" set or get the corresponding names of rows and columns of a gpu.matrix-class object.
 }
 
 \alias{rownames}
@@ -76,28 +78,27 @@ The rownames family of functions set or get the corresponding names of rows and 
 
 
 \arguments{
-\item{x}{A gpu.matrix}
+\item{x}{a \code{\linkS4class{gpu.matrix}}.}
 \item{value}{For \code{dim} a numeric vector of length 2 with the number of rows and number of columns. For \code{dimnames} a character or numeric vector of length 2 with the names of the rows and names of the columns. }
 }
 
 
 \value{
 
-\code{rownames} returns the names of the rows of a gpu.matrix.
+\code{rownames} returns the names of the rows of a gpu.matrix-class object.
+\code{colnames} returns the names of the columns of a gpu.matrix-class object.
 
-\code{colnames} returns the names of the columns of a gpu.matrix.
+\code{dim} returns the number of rows and columns of a gpu.matrix-class object and
+ \code{dim <- } sets the number of rows and columns of a gpu.matrix-class object.
 
-\code{dim} returns the number of rows and columns of a gpu.matrix and
- \code{dim <- } sets the number of rows and columns of a gpu.matrix.
+\code{dimnames} returns the names of the rows and columns of a gpu.matrix-class object and
+ \code{dimnames <- } sets the names of the rows and columns of a gpu.matrix-class object.
 
-\code{dimnames} returns the names of the rows and columns of a gpu.matrix and
-\code{dimnames <- } sets the names of the rows and columns of a gpu.matrix.
+\code{length} returns the length (ncol*nrow) of a gpu.matrix-class object.
 
-\code{length} returns the length (ncol*nrow) of a gpu.matrix.
+\code{ncol} returns the number of columns of a gpu.matrix-class object.
 
-\code{ncol} returns the number of columns of a gpu.matrix.
-
-\code{nrow} returns the number of rows of a gpu.matrix.
+\code{nrow} returns the number of rows of a gpu.matrix-class object.
 
 
 

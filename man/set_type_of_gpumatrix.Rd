@@ -5,10 +5,10 @@
 
 \description{
 
-\code{'dtype'} and \code{'dtype<-'} are functions that show or set the number of bits to use to store the number. The possible options are "float64" for float64 (default), "float32" for float32 and "int" for int64.
+\code{dtype} and \code{dtype<-} are functions that show or set the number of bits to use to store the number. The possible options are "float64" for float64 (default), "float32" for float32 and "int" for int64.
 float64 uses 64 bits, that means that float64's take up twice as much memory thatn float32, thus doing operations on them may be slower in some machine architectures. However, float64's can represent numbers much more accurately than 32 bit floats. They also allow much larger numbers to be stored.
 
-\code{'to_dense'} is a function that transforms a sparse matrix to a dense matrix. On the other hand, \code{'to_sparse'} transforms a dense matrix to a sparse matrix.
+\code{to_dense} is a function that transforms a sparse matrix to a dense matrix. On the other hand, \code{to_sparse} transforms a dense matrix to a sparse matrix.
 
 }
 
@@ -51,10 +51,19 @@ float64 uses 64 bits, that means that float64's take up twice as much memory tha
 
 \arguments{
 
-\item{x}{A gpu.matrix.torch or a gpu.matrix.tensorflow object.}
+\item{x}{a \code{\linkS4class{gpu.matrix}}.}
 \item{value}{type of gpu.matrix object}
 
 }
+
+
+\value{
+\code{dtype} and \code{dtype <- } show or set the number of bits to use to store the number.
+
+\code{to_dense} returns a dense gpu.matrix-class object while the function \code{to_sparse} returns a sparse gpu.matrix-class object.
+
+}
+
 
 \seealso{
 See also \code{\link[GPUmatrix]{gpu.matrix}}.

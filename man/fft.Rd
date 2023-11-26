@@ -1,17 +1,17 @@
 \name{fft}
 \title{Fast Discrete Fourier Transform (FFT)}
-
-
 \description{
-
-Computes the fft of the rows of a matrix. It is equivalent to the base R  \code{apply(A,1,fft)}.
+This function mimics the function \code{fft} of the library 'stats' to compute on gpu.matrix-class objects: it "Computes the Discrete Fourier Transform (DFT) of an array with a fast algorithm, the “Fast Fourier Transform” (FFT)."
 
 }
 
 \alias{fft}
 \alias{fft-methods}
 \alias{fft,gpu.matrix.tensorflow-method}
+\alias{fft,gpu.matrix.tensorflow,ANY-method}
 \alias{fft,gpu.matrix.torch-method}
+\alias{fft,gpu.matrix.torch,logical-method}
+\alias{fft,gpu.matrix.torch,missing-method}
 
 
 \usage{
@@ -20,16 +20,26 @@ Computes the fft of the rows of a matrix. It is equivalent to the base R  \code{
 }
 
 \arguments{
-\item{z}{a real or complex gpu.matrix containing the values to be transformed.}
+\item{z}{a  \code{\linkS4class{gpu.matrix}} object containing the values to be transformed.}
 }
 
 \seealso{
 For more information see:
-\code{\link[stats]{fft}}
+\code{\link[stats]{fft}} and \code{\link[torch]{torch_fft_ifft}}.
+}
+
+\details{
+This function mimics the function \code{\link[stats]{fft}} to operate on gpu.matrix-class objects.
+
+The function \code{fft} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+
+If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
+
 }
 
 \value{
-It returns the corresponding output of the function 'fft' of the library 'stats':  the unnormalized univariate discrete Fourier transform of the sequence of values in input \code{z}. For more details check the corresponding help of 'fft' of the library 'stats'.
+It returns a gpu.matrix-class object with the transformed values. To access the real and imaginary information, the following code must be executed:
+\code{output@gm$real} for the real part and \code{output@gm$imag} for the imaginary part.
 }
 
 
@@ -37,8 +47,9 @@ It returns the corresponding output of the function 'fft' of the library 'stats'
 if(installTorch){
 
   x <- gpu.matrix(1:4)
-  fft(x)
-
+  output <- fft(x)
+  output@gm$real
+  output@gm$imag
 }
 
 
