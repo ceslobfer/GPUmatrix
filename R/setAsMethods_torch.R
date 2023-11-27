@@ -36,7 +36,7 @@ setMethod("as.matrix", signature(x = "gpu.matrix.torch"), function(x, ...){
 # setAs("matrix", "gpu.matrix.torch", function(from) gpu.matrix.torch(as.matrix(from)))
 
 setMethod("as.array",  signature(x = "gpu.matrix.torch"), function(x, ...){
-  return(as(x@gm,"matrix"))
+  return(as(x@gm$cpu(),"matrix"))
 } )
 
 setMethod("as.vector", "gpu.matrix.torch", function(x, mode){

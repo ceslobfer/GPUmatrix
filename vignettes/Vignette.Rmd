@@ -2,13 +2,12 @@
 title: "Get started with GPUmatrix package"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 date: "February 2023"
-output:
-  word_document: default
+output: 
   rmarkdown: html_vignette
-  keep_tex: yes
-  pdf_document: null
-vignette: "%\\VignetteIndexEntry{Get started with GPUmatrix package} %\\usepackage[UTF-8]{inputenc}
-  %\\VignetteEngine{knitr::rmarkdown}\n"
+vignette: >
+  %\VignetteIndexEntry{Get started with GPUmatrix package}
+  %\usepackage[UTF-8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
 bibliography: references.bib
 subtitle: Seamlessly harness the power of GPU computing in R
 email:
@@ -356,7 +355,7 @@ knitr::kable(NULL,caption = "Table 4. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:----------------:|:----------------------------------:|:----------------:|
+|:----------------:|:---------------------------------:|:----------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -457,18 +456,24 @@ The main advantage of GPUmatrix is its versatility: R code needs only minor chan
 
 ## 4.1 Non negative factorization of a matrix
 
-The non-negative factorization (NMF) of a matrix is an approximate factorization were an initial matrix $\mathbf{V}$ is approximated by the product of two matrix $\mathbf{W}$ and $\mathbf{H}$ so that,
+The non-negative factorization (NMF) of a matrix is an approximate factorization were an initial matrix **V** is approximated by the product of two matrix **W** and **H** so that,
 
 $$
-\mathbf{V}_{m \times n} \approx \mathbf{W}_{m \times k}\mathbf{H}_{k \times n}$$ We have implemented our own non-negative matrix factorization function (`NMFgpumatrix()`) using the Lee and Seung multiplicative update rule.
+\mathbf{V}_{m \times n} \approx \mathbf{W}_{m \times k}\mathbf{H}_{k \times n}
+$$
+
+We have implemented our own non-negative matrix factorization function (`NMFgpumatrix()`) using the Lee and Seung multiplicative update rule.
 
 The rules are
 
 $$
 \mathbf{W}_{[i, j]}^{n+1} \leftarrow \mathbf{W}_{[i, j]}^n \frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)_{[i, j]}}{\left(\mathbf{W}^n \mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)_{[i, j]}}
-$$ and $$
+$$
+and 
+$$
 \mathbf{H}_{[i, j]}^{n+1} \leftarrow \mathbf{H}_{[i, j]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)_{[i, j]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)_{[i, j]}}
-$$ to update the $\mathbf{W}$ and $\mathbf{H}$ respectively.
+$$
+to update the **W** and **H** respectively.
 
 ![Figure 3: Computation time (in seconds) of non-negative factorization for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The internal size of the factorization is 10.](images/plotNMFgpumatrix.png){width="500"}
 

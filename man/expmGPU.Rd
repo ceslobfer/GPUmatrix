@@ -23,7 +23,7 @@ The matrix exponential of \code{x} as \code{\linkS4class{gpu.matrix}} class.
 \details{
 
 The exponential of a matrix is computed as:
-\eqn{\sum_{k=0}^\infin 1/k!X^k}.
+\eqn{\sum_{k=0}^\infty 1/k!X^k}.
 
 The function \code{expmGPU} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
 
