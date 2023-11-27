@@ -585,6 +585,7 @@ setMethod("qr.Q", signature(qr="list"), function(qr, complete=F,Dvec){
   return(res)
 })
 
+utils::globalVariables(c("R"))
 setMethod("qr.X", signature(qr="list"),function(qr, complete=F){
   objectClass <- class(qr[[1]])[[1]]
   if((objectClass == "gpu.matrix.torch") | (objectClass == "gpu.matrix.tensorflow")){

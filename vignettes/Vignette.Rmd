@@ -3,9 +3,6 @@ title: "Get started with GPUmatrix package"
 bibliography: "references.bib"
 author: "Cesar Lobato-Fernandez, Juan A. Ferrer-Bonsoms & Ángel Rubio"
 date: "February 2023"
-output:
-  md_document:
-    variant: markdown_github
 vignette: >
   %\VignetteIndexEntry{Get started with GPUmatrix package}
   %\usepackage[UTF-8]{inputenc}
@@ -512,9 +509,9 @@ summary(glm.D93)
 
 
 # Using speedglm
-library(speedglm)
-sglm.D93 <- speedglm(counts ~ outcome + treatment, family = poisson())
-summary(sglm.D93)
+# library(speedglm)
+# sglm.D93 <- speedglm(counts ~ outcome + treatment, family = poisson())
+# summary(sglm.D93)
 
 # GPU glm
 library(GPUmatrix)
