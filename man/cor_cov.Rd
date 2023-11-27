@@ -121,15 +121,17 @@ For more information:
 \examples{
 \donttest{
 \dontrun{
-a <- gpu.matrix(1:10)
-b <- gpu.matrix(11:20)
+a <- gpu.matrix(rnorm(10))
+b <- gpu.matrix(rnorm(10))
 cor(a,b)
 
 #example taken from stats corresponding help page:
-longley_gpu <- gpu.matrix(longley,type="tensorflow")
+longley_matrix <- as.matrix(longley)
+longley_gpu <- as.gpu.matrix(longley_matrix)
 C1 <- cor(longley_gpu)
 cov(longley_gpu)
 cov2cor(cov(longley_gpu))
+
 
 }
 }

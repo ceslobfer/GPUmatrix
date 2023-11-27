@@ -69,6 +69,9 @@ For more information see:
 \code{\link[base]{eigen}}, \code{\link[base]{svd}}, \code{\link[base]{chol}}, \code{\link[torch]{linalg_eig}}, \code{\link[torch]{torch_svd}}, and \code{\link[torch]{torch_cholesky}}.
 
 \code{chol} function is called by the function \code{\link{chol_solve}}.
+
+For the \code{qr} decomposition see \code{\link{qr}}.
+
 }
 
 \value{
@@ -93,14 +96,11 @@ The output of these functions correspond to their equivalent base functions:
 a <- gpu.matrix(rnorm(9),3,3)
 ein <- eigen(a) #eigenvalues and eigenvectors
 svd_return <- svd(a) #svd of gpu.matrix a
-qr_return <- qr(a) #qr decompostion
 
 ata <- tcrossprod(a)
 #ata is a real symmetric positive-definite square matrix.
 chol(ata) #cholesky decomposition.
 
-#for an example of how to use the cholesky decomposition see
-#the corresponding help for the function chol_solve.
 
 }
 }

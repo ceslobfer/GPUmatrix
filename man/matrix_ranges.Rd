@@ -146,7 +146,7 @@ These functions mimic the corresponding function of \code{'base'}, \code{'matrix
 \code{rowVars}, \code{colVars} calculate the variance of each row and of each column of a gpu.matrix-class object respectively.
 
 
-\code{rowRanks}, \code{colRanks}, \code{rankMatrix} get the rank of a gpu.matrix-class object, of each row and of each column respectively.
+\code{rowRanks}, \code{colRanks}: given a gpu.matrix-class object, these functions return a gpu.matrix which rearranges each row and each column into ascending respectively.
 
 
 \code{rowSums}, \code{colSums}, \code{sum} sum the value of a a gpu.matrix-class object, of each row and of each column respectively.
@@ -196,6 +196,67 @@ For more information:
 }
 
 
+\examples{
+\donttest{
+\dontrun{
+a <- gpu.matrix(rnorm(9),3,3)
+
+#the maximum value of a:
+max(a)
+
+#maximum of value in each row of a:
+rowMaxs(a)
+
+#maximum value in each column of a:
+colMaxs(a)
+
+#index of the maximum value of a:
+which.max(a)
+
+#minimum value of a:
+min(a)
+
+#minimum value in each row of a:
+rowMins(a)
+
+#minimum value in each column of a:
+colMins(a)
+
+#index of the minimum value in a:
+which.min(a)
+
+#mean of a:
+mean(a)
+
+#mean of each row of a:
+rowMeans(a)
+
+#mean of each column of a:
+colMeans(a)
+
+#variance of each row of a:
+rowVars(a)
+
+#variance of each column of a:
+colVars(a)
+
+#sum of all values of a:
+sum(a)
+
+#sum of each fow of a:
+rowSums(a)
+
+#sum of each column of a:
+colSums(a)
+
+#ranking of each row of a:
+rowRanks(a)
+
+#ranking of each columna of a:
+colRanks(a)
+}
+}
+}
 
 
 

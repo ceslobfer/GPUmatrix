@@ -117,7 +117,7 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL,
                          offset = NULL, acc = 1e-08, maxit = 25, k = 2,
                          sparse = NULL,
                          trace = FALSE,
-                         dtype=NULL,
+                         dtype="float64",
                          device=NULL,
                          type=NULL,...)
 {

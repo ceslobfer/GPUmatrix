@@ -115,7 +115,7 @@ inv <- solve(a)
 a \%*\% inv
 
 #inverse using ginv
-inv_2 <- GPUmatrix::ginv(a)
+inv_2 <- ginv(a)
 a \%*\% inv_2
 
 

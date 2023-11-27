@@ -120,12 +120,15 @@ A gpu.matrix-class object with the result of the matrix product.
 \examples{
 \donttest{
 \dontrun{
-  a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
-  b <- a\%*\%a
+a <- gpu.matrix(rnorm(12),nrow=4,ncol=3)
+b <- t(a)%*%a
+b
+crossprod(a,a)
 
-  b <- tcrossprod(a)
+b <- a%*%t(a)
+b
+tcrossprod(a)
 
-  b <- crossprod(a,a)
 
 }
 }

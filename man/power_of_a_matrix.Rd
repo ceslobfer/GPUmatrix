@@ -33,7 +33,7 @@ the nth power of the input gpu.matrix-class object. The returned matrix is also 
 \donttest{
 \dontrun{
 
-a <- gpu.matrix(1:9,nrow=3,ncol=3)
+a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
 a \%^\% 5
 
 

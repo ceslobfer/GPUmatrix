@@ -39,15 +39,15 @@ For more information see  \code{\link[Matrix]{expm}}, and \code{\link[torch]{tor
 \examples{
   \donttest{
   \dontrun{
-  #build with a matrix that contains int number. It will  not work.
+#build with a matrix that contains int number. It will  not work.
 x <- gpu.matrix(1:9,nrow=3,ncol = 3,dtype = "int")
 x
 try(expmGPU(x))
-#need to be float and not int32
 
-#by default, gpu.matrix work with float64
-x <- gpu.matrix(1:9,nrow=3,ncol = 3)
-try(expmGPU(x))
+#need to be float and not int
+x <- gpu.matrix(1:9,nrow=3,ncol = 3,dtype = "float64")
+expmGPU(x)
+
 }
 }
 

@@ -62,7 +62,7 @@ head(a) #shows the first six row of every column
 tail(a) #shows the las six row of every column
 
 show(a) #show all the object
-a #equivalente to apply function show.
+a #equivalente to run the function show.
 }
 }
 }

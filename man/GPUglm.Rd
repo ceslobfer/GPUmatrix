@@ -52,9 +52,9 @@ The common parameters with \code{speedglm}:
 
 The \code{glm.fit.GPU} function internally initialises matrices of the 'GPUmatrix' class by calling the \code{\link[GPUmatrix]{gpu.matrix}} function. The following parameters correspond to this function:
 
-\item{dtype}{parameter of the function \code{gpu.matrix}: "data type. User can indicate "float64", "float32" or "int" for "int64". if not specified, dtype will correspond to the input data type." }
+\item{dtype}{parameter of the function \code{gpu.matrix}: "data type. User can indicate "float64", "float32" or "int" for "int64"." By default it is set to 'float64'.}
 
-\item{device}{parameter of the function \code{gpu.matrix}:"Only for \code{type = "torch"}. It indicates de devide to load cuda. If not indicated, 'device' will be set to 'cuda' if \code{torch::cuda_is_available()}"}
+\item{device}{parameter of the function \code{gpu.matrix}:"It indicates the device to load cuda. If not indicated, 'device' will be set to 'cuda' if it is available."}
 
 \item{type}{parameter of the function \code{gpu.matrix}: "If gpu.matrix is 'torch' (by default if type is NULL) or "tensorflow"."}
 
@@ -105,11 +105,15 @@ Both \code{glmGPU}, and \code{glm.fit.GPU} returns an object of class "GPUglm". 
 }
 \seealso{
 See also: \code{\link[speedglm]{speedglm}} and \code{\link[stats]{glm}}.
+
+Also of interest may be the function \code{\link{LR_GradientConjugate_gpumatrix}} for logistic regression.
+
 }
 \examples{
 
 \donttest{
 \dontrun{
+
 # These examples show that the way to call
 # and work with these functions is the same
 # as with the corresponding functions
@@ -118,17 +122,25 @@ See also: \code{\link[speedglm]{speedglm}} and \code{\link[stats]{glm}}.
 # linear model:
 x <- matrix(rnorm(100*50),nrow = 100)
 y <- x %*% rnorm(50) + rnorm(100)
-s1 <- glm.fit.GPU(x=Matrix(x),y=as.gpu.matrix(y))
+s1 <- glm.fit.GPU(x=x,y=y)
+#call using formula:
+s1_formula <- GPUglm(y~0+x)
 
 #poisson and binomial:
+#For logistic regression: same example is solved
+# using the function LR_GradientConjugate_gpumatrix.
 
 m <- 1000
 n <- 100
 x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
 y <- rbinom(m, 1, prob = plogis(x%*%sol))
-s1 <- glm.fit.GPU(x,y,family = binomial(),dtype="float32")
-s2 <- glm.fit.GPU(x,y,family = poisson(),dtype="float64", device = "cpu")
+s1_logistic <- glm.fit.GPU(x,y,family = binomial())
+s2_poisson <- glm.fit.GPU(x,y,family = poisson())
+
+#call using formula:
+s1_logistic_formula <- GPUglm(y~0+x,family = binomial())
+s2_poisson_formula <- GPUglm(y~0+x,family = poisson())
 
 }
 }

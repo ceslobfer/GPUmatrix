@@ -40,12 +40,24 @@ If the input gpu.matrix-class object(s) are stored on the GPU, then the operatio
 [1] Minka TP (2003). “A comparison of numerical optimizers for logistic regression.” URL: https://tminka.github.io/papers/logreg/minka-logreg.pdf.
 }
 
+\seealso{
+See also:  \code{\link{GPUglm}}
+
+}
+
+
 \examples{
 \donttest{
 \dontrun{
-x <- gpu.matrix(rnorm(100*3),nrow=100,ncol=3)
-y <- sample(c(0,1),size=100,replace = T)
-a <- LR_GradientConjugate_gpumatrix(X = x,y = y)
+#same example is solved using the function GPUglm.
+set.seed(123)
+m <- 1000
+n <- 100
+x <- matrix(runif(m*n),m,n)
+sol <- rnorm(n)
+y <- rbinom(m, 1, prob = plogis(x%*%sol))
+s2_granConj <- LR_GradientConjugate_gpumatrix(X = x,y = y)
+
 }
 }
 }
