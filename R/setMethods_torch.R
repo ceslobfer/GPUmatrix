@@ -256,11 +256,15 @@ setMethod("colnames<-", signature(x = "gpu.matrix.torch", value="vector"), funct
 
 setMethod("rowSums", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(as.numeric(torch::torch_sum(x@gm,2)$cpu()))
+  res <- gpumatrix(torch::torch_sum(x@gm,2))
+  rownames(res) <- rownames(x)
+  return()
 })
 setMethod("colSums", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  return(as.numeric(torch::torch_sum(x@gm, 1)$cpu()))
+  res <- gpu.matrix(torch::torch_sum(x@gm, 1))
+  colnames(res) <- colnames(x)
+  return()
 })
 
 
@@ -818,11 +822,11 @@ setMethod("colMeans", signature(x = "gpu.matrix.torch"), function(x){
   if(x@sparse){
     reduced_sum = colSums(x)  # Sum of each row
     reduced_mean = reduced_sum / ncol(x)  # Mean of each row
-    res <- as.vector(reduced_mean)
+    res <- reduced_mean
   }else{
-    res <- as.numeric(torch::torch_mean(x@gm,1)$cpu())
+    res <- gpu.matrix(torch::torch_mean(x@gm,1))
   }
-  names(res) <- colnames(x)
+  colnames(res) <- colnames(x)
 
   return(res)
 })
@@ -832,11 +836,11 @@ setMethod("rowMeans", signature(x = "gpu.matrix.torch"), function(x){
   if(x@sparse){
     reduced_sum = rowSums(x)  # Sum of each row
     reduced_mean = reduced_sum / nrow(x)  # Mean of each row
-    res <- as.vector(reduced_mean)
+    res <- reduced_mean
   }else{
-    res <- as.numeric(torch::torch_mean(x@gm,2)$cpu())
+    res <- gpu.matrix(torch::torch_mean(x@gm,2))
   }
-  names(res) <- rownames(x)
+  rownames(res) <- rownames(x)
 
   return(res)
 })
@@ -1178,15 +1182,15 @@ setMethod("colVars", signature(x = "gpu.matrix.torch"), function(x){
 
 setMethod("colMaxs", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.numeric(torch::torch_max(x@gm,dim=1)[[1]]$cpu())
-  names(res) <- colnames(x)
+  res <- gpu.matrix(torch::torch_max(x@gm,dim=1)[[1]], device = device(x))
+  colnames(res) <- colnames(x)
   return(res)
 })
 
 setMethod("rowMaxs", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.numeric(torch::torch_max(x@gm,dim=2)[[1]]$cpu())
-  names(res) <- rownames(x)
+  res <- gpu.matrix(torch::torch_max(x@gm,dim=2)[[1]], device = device(x))
+  rownames(res) <- rownames(x)
   return(res)
 })
 
@@ -1203,15 +1207,15 @@ setMethod("colRanks", signature(x="gpu.matrix.torch"), function(x){
 
 setMethod("colMins", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.numeric(torch::torch_min(x@gm,dim=1)[[1]]$cpu())
-  names(res) <- colnames(x)
+  res <- gpu.matrix(torch::torch_min(x@gm,dim=1)[[1]], device = device(x))
+  colnames(res) <- colnames(x)
   return(res)
 })
 
 setMethod("rowMins", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- as.numeric(torch::torch_min(x@gm,dim=2)[[1]]$cpu())
-  names(res) <- rownames(x)
+  res <- gpu.matrix(torch::torch_min(x@gm,dim=2)[[1]], device=device(x))
+  rownames(res) <- rownames(x)
   return(res)
 })
 
