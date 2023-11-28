@@ -9,7 +9,7 @@ These functions mimic the functions \code{speedglm} and \code{speedglm.wfit} of 
 glm.fit.GPU(x, y, intercept = TRUE, weights = NULL, family =
                    gaussian(), start = NULL, etastart = NULL, mustart =
                    NULL, offset = NULL, acc = 1e-08, maxit = 25, k = 2,
-                   sparse = NULL, trace = FALSE, dtype = NULL, device =
+                   sparse = NULL, trace = FALSE, dtype = "float64", device =
                    NULL, type = NULL, ...)
 
 GPUglm(...)

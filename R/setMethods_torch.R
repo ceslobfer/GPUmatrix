@@ -256,7 +256,7 @@ setMethod("colnames<-", signature(x = "gpu.matrix.torch", value="vector"), funct
 
 setMethod("rowSums", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
-  res <- gpumatrix(torch::torch_sum(x@gm,2))
+  res <- gpu.matrix(torch::torch_sum(x@gm,2))
   rownames(res) <- rownames(x)
   return()
 })
