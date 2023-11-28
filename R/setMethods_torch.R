@@ -492,6 +492,7 @@ setMethod("%^%", signature(x = "gpu.matrix.torch", k = "numeric"), function(x,k)
 setGeneric("expmGPU", function(x) standardGeneric("expmGPU"))
 setMethod("expmGPU", signature(x = "gpu.matrix.torch"), function(x){
   x <- warningSparseTensor_torch(x)
+  x <- warningInteger(x)
   x@gm <- torch::torch_matrix_exp(x@gm)
   # message("The exponential is computed using a combination of the scaling and squaring method and the Pade approximation.SIAM J. Matrix Anal. Applic., 26:1179-1193, 2005")
   return(x)
