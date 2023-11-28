@@ -49,7 +49,8 @@ See also:  \code{\link{GPUglm}}
 \examples{
 \donttest{
 \dontrun{
-#same example is solved using the function GPUglm.
+
+#toy example:
 set.seed(123)
 m <- 1000
 n <- 100
@@ -57,6 +58,41 @@ x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
 y <- rbinom(m, 1, prob = plogis(x%*%sol))
 s2_granConj <- LR_GradientConjugate_gpumatrix(X = x,y = y)
+
+#the following compares LR_GradientConjugate_gpumatrix
+# with glm and GPUglm:
+
+require(MASS)
+require(stats,quietly = TRUE)
+#logistic:
+data(menarche)
+glm.out <- glm(cbind(Menarche, Total-Menarche) ~ Age, family=binomial(), data=menarche)
+summary(glm.out)
+
+glm.out_gpu <- GPUglm(cbind(Menarche, Total-Menarche) ~ Age, family=binomial(), data=menarche)
+summary(glm.out_gpu)
+
+#can be also called using glm.fit.gpu:
+new_menarche <- data.frame(Age=rep(menarche$Age,menarche$Total))
+observations <- c()
+for(i in 1:nrow(menarche)){
+  observations <- c(observations,rep(c(0,1),c(menarche$Total[i]-menarche$Menarche[i],
+                                              menarche$Menarche[i])))
+}
+new_menarche$observations <- observations
+x <- model.matrix(~Age,data=new_menarche)
+head(new_menarche)
+glm.fit_gpu <- glm.fit.GPU(x=x,y=new_menarche$observations, family=binomial())
+summary(glm.fit_gpu)
+
+#GPUmatrix package also include the function 'LR_GradientConjugate_gpumatrix'
+lr_gran_sol <- LR_GradientConjugate_gpumatrix(X = x,y = observations)
+
+#check results
+glm.out$coefficients
+glm.out_gpu$coefficients
+glm.fit_gpu$coefficients
+lr_gran_sol
 
 }
 }

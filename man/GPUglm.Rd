@@ -113,35 +113,70 @@ Also of interest may be the function \code{\link{LR_GradientConjugate_gpumatrix}
 
 \donttest{
 \dontrun{
+require(MASS,quietly = TRUE)
+require(stats,quietly = TRUE)
 
-# These examples show that the way to call
-# and work with these functions is the same
-# as with the corresponding functions
-# of the `speedglm' library.
+# linear model (example taken from 'glm'):
 
-# linear model:
-x <- matrix(rnorm(100*50),nrow = 100)
-y <- x %*% rnorm(50) + rnorm(100)
-s1 <- glm.fit.GPU(x=x,y=y)
-#call using formula:
-s1_formula <- GPUglm(y~0+x)
+utils::data(anorexia, package = "MASS")
+anorex_glm <- glm(Postwt ~ Prewt + Treat + offset(Prewt),
+                  family = gaussian(), data = anorexia)
+summary(anorex_glm)
 
-#poisson and binomial:
-#For logistic regression: same example is solved
-# using the function LR_GradientConjugate_gpumatrix.
+#Using GPUglm:
+anorex_GPUglm <- GPUglm(Postwt ~ Prewt + Treat + offset(Prewt),
+                        family = gaussian, data = anorexia)
+summary(anorex_GPUglm)
 
-m <- 1000
-n <- 100
-x <- matrix(runif(m*n),m,n)
-sol <- rnorm(n)
-y <- rbinom(m, 1, prob = plogis(x%*%sol))
-s1_logistic <- glm.fit.GPU(x,y,family = binomial())
-s2_poisson <- glm.fit.GPU(x,y,family = poisson())
+#linear model using glm.fit.gpu
+x <- model.matrix(~Treat+Prewt,data=anorexia)
+y <- as.matrix(anorexia$Postwt)
+s1_glm <- glm.fit(x=x,y=y)
+s1_gpu <- glm.fit.GPU(x=x,y=y)
 
-#call using formula:
-s1_logistic_formula <- GPUglm(y~0+x,family = binomial())
-s2_poisson_formula <- GPUglm(y~0+x,family = poisson())
+s1_glm$coefficients
+s1_gpu$coefficients
 
+
+# poisson (example taken from 'glm'):
+counts <- c(18,17,15,20,10,20,25,13,12)
+outcome <- gl(3,1,9)
+treatment <- gl(3,3)
+glm.D93 <- glm(counts ~ outcome + treatment, family = poisson())
+summary(glm.D93)
+
+gpu.glm.D93 <- GPUglm(counts ~ outcome + treatment, family = poisson())
+summary(gpu.glm.D93)
+
+#logistic:
+data(menarche)
+glm.out <- glm(cbind(Menarche, Total-Menarche) ~ Age, family=binomial(), data=menarche)
+summary(glm.out)
+
+glm.out_gpu <- GPUglm(cbind(Menarche, Total-Menarche) ~ Age, family=binomial(), data=menarche)
+summary(glm.out_gpu)
+
+#can be also called using glm.fit.gpu:
+new_menarche <- data.frame(Age=rep(menarche$Age,menarche$Total))
+observations <- c()
+for(i in 1:nrow(menarche)){
+  observations <- c(observations,rep(c(0,1),c(menarche$Total[i]-menarche$Menarche[i],
+                                              menarche$Menarche[i])))
+}
+new_menarche$observations <- observations
+x <- model.matrix(~Age,data=new_menarche)
+head(new_menarche)
+glm.fit_gpu <- glm.fit.GPU(x=x,y=new_menarche$observations, family=binomial())
+summary(glm.fit_gpu)
+
+#GPUmatrix package also include the function 'LR_GradientConjugate_gpumatrix'
+lr_gran_sol <- LR_GradientConjugate_gpumatrix(X = x,y = observations)
+
+#check results
+glm.out$coefficients
+glm.out_gpu$coefficients
+glm.fit_gpu$coefficients
+lr_gran_sol
 }
 }
 

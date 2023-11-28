@@ -241,13 +241,15 @@ glm.fit.GPU <- function (x,y, intercept = TRUE, weights = NULL,
     else paste("V", 1:length(coefficients), sep = "")
   }
   else col.names
+  if ((fam == "gaussian") & (link == "identity"))
+    tol <- 0
   rval <- list(coefficients = coefficients, logLik = ll.nuovo,
                iter = iter, tol = tol, family = family, link = link,
                df = dfr, XTX = as.matrix(XTX), dispersion = dispersion, ok = ok,
                rank = rank, RSS = as.numeric(RSS), method = method, aic = aic.model,
                offset = offset, sparse = sparse, deviance = dev, nulldf = nulldf,
                nulldev = nulldev, ngoodobs = n.ok, n = nobs, intercept = intercept,
-               convergence = (!(tol > acc)))
+               convergence = (!(tol > acc)),converged = (!(tol > acc)))
 
   class(rval) <- "GPUglm"
   return(rval)
