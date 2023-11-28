@@ -1216,7 +1216,6 @@ setMethod("rowMins", signature(x = "gpu.matrix.torch"), function(x){
 
 
 setMethod("dist", signature(x = "gpu.matrix.torch"), function(x,method = "euclidean", diag = FALSE, upper = FALSE, p = 2){
-  print("hola")
   if (!is.na(pmatch(method, "euclidian")))
     method <- "euclidean"
   METHODS <- c("euclidean", "maximum", "manhattan", "minkowski")
