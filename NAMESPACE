@@ -87,7 +87,8 @@ exportMethods("as.matrix",
               "cov",
               "cov2cor",
               "cor",
-              "apply")
+              "apply",
+              "dist")
 
 
 

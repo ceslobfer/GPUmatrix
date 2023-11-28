@@ -1214,3 +1214,33 @@ setMethod("rowMins", signature(x = "gpu.matrix.torch"), function(x){
   return(res)
 })
 
+
+setMethod("dist", signature(x = "gpu.matrix.torch"), function(x,method = "euclidean", diag = FALSE, upper = FALSE, p = 2){
+  print("hola")
+  if (!is.na(pmatch(method, "euclidian")))
+    method <- "euclidean"
+  METHODS <- c("euclidean", "maximum", "manhattan", "minkowski")
+  method <- pmatch(method, METHODS)
+  p <- (method == 1)*2 + (method==3)*1+(method==4)*p
+  if(method==2) p <- Inf
+  if (is.na(method))
+    stop("invalid distance method")
+
+  output <- torch::torch_cdist(x@gm, x@gm,p)
+  return(gpu.matrix(output, device = device(x)))
+})
+
+# dist <- function(A,method = "euclidean", diag = FALSE, upper = FALSE, p = 2) {
+#   if (!is.na(pmatch(method, "euclidian")))
+#     method <- "euclidean"
+#   METHODS <- c("euclidean", "maximum", "manhattan", "minkowski")
+#   method <- pmatch(method, METHODS)
+#   p <- (method == 1)*2 + (method==3)*1+(method==4)*p
+#   if(method==2) p <- Inf
+#   if (is.na(method))
+#     stop("invalid distance method")
+#
+#   output <- torch::torch_cdist(A@gm, A@gm,p)
+#   return(gpu.matrix(output))
+# }
+
