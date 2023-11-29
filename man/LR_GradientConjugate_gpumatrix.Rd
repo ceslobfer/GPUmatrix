@@ -56,7 +56,7 @@ m <- 1000
 n <- 100
 x <- matrix(runif(m*n),m,n)
 sol <- rnorm(n)
-y <- rbinom(m, 1, prob = plogis(x%*%sol))
+y <- rbinom(m, 1, prob = plogis(x\%*\%sol))
 s2_granConj <- LR_GradientConjugate_gpumatrix(X = x,y = y)
 
 #the following compares LR_GradientConjugate_gpumatrix
