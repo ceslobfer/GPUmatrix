@@ -65,7 +65,8 @@ Returns a GPUmatrix object that can be either "gpu.matrix.tensorflow" or "gpu.ma
 
 If the gpu.matrix-class object is not sparse it will show on the console the matrix as it is. If the gpu.matrix is sparse, it will return to the console the position where there are number different from zero. The internal values of the matrix can be seen using the operator "@".
 
-If the gpu.matrix-class object contains complex numbers, use the  \code{@gm$real} and \code{@gm$imag} operators to access the corresponding real and imaginary values.
+If the gpu.matrix-class object contains complex numbers, to access the real and imaginary information use the function \code{Re()} for teh rea part and \code{Im()} for the imaginary part. Furthermore, the following code can be used:
+\code{output@gm$real} for the real part and \code{output@gm$imag} for the imaginary part.
 
 Even if the gpu.matrix-class object is sparse or not, both kind of matrices works equally with all functions.
 }
