@@ -32,16 +32,22 @@ NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
     Vnew <- Winit%*%Hinit
     if(mean((Vnew-Vold)^2)<tol){
       res <- list("W"=Winit,"H"=Hinit)
-      condition <- T
+      warning(message="Early finish")
+      return(res)
       break()
     }
     Vold <- Vnew
+    if(iter == niter){
+      res <- list("W"=Winit,"H"=Hinit)
+      return(res)
+    }
   }
 
-  if(!condition){
-    warning(message="Early finish")
-  }
-  return(res)
+  # if(!condition){
+  #
+  #   warning(message="Early finish")
+  # }
+  # return(res)
 }
 
 
