@@ -80,12 +80,57 @@ setMethod("det", signature(x = "gpu.matrix.torch"), function(x, ...){
 
 setMethod("fft", signature(z="gpu.matrix.torch", inverse="missing"), function(z,inverse=F){
   z <- warningSparseTensor_torch(z)
+  if(!(ncol(z)>1 & nrow(z)>1)){
+    if(ncol(z)>1){
+      z@gm <- torch::torch_fft_fft(z@gm,dim = 2)
+    }else{
+      z@gm <- torch::torch_fft_fft(z@gm,dim = 1)
+    }
+  }else{
+    stop("FFT in gpu.matrix with 2 dimensions is not allowed yet")
+  }
+
+  return(z)
+})
+
+
+setMethod("fft", signature(z="gpu.matrix.torch", inverse="logical"), function(z,inverse=F){
+  z <- warningSparseTensor_torch(z)
+
+  if(!(ncol(z)>1 & nrow(z)>1)){
+    if(ncol(z)>1){
+      if(inverse){
+        z@gm <- torch::torch_fft_ifft(z@gm, norm = "forward",dim = 2)
+      }else{
+        z@gm <- torch::torch_fft_fft(z@gm,dim = 2)
+      }
+    }else{
+      if(inverse){
+        z@gm <- torch::torch_fft_ifft(z@gm, norm = "forward",dim = 1)
+      }else{
+        z@gm <- torch::torch_fft_fft(z@gm,dim = 1)
+      }
+    }
+  }else{
+    stop("FFT in gpu.matrix with 2 dimensions is not allowed yet")
+  }
+
+  # if(inverse){
+  #   z@gm <- torch::torch_fft_ifft(z@gm, norm = "forward",dim = 1)
+  # }else{
+  #   z@gm <- torch::torch_fft_fft(z@gm,dim = 1)
+  # }
+  return(z)
+})
+
+setMethod("mvfft", signature(z="gpu.matrix.torch", inverse="missing"), function(z,inverse=F){
+  z <- warningSparseTensor_torch(z)
   z@gm <- torch::torch_fft_fft(z@gm,dim = 1)
 
   return(z)
 })
 
-setMethod("fft", signature(z="gpu.matrix.torch", inverse="logical"), function(z,inverse=F){
+setMethod("mvfft", signature(z="gpu.matrix.torch", inverse="logical"), function(z,inverse=F){
   z <- warningSparseTensor_torch(z)
   if(inverse){
     z@gm <- torch::torch_fft_ifft(z@gm, norm = "forward",dim = 1)
