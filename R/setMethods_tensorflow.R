@@ -74,11 +74,36 @@ setMethod("det", signature(x = "gpu.matrix.tensorflow"), function(x, ...){
   return(as.numeric(res$modulus))
 })
 
-setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
-  z <- warningSparseTensor(z)
-  res <- gpu.matrix.tensorflow(tensorflow::tf$signal$fft(tensorflow::tf$cast(z@gm,tensorflow::tf$complex128)),dtype=tensorflow::tf$complex128)
-  return(res)
+# setMethod("fft", signature(z="gpu.matrix.tensorflow"), function(z){
+#   z <- warningSparseTensor(z)
+#   res <- gpu.matrix.tensorflow(tensorflow::tf$signal$fft(tensorflow::tf$cast(z@gm,tensorflow::tf$complex128)),dtype=tensorflow::tf$complex128)
+#   return(res)
+# })
+setMethod("fft", signature(z="gpu.matrix.tensorflow", inverse="missing"), function(z,inverse=F){
+  z <- warningSparseTensor_torch(z)
+  if(!(ncol(z)>1 & nrow(z)>1)){
+    if(ncol(z)>1){
+      z@gm <- tensorflow::tf$signal$fft(tensorflow::tf$cast(z@gm,tensorflow::tf$complex128))
+    }else{
+      z@gm <- tensorflow::tf$signal$fft(tensorflow::tf$cast(t(z)@gm,tensorflow::tf$complex128))
+    }
+  }else{
+    stop("FFT in gpu.matrix with 2 dimensions is not allowed yet")
+  }
+
+  return(z)
 })
+
+
+
+setMethod("mvfft", signature(z="gpu.matrix.tensorflow", inverse="missing"), function(z,inverse=F){
+  z <- warningSparseTensor_torch(z)
+  z@gm <- tensorflow::tf$signal$fft(tensorflow::tf$cast(t(z)@gm,tensorflow::tf$complex128))
+
+  return(z)
+})
+
+
 
 
 
