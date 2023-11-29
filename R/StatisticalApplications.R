@@ -13,16 +13,89 @@ NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
 
   if(!is.null(objectPackage)){
     if(objectPackage == "GPUmatrix"){
-      if(is.null(Winit)) Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
-      if(is.null(Hinit)) Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
+      if(is.null(Winit)){
+        Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
+      }else{
+        if(!((nrow(Winit) == nrow(V)) & (ncol(Winit) == k))){
+          stop("The dimensions of the Winit matrix are incorrect.
+               Please check that nrow(Winit) == nrow(V) and that ncol(Winit) == k.")
+        }
+        if(min(Winit) < 0){
+          Winit[which(Winit < 0)] <- 0
+          warning(message="The values of Winit must be positive. Negative values in Winit are set to 0.")
+        }
+      }
+      if(is.null(Hinit)){
+        Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
+      }else{
+        if(!((nrow(Hinit) == k) & (ncol(Hinit) == ncol(V)))){
+          stop("The dimensions of the Hinit matrix are incorrect.
+               Please check that nrow(Hinit) == k and that ncol(Hinit) == ncol(V).")
+        }
+        if(min(Hinit) < 0){
+          Hinit[which(Hinit < 0)] <- 0
+          warning(message="The values of Hinit must be positive. Negative values in Hinit are set to 0.")
+        }
+      }
     }else{
-      if(is.null(Winit)) Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
-      if(is.null(Hinit)) Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
+      if(is.null(Winit)){
+        Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
+      }else{
+        if(!((nrow(Winit) == nrow(V)) & (ncol(Winit) == k))){
+          stop("The dimensions of the Winit matrix are incorrect.
+               Please check that nrow(Winit) == nrow(V) and that ncol(Winit) == k.")
+        }
+        if(min(Winit) < 0){
+          Winit[which(Winit < 0)] <- 0
+          warning(message="The values of Winit must be positive. Negative values in Winit are set to 0.")
+        }
+      }
+      if(is.null(Hinit)){
+        Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
+      }else{
+        if(!((nrow(Hinit) == k) & (ncol(Hinit) == ncol(V)))){
+          stop("The dimensions of the Hinit matrix are incorrect.
+               Please check that nrow(Hinit) == k and that ncol(Hinit) == ncol(V).")
+        }
+        if(min(Hinit) < 0){
+          Hinit[which(Hinit < 0)] <- 0
+          warning(message="The values of Hinit must be positive. Negative values in Hinit are set to 0.")
+        }
+      }
     }
   }else{
-    if(is.null(Winit)) Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
-    if(is.null(Hinit)) Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
+    if(is.null(Winit)){
+      Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
+    }else{
+      if(!((nrow(Winit) == nrow(V)) & (ncol(Winit) == k))){
+        stop("The dimensions of the Winit matrix are incorrect.
+               Please check that nrow(Winit) == nrow(V) and that ncol(Winit) == k.")
+      }
+      if(min(Winit) < 0){
+        Winit[which(Winit < 0)] <- 0
+        warning(message="The values of Winit must be positive. Negative values in Winit are set to 0.")
+      }
+    }
+    if(is.null(Hinit)){
+      Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
+    }else{
+      if(!((nrow(Hinit) == k) & (ncol(Hinit) == ncol(V)))){
+        stop("The dimensions of the Hinit matrix are incorrect.
+               Please check that nrow(Hinit) == k and that ncol(Hinit) == ncol(V).")
+      }
+      if(min(Hinit) < 0){
+        Hinit[which(Hinit < 0)] <- 0
+        warning(message="The values of Hinit must be positive. Negative values in Hinit are set to 0.")
+      }
+    }
   }
+
+  if(min(V) < 0){
+    V[which(V < 0)] <- 0
+    warning(message="The values of V must be positive. Negative values in V are set to 0.")
+  }
+
+
 
   Vold <- V
   condition <- F
