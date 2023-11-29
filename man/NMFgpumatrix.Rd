@@ -69,12 +69,12 @@ library(Matrix)
 set.seed(1)
 a1 <- gpu.matrix(runif(90),nrow=30,ncol=3)
 a2 <- gpu.matrix(runif(30),nrow=3,ncol=10)
-V <- a1 %*% a2
+V <- a1 \%*\% a2
 b <- NMFgpumatrix(V = V, k=3, tol = 1e-6)
 
 #check result:
 image(Matrix(as.matrix(V)))
-image(Matrix(as.matrix(b$W %*% b$H)))
+image(Matrix(as.matrix(b$W \%*\% b$H)))
 
 }
 }
