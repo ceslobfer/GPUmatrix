@@ -22,7 +22,7 @@ setNegativeZero <- function(x){
 
   return(x)
 }
-controlDimensionNMF <- function(Winit=NULL, Hinit=NULL,k){
+controlDimensionNMF <- function(Winit=NULL, Hinit=NULL,V,k){
   if(!((nrow(Winit) == nrow(V)) & (ncol(Winit) == k))){
     stop("The dimensions of the Winit matrix are incorrect.
                Please check that nrow(Winit) == nrow(V) and that ncol(Winit) == k.")
@@ -35,13 +35,22 @@ controlDimensionNMF <- function(Winit=NULL, Hinit=NULL,k){
 NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
   set.seed(123)
   objectClass <- class(V)
-
-  if(objectClass == "gpu.matrix.torch" | objectClass == "gpu.matrix.tensorflow"){
-    if(is.null(Winit)){
-      Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
-    }
-    if(is.null(Hinit)){
-      Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
+  objectPackage <- attr(class(V),"package")
+  if(!is.null(objectPackage)){
+    if(objectClass == "gpu.matrix.torch" | objectClass == "gpu.matrix.tensorflow"){
+      if(is.null(Winit)){
+        Winit <- gpu.matrix(runif(nrow(V)*k),nrow(V),k, dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
+      }
+      if(is.null(Hinit)){
+        Hinit <- gpu.matrix(runif(k*ncol(V)),k,ncol(V), dtype = dtype(V),type = typeGPUmatrix(V),device = device(V))
+      }
+    }else{
+      if(is.null(Winit)){
+        Winit <- matrix(runif(nrow(V)*k),nrow(V),k)
+      }
+      if(is.null(Hinit)){
+        Hinit <- matrix(runif(k*ncol(V)),k,ncol(V))
+      }
     }
   }else{
     if(is.null(Winit)){
@@ -52,9 +61,10 @@ NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
     }
   }
 
+
   Winit <- setNegativeZero(Winit)
   Hinit <- setNegativeZero(Hinit)
-  controlDimensionNMF(Winit, Hinit,k)
+  controlDimensionNMF(Winit, Hinit,V,k)
   V <- setNegativeZero(V)
 
 
