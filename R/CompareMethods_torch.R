@@ -21,7 +21,7 @@ setMethod("Compare",
                      return(as.matrix((e1@gm < e2@gm)$cpu()))
                    },
                    '!=' = {
-                     return(as.matrix((e1@gm != e2@gm))$cpu())
+                     return(as.matrix((e1@gm != e2@gm)$cpu()))
                    },
                    '<='={
                      return(as.matrix((e1@gm <= e2@gm)$cpu()))
@@ -54,7 +54,7 @@ setMethod("Compare",
                      return(as.matrix((e1@gm < e2@gm)$cpu()))
                    },
                    '!=' = {
-                     return(as.matrix((e1@gm != e2@gm))$cpu())
+                     return(as.matrix((e1@gm != e2@gm)$cpu()))
                    },
                    '<='={
                      return(as.matrix((e1@gm <= e2@gm)$cpu()))

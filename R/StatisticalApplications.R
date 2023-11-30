@@ -22,7 +22,7 @@ setNegativeZero <- function(x){
 
   return(x)
 }
-controlDimensionNMF <- function(Winit=NULL, Hinit=NULL){
+controlDimensionNMF <- function(Winit=NULL, Hinit=NULL,k){
   if(!((nrow(Winit) == nrow(V)) & (ncol(Winit) == k))){
     stop("The dimensions of the Winit matrix are incorrect.
                Please check that nrow(Winit) == nrow(V) and that ncol(Winit) == k.")
@@ -54,7 +54,7 @@ NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
 
   Winit <- setNegativeZero(Winit)
   Hinit <- setNegativeZero(Hinit)
-  controlDimensionNMF(Winit, Hinit)
+  controlDimensionNMF(Winit, Hinit,k)
   V <- setNegativeZero(V)
 
 
