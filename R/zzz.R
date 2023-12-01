@@ -18,6 +18,8 @@ installTorch <- tryCatch({
   if(installTorch) packageStartupMessage("Torch tensors allowed")
   if (installedTENSORFLOW) packageStartupMessage("Tensorflow tensors allowed")
   if(installTorch==F & installedTENSORFLOW==F) packageStartupMessage("Not torch or tensorflow installed")
+  #Type
+  options(typeTensor = "torch")
 
 }
 

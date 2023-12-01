@@ -466,7 +466,7 @@ gpu.matrix.tensorflow <- function(data = NA, nrow = NULL, ncol = NULL, byrow = F
 #' @export
 gpu.matrix <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALSE,
                        dimnames = NULL, dtype=NULL, sparse=NULL, colnames=c(), rownames=c(),device=NULL, type=NULL) {
-  if (is.null(type)) type <- "torch"
+  if (is.null(type)) type <- getOption("typeTensor")
   if (type=="tensorflow") {
 
     res <- gpu.matrix.tensorflow(data , nrow , ncol , byrow ,
