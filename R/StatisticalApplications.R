@@ -9,9 +9,9 @@ updateW <- function(V,W,H) {
 
 setNegativeZero <- function(x){
   if(min(x) < 0){
-    if(class(x) == "gpu.matrix.torch"){
+    if(class(x)[[1]] == "gpu.matrix.torch"){
       x@gm <- torch::torch_clamp(x@gm, min=0)
-    }else if(class(x) == "gpu.matrix.tensorflow"){
+    }else if(class(x)[[1]] == "gpu.matrix.tensorflow"){
       x@gm <- tensorflow::tf$maximum(x@gm, 0)
     }else{
       x[(x < 0)] <- 0
@@ -34,7 +34,7 @@ controlDimensionNMF <- function(Winit=NULL, Hinit=NULL,V,k){
 }
 NMFgpumatrix <- function(V,k=10,Winit=NULL, Hinit=NULL, tol=1e-6, niter=100){
   set.seed(123)
-  objectClass <- class(V)
+  objectClass <- class(V)[[1]]
   objectPackage <- attr(class(V),"package")
   if(!is.null(objectPackage)){
     if(objectClass == "gpu.matrix.torch" | objectClass == "gpu.matrix.tensorflow"){

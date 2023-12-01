@@ -355,7 +355,7 @@ knitr::kable(NULL,caption = "Table 4. Functions that accept one or several gpu.m
 ```
 
 |   Functions   |                    Usage                    |    Package    |
-|:----------------:|:---------------------------------:|:----------------:|
+|:-----------------:|:---------------------------------:|:-----------------:|
 | `determinant` |       `determinant(Gm, logarithm=T)`        |    `base`     |
 |     `fft`     |                  `fft(Gm)`                  |    `base`     |
 |    `sort`     |           `sort(Gm,decreasing=F)`           |    `base`     |
@@ -440,11 +440,11 @@ These functions were tested on square matrices whose row sizes are 500, 700, 100
 
 Figure 1 compares the different computational architectures, namely, CPU -standard R matrices running on MKL on FP64-, CPU64 -GPUmatrix matrices computed on the CPU with FP64-, CPU32 -similar to the previous using FP32-, GPU64 -GPUmatrix matrices stored and computed on the GPU with FP64- and GPU32 -identical to the previous using FP32-.
 
-It is important to note that the y-axis is in logarithmic scale. For example, the element-wise product of a matrix on GPU32 is almost two orders of magnitude faster than the same operation on CPU. The results show that the GPU is particularly effective for element-wise operations (Hadamard product, exponential of a matrix). For these operations, it is easier to fully utilize the huge number of cores of a GPU. R-MKL seems to use a single core to perform element-wise operations. The torch implementation is much faster, but not as much as the GPU. rowMeans is also faster on the GPU than on the CPU. In this case, the Torch CPU implementation is on par with the GPU. When the operations become more complex, as in the standard product of matrices and computing the inverse, CPU and GPU (using double precision) are closer to each other. However, GPU32 is still much faster than its CPU32 counterpart. Finally, it is not advisable -in terms of speed- to use the GPU for even more complex operations such as the SVD. In this case, GPU64 is the slowest method. GPU32 hardly stands up to comparison with CPU32.
+It is important to note that the y-axis is in logarithmic scale. For example, the element-wise product of a matrix on GPU32 is around five times faster than the same operation on CPU. The results show that the GPU is particularly effective for element-wise operations (Hadamard product, exponential of a matrix). For these operations, it is easier to fully utilize the huge number of cores of a GPU. R-MKL seems to use a single core to perform element-wise operations. The torch implementation is much faster, but not as much as using the GPU. rowMeans is also faster on the GPU than on the CPU. In this case, the GPUmatrix CPU implementation is on par with the GPU. When the operations become more complex, as in the standard product of matrices and computing the inverse, CPU and GPU (using double precision) are closer to each other. However, GPU32 is still much faster than its CPU32 counterpart. Finally, it is not advisable -in terms of speed- to use the GPU for even more complex operations such as the SVD. In this case, GPU64 is the slowest method. GPU32 hardly stands up the comparison with CPU32.
 
 ![Figure 2: Computation time (in seconds) for the Matrix package (solid violet), yellow lines for GPUmatrix with float32, orange lines for GPUmatrix with float64, solid lines for CPU and dashed lines for GPU with CUDA. Time shown in y-axis is in logarithmic scale. The small model is a random square matrix of size 2,000 x 2,000. The proportion of non-zero elements is either 0.001 or 0.01. The large model is a 20,000 x 20,000 matrix with the same proportion of non-zero elements. The element-wise multiplication is performed on the sparse matrix. The right panel shows the time required to multiply these matrices by dense matrices whose sizes are 2,000 x 500 and 20,000 x 500, respectively.](images/SparsePerformanceComparison.png){width="500"}
 
-Regarding sparse matrices, Torch or Tensorflow for R have very limited support for them. In many cases, it is necessary to cast the sparse matrix to a full matrix and perform the operations on the full matrix. However, there are two operations that do not require this casting: element-wise multiplication of matrices and multiplication of a sparse matrix and a full matrix. We created four sparse matrices. The size of two of them (small ones) is 2,000 x 2,000. The fraction of nonzero entries is 0.01 and 0.001. The size of the other two (large) is 20,000 x 20,000. The fraction of non-null entries is also 0.01 and 0.001. Figure 2 shows the results for these matrices. As mentioned earlier, the implementation of sparse operations in torch or tensorflow for R is far from perfect, probably, because the only storage mode is "coo" in their respective R packages. Matrix package outperforms either GPU or CPU, even for float32, in all the cases.
+Regarding sparse matrices, Torch or Tensorflow for R have very limited support for them. In many cases, it is necessary to cast the sparse matrix to a full matrix and perform the operations on the full matrix. However, there are two operations that do not require this casting: element-wise multiplication of matrices and multiplication of a sparse matrix and a full matrix. We created four sparse matrices. The size of two of them (small ones) is 2,000 x 2,000. The fraction of nonzero entries is 0.01 and 0.001. The size of the other two (large ones) is 20,000 x 20,000. The fraction of non-null entries is also 0.01 and 0.001. Figure 2 shows the results for these matrices. The element-wise multiplication is faster using **GPUmatrix**. On the contrary, the time to multiply a sparse and a full matrices is similar using **Matrix** and **GPUmatrix**. As mentioned earlier, the implementation of sparse operations in torch or tensorflow for R is far from perfect, probably, because the only storage mode is "coo" in their respective R packages.
 
 GPUmatrix clearly outperforms CPU computation for the element-wise matrix product, since it is not possible to use MKL in these cases.
 
@@ -468,12 +468,9 @@ The rules are
 
 $$
 \mathbf{W}_{[i, j]}^{n+1} \leftarrow \mathbf{W}_{[i, j]}^n \frac{\left(\mathbf{V}\left(\mathbf{H}^{n+1}\right)^T\right)_{[i, j]}}{\left(\mathbf{W}^n \mathbf{H}^{n+1}\left(\mathbf{H}^{n+1}\right)^T\right)_{[i, j]}}
-$$
-and 
-$$
+$$ and $$
 \mathbf{H}_{[i, j]}^{n+1} \leftarrow \mathbf{H}_{[i, j]}^n \frac{\left(\left(\mathbf{W}^n\right)^T \mathbf{V}\right)_{[i, j]}}{\left(\left(\mathbf{W}^n\right)^T \mathbf{W}^n \mathbf{H}^n\right)_{[i, j]}}
-$$
-to update the **W** and **H** respectively.
+$$ to update the **W** and **H** respectively.
 
 ![Figure 3: Computation time (in seconds) of non-negative factorization for MKL-R (i.e. R with the optimized MKL BLAS library, solid green), solid lines for CPU, dashed lines for GPU with CUDA, pink lines for GPUmatrix with float64, and blue lines for GPUmatrix with float32. Time shown in y-axis is in logarithmic scale. All calculations are performed on square matrices. The x-axis represents the number of rows in the matrices. The internal size of the factorization is 10.](images/plotNMFgpumatrix.png){width="500"}
 
