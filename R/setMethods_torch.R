@@ -7,11 +7,33 @@ to_dense_torch<-function(x){
   return(x)
 }
 
-to_sparse_torch<-function(x){
-  if(!x@sparse){
-    x@gm <-x@gm$to_sparse()
-    x@sparse <- T
-  }
+# to_sparse_torch<-function(x){
+#   if(!x@sparse){
+#     x@gm <-x@gm$to_sparse()
+#     x@sparse <- T
+#   }
+#   return(x)
+# }
+
+to_sparse_torch <- function(x) {
+  # Encontrar los índices de los elementos no cero
+  non_zero_indices <- which(x != 0, arr.ind = TRUE)
+  device <- "cuda"
+  if(!x@gm$is_cuda) device <- "cpu"
+
+  # indices <- torch::torch_tensor(t(non_zero_indices),device = x@gm$device,dtype = torch::torch_long())
+  indices <- gpu.matrix(t(non_zero_indices),device = device,dtype = torch::torch_long())
+
+
+  # Extraer los valores no cero
+  values <- as.numeric(x)
+  values <- torch::torch_tensor(values[values != 0],device = x@gm$device,dtype = x@gm$dtype)
+
+  # Crear el tensor disperso
+  sparse_tensor <- torch::torch_sparse_coo_tensor(indices@gm, values, size = dim(x))
+  res <- gpu.matrix(sparse_tensor,sparse = T,dtype = dtype(x), device = device)
+  x@gm <- res@gm
+  x@sparse <- T
   return(x)
 }
 
@@ -556,7 +578,7 @@ setMethod("diag<-", signature(x = "gpu.matrix.torch", value = "numeric"), functi
     value <-torch::torch_diag_embed(value)
     if(device(x) == "cuda") value <- value$cuda()
     x@gm <- x@gm + value
-    x@gm <- x@gm$to_sparse()
+    x@gm <- (to_sparse_torch(x@gm))@gm
     x@sparse <- T
   }else{
     x@gm$fill_diagonal_(0)

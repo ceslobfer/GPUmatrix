@@ -44,7 +44,7 @@ For more information see:
 
 \examples{
 
-if(installTorch){
+if(installTorch()){
 
   a <- gpu.matrix(rnorm(9),nrow=3,ncol=3)
 

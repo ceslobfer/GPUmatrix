@@ -73,7 +73,7 @@ On the other hand, the function \code{hist} returns the same output as its count
 
 \examples{
 
-if(installTorch){
+if(installTorch()){
 
   a <- gpu.matrix(rnorm(20*100),20,100)
 

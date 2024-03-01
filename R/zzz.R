@@ -1,4 +1,15 @@
 
+installTorch <- function(){
+  installedTORCH <- requireNamespace("torch", quietly = TRUE)
+  tryCatch({
+    res <- FALSE
+    if (installedTORCH){
+      res <- torch::torch_is_installed()
+      if(res & !isNamespaceLoaded("torch")) attachNamespace("torch")
+    }
+    return(res)
+  })
+}
 
 # Function called when a package is attached
 .onAttach <- function (libname, pkgname) {

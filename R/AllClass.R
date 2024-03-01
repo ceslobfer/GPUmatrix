@@ -6,7 +6,7 @@ setClass("gpu.matrix.tensorflow",
            rownames = "ANY",
            colnames = "ANY",
            gm = "ANY",
-           sparse = "logical",
+           sparse = "ANY",
            type="character")
 )
 # Define a class for a GPU matrix using PyTorch
@@ -16,7 +16,7 @@ setClass("gpu.matrix.torch",
            rownames = "ANY",
            colnames = "ANY",
            gm = "ANY",
-           sparse = "logical",
+           sparse = "ANY",
            type="character")
 )
 
@@ -290,16 +290,18 @@ gpu.matrix.torch <- function(data = NULL, nrow = NULL, ncol = NULL, byrow = FALS
   )
 
 
+  res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, type="torch")
 
   #sparse Control
   if (!is.null(sparse)) {
-    if(gm$is_sparse()!=sparse & sparse==T) gm <- gm$to_sparse()
-    if(gm$is_sparse()!=sparse & sparse==F) gm <- gm$to_dense()
+    if(res@gm$is_sparse()!=sparse & sparse==T) res <- to_sparse_torch(res)
+    if(res@gm$is_sparse()!=sparse & sparse==F) res@gm <- res@gm$to_dense()
   }else{
-    sparse <- gm$is_sparse()
+    sparse <- res@gm$is_sparse()
+    res@sparse <- sparse
   }
 
-  res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, type="torch")
+  # res <- new("gpu.matrix.torch", gm=gm, sparse=sparse, type="torch")
 
   #dimnames Control
   if (!is.null(dimnames)){

@@ -88,7 +88,7 @@ The GPUmatrix package is based on S4 objects in R and we have created a construc
 
 ```{r, eval=T}
 library(GPUmatrix)
-if (installTorch) {
+if (installTorch()) {
   #R matrix initialization
   m <- matrix(c(1:20)+40,10,2)
   #Show CPU matrix
@@ -103,7 +103,7 @@ if (installTorch) {
 Although the indexing of tensors in both torch and tensorflow is 0-based, the indexing of GPUmatrix objects is 1-based, making it as close as possible to working with native R matrices and more convenient for the user. In the previous example, a normal R CPU matrix called `m` and its GPU counterpart `Gm` are created. Just like regular matrices, the created GPU matrices allow for indexing of its elements and assignment of values. The concatenation operators `rbind()` and `cbind()` work independently of the type of matrices that are to be concatenated, resulting in a ***gpu.matrix***:
 
 ```{r,eval=T}
-if (installTorch) {
+if (installTorch()) {
 Gm[c(2,3),1]
 
 Gm[,2]
@@ -119,7 +119,7 @@ Gm2
 It is also possible to initialize the data with NaN values:
 
 ```{r,eval=T}
-if (installTorch) {
+if (installTorch()) {
 Gm3 <- gpu.matrix(nrow = 2,ncol=3)
 Gm3[,2]
 Gm3[1,2] <- 1 
@@ -136,7 +136,7 @@ These examples demonstrate that, contrary to standard R, subsetting a gpu.matrix
 In the GPUmatrix constructor, we can specify the location of the matrix, i.e., we can decide to host it on the GPU or in RAM memory to use it with the CPU. As a package, as its name suggests, oriented towards algebraic operations in R using the GPU, it will by default be hosted on the GPU, but it allows the same functionalities using the CPU. To do this, we use the `device` attribute of the constructor and assign it the value ***"cpu"***.
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 #GPUmatrix initialization with CPU option   
 Gm <- gpu.matrix(c(1:20)+40,10,2,device="cpu")   
 #Show CPU matrix from GPUmatrix   
@@ -186,7 +186,7 @@ There are two functions for casting to create a ***gpu.matrix***: **`as.gpu.matr
 reate 'Gm' from 'm' matrix R-base:
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 m <- matrix(c(1:10)+40,5,2)
 Gm <- gpu.matrix(m)
 Gm
@@ -196,7 +196,7 @@ Gm
 Create 'Gm' from 'M' with Matrix package:
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 library(Matrix)
 M <- Matrix(c(1:10)+40,5,2)
 Gm <- gpu.matrix(M)
@@ -207,7 +207,7 @@ Gm
 Create 'Gm' from 'mfloat32' with float package:
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 library(float)
 mfloat32 <- fl(m)
 Gm <- gpu.matrix(mfloat32)
@@ -220,7 +220,7 @@ Interestingly, GPUmatrix returns a float32 data type matrix if the input is a fl
 It is also possible to a gpu.matrix create 'Gms' type sparse from 'Ms' type sparse dgCMatrix, dgeMatrix, ddiMatrix or dpoMatrix with Matrix package:
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 Ms <- Matrix(sample(0:1, 10, replace = TRUE), nrow=5, ncol=2, sparse=TRUE)
 Ms
  
@@ -234,7 +234,7 @@ Gms
 The data types allowed by GPUmatrix are: **float64**, **float32**, **int**, **bool** or **logical**, **complex64** and **complex32**. We can create a GPU matrix with a specific data type using the **`dtype`** parameter of the **`gpu.matrix()`** constructor function. It is also possible change the data type of a previously created GPU matrix using the the data type of a previously created GPU matrix using the **`dtype()`** function. The same applies to GPU sparse matrices, we can create them from the constructor using the **`sparse`** parameter, which will obtain a Boolean value of `TRUE`/`FALSE` depending on whether we want the resulting matrix to be sparse or not. We can also modify the sparsity of an existing GPU matrix with the functions **`to_dense()`**, if we want it to go from sparse to dense, and **`to_sparse()`**, if we want it to go from dense to sparse.
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 #Creating a float32 matrix
 Gm32 <- gpu.matrix(c(1:20)+40,10,2, dtype = "float32")
 Gm32
@@ -263,7 +263,7 @@ Gms64
 GPUmatrix supports all basic arithmetic operators in R: `+`, `-`, `*`, `^`, `/`, `%*%` and `%%`. Its usage is the same as for basic R matrices, and it allows compatibility with other matrix objects from the packages mentioned above.
 
 ```{r, eval=T}
-if (installTorch) {
+if (installTorch()) {
 (Gm + Gm) == (m + m)
 
 (Gm + M) == (mfloat32 + Gm)
@@ -332,7 +332,7 @@ knitr::kable(NULL,caption = "Table 3. Complex operators that accept a gpu.matrix
 We can find a multitude of functions that can be applied to *gpu.matrix* type matrices. Most of the functions are functions from the base R package that can be used on *gpu.matrix* matrices in the same way they would be applied to regular matrices of R. There are other functions from other packages like **Matrix** or **matrixStats** that have been implemented due to their widespread use within the user community, such as `rowVars` or `colMaxs`. The output of these functions, which originally produced R default matrix type objects, will now return *gpu.matrix* type matrices if the input type of the function is *gpu.matrix*.
 
 ```{r,eval=T}
-if (installTorch) {
+if (installTorch()) {
 m <- matrix(c(1:20)+40,10,2)
 Gm <- gpu.matrix(c(1:20)+40,10,2)
 
@@ -510,7 +510,7 @@ The following script illustrates how to use the `GPUglm` function in toy example
 
 ```{r message=FALSE, warning=FALSE}
 # Standard glm
-if (installTorch) {
+if (installTorch()) {
 counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)
 treatment <- gl(3,3)

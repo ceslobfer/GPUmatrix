@@ -65,7 +65,7 @@ It returns a gpu.matrix-class object with the transformed values. To access the 
 
 
 \examples{
-if(installTorch){
+if(installTorch()){
 
 x <- gpu.matrix(1:4,ncol = 1)
 output_gpu <- fft(x)
