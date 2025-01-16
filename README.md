@@ -305,8 +305,20 @@ Gm
     ##  49  59
     ##  50  60
     ## [ CPUDoubleType{10,2} ]
+    
+## 1.2 Using GPUMatrix on Apple Silicon
 
-## 1.2 Using GPUMatrix with Tensorflow
+The GPUmatrix package also supports Apple Silicon devices, allowing GPU operations to work seamlessly. By using the `device = "mds"` option in most functions, users can leverage the GPU on Apple Silicon machines out of the box. This ensures optimal performance on devices equipped with the M1 or M2 chips.
+
+``` r
+if (installTorch()) {
+  # GPUmatrix initialization for Apple Silicon GPU   
+  Gm <- gpu.matrix(c(1:20)+40,10,2,device="mds")   
+  # Show Apple Silicon GPU matrix from GPUmatrix   
+  Gm 
+}
+```
+## 1.3 Using GPUMatrix with Tensorflow
 
 As commented in the introduction and dependency section, GPUmatrix can
 be used with both TensorFlow and Torch. By default, the GPU matrix
