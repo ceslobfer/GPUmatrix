@@ -6,7 +6,7 @@
 
 The function \code{solve} mimics of the 'base' function \code{solve} to operate on gpu.matrix-class objects: it "solves the equation \code{a \%*\% x = b}."
 
-The function \code{ginv} mimics the function \code{ginv} of package 'MASS' to operate on gpu.matrix-class objects: it "Calculates the Moore-Penrose generalized inverse of a matrix X."
+The function \code{pinv} mimics the function \code{pinv} of package 'MASS' to operate on gpu.matrix-class objects: it "Calculates the Moore-Penrose generalized inverse of a matrix X."
 
 The function \code{chol_solve} is a GPUmatrix own function. This function uses the Cholesky decomposition to solve a system of equations.
 
@@ -21,10 +21,10 @@ The function \code{chol_solve} is a GPUmatrix own function. This function uses t
 \alias{solve,gpu.matrix.torch,ANY-method}
 \alias{solve,gpu.matrix.torch,missing-method}
 
-\alias{ginv}
-\alias{ginv-methods}
-\alias{ginv,gpu.matrix.torch-method}
-\alias{ginv,gpu.matrix.tensorflow-method}
+\alias{pinv}
+\alias{pinv-methods}
+\alias{pinv,gpu.matrix.torch-method}
+\alias{pinv,gpu.matrix.tensorflow-method}
 
 \alias{chol_solve}
 \alias{chol_solve-methods}
@@ -43,8 +43,8 @@ The function \code{chol_solve} is a GPUmatrix own function. This function uses t
 \S4method{solve}{gpu.matrix.torch,ANY}(a,b)
 \S4method{solve}{gpu.matrix.torch,missing}(a)
 
-\S4method{ginv}{gpu.matrix.torch}(X,tol)
-\S4method{ginv}{gpu.matrix.tensorflow}(X,tol)
+\S4method{pinv}{gpu.matrix.torch}(X,tol)
+\S4method{pinv}{gpu.matrix.tensorflow}(X,tol)
 
 \S4method{chol_solve}{ANY,gpu.matrix.torch}(x,y)
 \S4method{chol_solve}{ANY,gpu.matrix.tensorflow}(x,y)
@@ -70,7 +70,7 @@ These inputs correspond to the \code{chol_solve} function:
 
 \item{y}{a numeric or complex vector or matrix giving the right-hand side(s) of the linear system.}
 
-These inputs correspond to the \code{ginv} function:
+These inputs correspond to the \code{pinv} function:
 
 \item{X}{Matrix for which the Moore-Penrose inverse is required.}
 \item{tol}{A relative tolerance to detect zero singular values.}
@@ -78,7 +78,7 @@ These inputs correspond to the \code{ginv} function:
 }
 
 \details{
-The functions \code{solve}, and \code{ginv} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
+The functions \code{solve}, and \code{pinv} internally calls the corresponding function of the library torch or tensorflow (depending on the type of input gpu.matrix-class).
 
 If the input gpu.matrix-class object(s) are stored on the GPU, then the operations will be performed on the GPU. See \code{\link{gpu.matrix}}.
 
@@ -114,8 +114,8 @@ a \%*\% betas
 inv <- solve(a)
 a \%*\% inv
 
-#inverse using ginv
-inv_2 <- ginv(a)
+#inverse using pinv
+inv_2 <- pinv(a)
 a \%*\% inv_2
 
 

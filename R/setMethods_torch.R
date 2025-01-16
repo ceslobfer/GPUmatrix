@@ -822,7 +822,7 @@ setMethod("svd", signature(x="gpu.matrix.torch"), function(x){
   return(res)
 })
 
-setMethod("ginv", signature(X="gpu.matrix.torch", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
+setMethod("pinv", signature(X="gpu.matrix.torch", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
 {
   X <- warningSparseTensor_torch(X)
   X@gm <- torch::torch_pinverse(X@gm)

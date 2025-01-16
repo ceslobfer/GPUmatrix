@@ -616,8 +616,8 @@ setMethod("svd", signature(x="gpu.matrix.tensorflow"), function(x){
 
   return(res)
 })
-setGeneric("ginv", function(X,tol) standardGeneric("ginv"))
-setMethod("ginv", signature(X="gpu.matrix.tensorflow", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
+setGeneric("pinv", function(X,tol) standardGeneric("pinv"))
+setMethod("pinv", signature(X="gpu.matrix.tensorflow", tol="ANY"), function (X, tol = sqrt(.Machine$double.eps))
 {
   X <- warningSparseTensor(X)
   X@gm <- tensorflow::tf$linalg$pinv(X@gm)

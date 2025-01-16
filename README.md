@@ -793,7 +793,7 @@ are adapted to be used just like regular R matrices.
 |  `qr.resid`   |            ``` qr.resid``(…) ```            |    `base`     |
 |    `eigen`    |                 `eigen(Gm)`                 |    `base`     |
 |     `svd`     |                  `svd(Gm)`                  |    `base`     |
-|    `ginv`     | `ginv(Gm, tol = sqrt(.Machine$double.eps))` |    `MASS`     |
+|    `pinv`     | `pinv(Gm, tol = sqrt(.Machine$double.eps))` |    `MASS`     |
 |    `chol`     |                 `chol(Gm)`                  |    `base`     |
 | `chol_solve`  |             `chol_solve(Gm, …)`             |  `GPUmatrix`  |
 |    `mean`     |                 `mean(Gm)`                  |    `base`     |
