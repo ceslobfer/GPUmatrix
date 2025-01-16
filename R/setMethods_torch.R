@@ -216,9 +216,9 @@ setMethod(f = "show", signature = "gpu.matrix.torch", definition = function(obje
   if (dtype(object) == "complex64" | dtype(object) == "complex32"){
     cat("GPUmatrix\n")
     cat("Real (Re function):\n")
-    print(Re(object))
+    print(object@gm$real)
     cat("Imag (Im function):\n")
-    print(Im(object))
+    print(object@imag)
   }else{
     cat("GPUmatrix\n")
     print(object@gm)
@@ -232,9 +232,9 @@ setMethod("print", signature = "gpu.matrix.torch", definition = function(x){
   if (dtype(object) == "complex64" | dtype(object) == "complex32"){
     cat("GPUmatrix\n")
     cat("Real (Re function):\n")
-    print(Re(object))
+    print(object@gm$real)
     cat("Imag (Im function):\n")
-    print(Im(object))
+    print(object@gm$imag)
   }else{
     print(object@gm)
     if (!is.null(object@rownames)) cat(paste(c("rownames:",object@rownames,"\n")))
@@ -274,9 +274,12 @@ setMethod("dimnames", signature(x = "gpu.matrix.torch"), function(x){
   return(res)
 })
 
-setMethod("dimnames<-", signature(x = "gpu.matrix.torch", value="vector"), function(x,value){
+setMethod("dimnames<-", signature(x = "gpu.matrix.torch", value="ANY"), function(x,value){
 
-  if (is.null(value[[1]]) & is.null(value[[2]])){
+  if(length(value)==0){
+    x@rownames <- NULL
+    x@colnames <- NULL
+  }else if (is.null(value[[1]]) & is.null(value[[2]])){
     x@rownames <- NULL
     x@colnames <- NULL
   }else if (is.null(value[[1]]) & length(value[[2]]) == ncol(x)){
